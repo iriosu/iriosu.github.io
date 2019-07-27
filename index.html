@@ -15,7 +15,7 @@
 		<link href="images/imago.png" type="text/css" rel="shortcut icon"/>
 		<meta name="author" content="NAnodelabarra."/>
 
-		<style>
+		<!-- <style>
 		.collapsible {
 		  background-color: #777;
 		  color: white;
@@ -38,7 +38,13 @@
 		  overflow: hidden;
 		  background-color: #f1f1f1;
 		}
-		</style>
+		</style> -->
+		<script type="text/javascript">
+		function show_hide_row(row)
+		{
+		 $("#"+row).toggle();
+		}
+		</script>
 
 
 	</head>
@@ -99,14 +105,14 @@
 							</td>
 							<td class="ca"><pc> with <a href="https://www.ruthybeer.com/"><span class="label"><pf>R. Beer</pf></span></a> and <a href="https://stanford.edu/~dsaban/"><span class="label"><pf>D. Saban</pf></span></a></pc></td>
 						</tr>
-						<tr>
-							<button class="collapsible">Open Collapsible</button>
-							<div class="content">
-							  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-							</div>
+
+						<!-- <tr onclick="show_hide_row('hidden_row1');">
+							<td><pd>Abstract</pd></td><td></td>
 						</tr>
-
-
+						<tr id="hidden_row1" class="hidden_row">
+						<td colspan=2><pd>
+						Motivated by recent initiatives to increase transparency in procurement, we study the effects of disclosing information about previous purchases in a setting where an organization delegates its purchasing decisions to its employees. When employees can use their own discretion —which may be influenced by personal preferences— to select a supplier, the incentives of the employees and the organization may be misaligned. </pd></td>
+						</tr> -->
 
 						<tr>
 							<td><a href="https://www.dropbox.com/s/tkux0e1y0d9nlxa/submission_OR_v3.pdf?dl=0" class="title"><span class="label">Improving the Chilean College Admissions System</span></a> <br> <pd>Major revision in Operations Research</pd>
@@ -225,20 +231,18 @@
 
 
 	<script>
-	var coll = document.getElementsByClassName("collapsible");
-	var i;
-
-	for (i = 0; i < coll.length; i++) {
-	  coll[i].addEventListener("click", function() {
-	    this.classList.toggle("active");
-	    var content = this.nextElementSibling;
-	    if (content.style.display === "block") {
-	      content.style.display = "none";
-	    } else {
-	      content.style.display = "block";
-	    }
-	  });
-	}
+	$(function() {
+	    $("td[colspan=3]").find("p").hide();
+	    $("table").click(function(event) {
+	        event.stopPropagation();
+	        var $target = $(event.target);
+	        if ( $target.closest("td").attr("colspan") > 1 ) {
+	            $target.slideUp();
+	        } else {
+	            $target.closest("tr").next().find("p").slideToggle();
+	        }
+	    });
+	});
 	</script>
 
 	</body>
