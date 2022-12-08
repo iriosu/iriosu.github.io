@@ -1574,18 +1574,12 @@
 	}
 
 	a {
-		-moz-transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-		-webkit-transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-		-ms-transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-		transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-		/* border-bottom: dotted 1px; */
 		color: #787878;
 		text-decoration: none;
 	}
-
+r 
 		a:hover {
 			border-bottom-color: transparent;
-			color: #1463A7 !important;
 			text-decoration: none;
 		}
 
@@ -1618,6 +1612,23 @@
 	}
 	pf {
 		border-bottom: dotted 1px;
+	}
+	pf:hover {
+		background-color: #15473423;
+		color: #154734 !important;
+		padding: 0 2px;
+		margin: 0 -2px;
+		border-bottom: solid 4px;
+	}
+	.utdallas:hover {
+		background-color: rgba(255, 255, 255, 0.158);
+		color: #fff !important;
+		padding: 0 4px;
+		margin: 0 -4px;
+		border-bottom: solid 4px;
+	}
+	.social:hover {
+		color: #fff !important;
 	}
 
 	h1, h5, h3, h4, h6 {
@@ -1814,7 +1825,7 @@
 		input[type="email"]:focus,
 		select:focus,
 		textarea:focus {
-			border-color: #1463A7;
+			border-color: #154734;
 		}
 
 	.select-wrapper {
@@ -1924,7 +1935,7 @@
 
 		input[type="checkbox"]:focus + label:before,
 		input[type="radio"]:focus + label:before {
-			border-color: #1463A7;
+			border-color: #154734;
 		}
 
 	input[type="checkbox"] + label:before {
@@ -2411,17 +2422,18 @@
 		input[type="reset"]:hover,
 		input[type="button"]:hover,
 		.button:hover {
-			border-color: #1463A7;
-			color: #1463A7 !important;
+			border-color: #fff;
+			color: #fff !important;
+			background-color: rgba(255, 255, 255, 0.267);
 		}
 
 		input[type="submit"]:active,
 		input[type="reset"]:active,
 		input[type="button"]:active,
 		.button:active {
-			background-color: rgba(73, 191, 157, 0.1);
-			border-color: #1463A7;
-			color: #1463A7 !important;
+			border-color: #fff;
+			color: #fff !important;
+			background-color: rgba(255, 255, 255, 0.267);
 		}
 
 		input[type="submit"].icon,
@@ -2466,9 +2478,9 @@
 		input[type="reset"].special,
 		input[type="button"].special,
 		.button.special {
-			background-color: #1463A7;
-			border-color: #1463A7;
-			color: #ffffff !important;
+			border-color: #fff;
+			color: #fff !important;
+			background-color: rgba(255, 255, 255, 0.267);
 		}
 
 			input[type="submit"].special:hover,
@@ -2632,8 +2644,8 @@
 /* Main */
 
 	#main {
-		margin-left: 35%;
-		max-width: 54em;
+		margin-left: 25%;
+		max-width: 58em;
 		padding: 1em 4em 4em 4em;
 		width: calc(100% - 35%);
 	}
