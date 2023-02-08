@@ -188,6 +188,25 @@
 					<tr><td colspan="2" align="justify"></td></tr>
 
 					<tr class="parent">
+							<td>
+								<!-- <a href="Papers/two_sided_assortment.pdf" class="title"><span class="label">Two-Sided Assortment Optimization</span></a> -->
+								<a href="Papers/two_sided_with_sim_and_sec.pdf" class="title"><span class="label">Two-Sided Assortment Optimization with Simultaneous and Sequential Matches</span></a>
+								<br><pd>Submitted</pd>
+								<br><a href="#" id="abstract">+ Abstract</a>
+							</td>
+						<td class="ca"><pc>with <a href="https://sites.google.com/view/atorrico"><span class="label"><pf>A. Torrico</pf></span></a> and <a href="https://sites.google.com/view/vverdugo/home"><span class="label"><pf>V. Verdugo</pf></span></a></pc></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="justify">
+							<p>
+							We study the two-sided assortment problem recently introduced by [Rios et al., 2022]. A platform must choose an assortment of profiles for each user in each period. Users can either like/dislike as many profiles as they want, and a match occurs if two users see and like each other, potentially in different periods. The platform’s goal is to maximize the expected number of matches generated. We show that the problem is NP-hard, even if we consider two periods and only one-directional sequential matches (i.e., users on one side of the market reach out first, and then the ones on the other side respond). Given the complexity of the problem, we focus on the case with two periods and provide algorithms and performance guarantees for different variants of the problem. First, we show that if matches can only be formed sequentially (i.e., users cannot see each other in the same period), there is an approximation guarantee of 1/3, which can be improved to 1 − 1/e if we restrict to one-directional matches. Second, we show that when we allow simultaneous matches in the first period, there is an approximation guarantee of 1/4, which can be improved to 1/2 if sequential matches are one-directional. Finally, we show that the general problem with simultaneous and sequential matches is more challenging, as the objective function is no longer submodular. Nevertheless, we provide performance guarantees for some specific cases, and we use data from our industry partner (a dating app in the US) to numerically show that the loss for not considering simultaneous matches in the second period when making first-period decisions is negligible.
+							</p>
+						</td>
+				    </tr>
+					<tr><td colspan="2" align="justify"></td></tr>
+
+
+					<tr class="parent">
 						<td>
 							<a href="Papers/strategic_behavior_college.pdf" class="title"><span class="label">Strategic Behavior in the Chilean College Admissions Problem</span></a>
 							<br><a href="#" id="abstract">+ Abstract</a>
@@ -236,24 +255,6 @@
 						<td colspan="2" align="justify">
 							<p>
 							We analyze the prevalence and relevance of application mistakes in a seemingly strategy-proof centralized college admissions system. We use data from Chile and exploit institutional features to identify a common type of application mistake: applying to programs without meeting all requirements (admissibility mistakes). We find that the growth of admissibility mistakes over time is driven primarily by growth on active score requirements. However, this effect fades out over time, suggesting that students might adapt to the new set of requirements but not immediately. To analyze application mistakes that are not observed in the data, we design nationwide surveys and collect information about students’ true preferences, their subjective beliefs about admission probabilities, and their level of knowledge about admission requirements and admissibility mistakes. We find that between 2% - 4% of students do not list their true most preferred program, even though they face a strictly positive admission probability, and only a fraction of this skipping behavior can be rationalized by biases on students’ subjective beliefs. In addition, we find a pull-to-center effect on beliefs, i.e., students tend to attenuate the probability of extreme events and under-predict the risk of not being assigned to the system. We use these insights to design and implement a large-scale information policy to reduce application mistakes. We find that showing personalized information about admission probabilities has a causal effect on improving students’ outcomes, significantly reducing the risk of not being assigned to the centralized system and the incidence of admissibility mistakes. Our results suggest that information frictions play a significant role in affecting the performance of centralized college admissions systems, even when students do not face clear strategic incentives to misreport their preferences.
-							</p>
-						</td>
-				    </tr>
-					<tr><td colspan="2" align="justify"></td></tr>
-
-
-					<tr class="parent">
-							<td>
-								<!-- <a href="Papers/two_sided_assortment.pdf" class="title"><span class="label">Two-Sided Assortment Optimization</span></a> -->
-								<span class="title">Two-Sided Assortment Optimization</span>
-								<br><a href="#" id="abstract">+ Abstract</a>
-							</td>
-						<td class="ca"><pc>with <a href="https://sites.google.com/view/atorrico"><span class="label"><pf>A. Torrico</pf></span></a> and <a href="https://sites.google.com/view/vverdugo/home"><span class="label"><pf>V. Verdugo</pf></span></a></pc></td>
-					</tr>
-					<tr>
-						<td colspan="2" align="justify">
-							<p>
-							We study the two-sided assortment problem recently introduced by Rios, Saban and Zheng (2021). A platform must choose an assortment of profiles to show each user on each side of the market in each stage. Users can either like/dislike as many profiles as they want, and a match occurs if two users see and like each other. The goal of the platform is to maximize the expected number of matches generated. Given the complexity of the problem, we focus on the one look-ahead version of the problem (i.e., two stages), and we provide performance guarantees for different variants of the problem. Specifically, we show that if users cannot see each other simultaneously, there is an approximation guarantee of 1−1/𝑒 obtained using submodular optimization techniques. For the more challenging case where simultaneous shows are allowed, we provide an approximation guarantee of (1−1/𝑒)/24. Finally, using data from our industry partner (a dating app in the US), we numerically show that our proposed heuristic outperforms several relevant benchmarks.
 							</p>
 						</td>
 				    </tr>
