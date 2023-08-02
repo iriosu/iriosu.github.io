@@ -172,6 +172,7 @@
 							<td>
 								<!-- <a href="Papers/two_sided_assortment.pdf" class="title"><span class="label">Two-Sided Assortment Optimization</span></a> -->
 								<a href="https://arxiv.org/abs/2110.00734" class="title"><span class="label">Capacity Planning in Stable Matching: An Application to School Choice</span></a>
+								<br><pd>Submitted to Operations Research</pd>
 								<br><pd>To appear in the 24th ACM Conference on Economics and Computation (EC), 2023</pd>
 								<br><pd>Second place, CORS Student Paper Competition, 2023</pd>
 								<br><a href="#" id="abstract">+ Abstract</a>
@@ -191,16 +192,20 @@
 					<tr class="parent">
 							<td>
 								<!-- <a href="Papers/two_sided_assortment.pdf" class="title"><span class="label">Two-Sided Assortment Optimization</span></a> -->
-								<a href="Papers/two_sided_with_sim_and_sec.pdf" class="title"><span class="label">Two-Sided Assortment Optimization with Simultaneous and Sequential Matches</span></a>
-								<!-- <br><pd>Submitted</pd> -->
+								<a href="Papers/platform_design.pdf" class="title"><span class="label">Platform Design in Matching Markets: A Two-Sided Assortment Optimization Approach</span></a>
+								<br><pd>Submitted to Management Science</pd>
 								<br><a href="#" id="abstract">+ Abstract</a>
 							</td>
-						<td class="ca"><pc>with <a href="https://sites.google.com/view/atorrico"><span class="label"><pf>A. Torrico</pf></span></a> and <a href="https://sites.google.com/view/vverdugo/home"><span class="label"><pf>V. Verdugo</pf></span></a></pc></td>
+						<td class="ca"><pc>with <a href="https://sites.google.com/view/atorrico"><span class="label"><pf>A. Torrico</pf></span></a></pc></td>
 					</tr>
 					<tr>
 						<td colspan="2" align="justify">
 							<p>
-							We study the two-sided assortment problem recently introduced by [Rios et al., 2022]. A platform must choose an assortment of profiles for each user in each period. Users can either like/dislike as many profiles as they want, and a match occurs if two users see and like each other, potentially in different periods. The platform’s goal is to maximize the expected number of matches generated. We show that the problem is NP-hard, even if we consider two periods and only one-directional sequential matches (i.e., users on one side of the market reach out first, and then the ones on the other side respond). Given the complexity of the problem, we focus on the case with two periods and provide algorithms and performance guarantees for different variants of the problem. First, we show that if matches can only be formed sequentially (i.e., users cannot see each other in the same period), there is an approximation guarantee of 1/3, which can be improved to 1 − 1/e if we restrict to one-directional matches. Second, we show that when we allow simultaneous matches in the first period, there is an approximation guarantee of 1/4, which can be improved to 1/2 if sequential matches are one-directional. Finally, we show that the general problem with simultaneous and sequential matches is more challenging, as the objective function is no longer submodular. Nevertheless, we provide performance guarantees for some specific cases, and we use data from our industry partner (a dating app in the US) to numerically show that the loss for not considering simultaneous matches in the second period when making first-period decisions is negligible.
+								Motivated by online dating apps, we consider the assortment optimization problem faced by a two-sided matching platform. Users on each side observe an assortment of profiles and decide which of them to like. A match occurs if and only if two users mutually like each other, potentially in different periods.
+  							We study how platforms should make assortment decisions to maximize the expected number of matches under different platform designs, varying (i) how users interact with each other, i.e., whether one or both sides of the market can initiate an interaction, and (ii) the timing of matches, i.e., either sequentially or also simultaneously. We show that the problem is NP-hard and that common approaches perform arbitrarily badly.
+  							Given the complexity of the problem and industry practices, we focus on the case with two periods and provide algorithms and performance guarantees for different platform designs.
+  							We establish that, when interactions are one-directional and matches only take place sequentially, there is an approximation guarantee of 1-1/e, which becomes arbitrarily close to 1/2 if we allow for two-directional interactions. Moreover, when we enable matches to happen sequentially and simultaneously in the first period, we provide an approximation guarantee close to 1/2, which becomes approximately 1/3 when we allow two-directional interactions.
+  							Finally, we discuss some model extensions and use data from our industry partner to numerically show that the loss for not considering simultaneous matches is negligible. Our results suggest that platforms should focus on simple sequential adaptive policies to make assortment decisions.
 							</p>
 						</td>
 				    </tr>
