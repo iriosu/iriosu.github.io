@@ -192,6 +192,26 @@
 					<tr class="parent">
 							<td>
 								<!-- <a href="Papers/two_sided_assortment.pdf" class="title"><span class="label">Two-Sided Assortment Optimization</span></a> -->
+								<a href="Papers/Dynamic_preferences.pdf" class="title"><span class="label">Stable Matching with Contingent Priorities</span></a>
+								<br><pd>Submitted to EC 2024</pd>
+								<br><a href="#" id="abstract">+ Abstract</a>
+							</td>
+						<td class="ca"><pc>with <a href="https://cerc-datascience.polymtl.ca/person/federico-bobbio/"><span class="label"><pf>F. Bobbio</pf></span></a>, <a href="http://margaridacarvalho.org"><span class="label"><pf>M. Carvalho</pf></span></a> and <a href="https://sites.google.com/view/atorrico"><span class="label"><pf>A. Torrico</pf></span></a></pc></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="justify">
+							<p>
+								We study stable matching problems under contingent priorities, whereby the clearinghouse prioritizes some agents based on the allocation of others. Using school choice as a motivating example, we first introduce a stylized model of a many-to-one matching market where the clearinghouse aims to prioritize applicants with siblings assigned to the same school and match them together. We provide a series of guidelines to implement these contingent priorities and introduce two novel concepts of stability that account for them. We study some properties of the corresponding mechanisms, including the existence of a stable assignment under contingent priorities, its incentive properties, and the complexity of finding one if it exists. Moreover, we provide mathematical programming formulations to find such stable assignments whenever they exist. Finally, using data from the Chilean school choice system, we show that our framework can significantly increase the number of siblings assigned together while having no large effect on students without siblings.
+							</p>
+						</td>
+				    </tr>
+					<tr><td colspan="2" align="justify"></td></tr>
+
+
+
+					<tr class="parent">
+							<td>
+								<!-- <a href="Papers/two_sided_assortment.pdf" class="title"><span class="label">Two-Sided Assortment Optimization</span></a> -->
 								<a href="Papers/platform_design.pdf" class="title"><span class="label">Platform Design in Matching Markets: A Two-Sided Assortment Optimization Approach</span></a>
 								<br><pd>Submitted to Management Science</pd>
 								<br><a href="#" id="abstract">+ Abstract</a>
@@ -211,48 +231,10 @@
 				    </tr>
 					<tr><td colspan="2" align="justify"></td></tr>
 
-
-					<tr class="parent">
-						<td>
-							<a href="Papers/strategic_behavior_college.pdf" class="title"><span class="label">Strategic Behavior in the Chilean College Admissions Problem</span></a>
-							<br><a href="#" id="abstract">+ Abstract</a>
-						</td>
-						<td class="ca">
-							<pc> with <a href="https://tlarroucau.github.io/"><span class="label"><pf>T. Larroucau</pf></span></a></pc>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" align="justify">
-							<p>
-							We analyze the application process in the Chilean College Admissions problem.
-							Students can submit up to 10 preferences, but most of the students do not fill
-							their entire application list ("short-list"). Even though students face no
-							incentives to misreport, we find evidence of strategic behavior as students tend
-							to omit programs if their admission probabilities are too low. To rationalize
-							this behavior, we construct a portfolio problem where students maximize their
-							expected utility of reporting a ROL given their preferences and beliefs over
-							admission probabilities. We adapt the estimation procedure proposed
-							by Agarwal and Somaini (2018) to solve a large portfolio problem. To simplify this task, we show
-							that it is sufficient to compare a ROL with only a subset of ROLs ("one-shot
-							swaps") to ensure its optimality without running into the curse of
-							dimensionality. To better identify the model, we exploit a unique exogenous
-							variation on the admission weights over time. We find that assuming
-							truth-telling leads to biased results. Specifically, when students only include
-							programs if it is strictly profitable to do so, assuming truth-telling underestimates how
-							preferred selective programs are and overstates the value of being unassigned
-							and the degree of preference heterogeneity in the system. In addition, ignoring
-							the constraint on the length of the list can also result in biased estimates,
-							even if the proportion of constrained ROLs is relatively small. Our estimation
-							results strongly suggest that "short-list" students should not be interpret as
-							truth-tellers, even in a seemingly strategy-proof environment.
-							</p>
-						</td>
-				    </tr>
-					<tr><td colspan="2" align="justify"></td></tr>
-
 					<tr class="parent">
 							<td>
-								<a href="Papers/mistakes.pdf" class="title"><span class="label">Application Mistakes and Information Frictions in College Admissions</span></a>
+								<a href="Papers/Information_Policies_at_Scale_LRFN_2024.pdf" class="title"><span class="label">College Application Mistakes and the Design of Information Policies at Scale</span></a>
+								<br><pd>Submitted to Management Science</pd>
 								<br><a href="#" id="abstract">+ Abstract</a>
 							</td>
 						<td class="ca"><pc>with <a href="https://tlarroucau.github.io/"><span class="label"><pf>T. Larroucau</pf></span></a>, A. Fabre and <a href="https://christopherneilson.github.io"><span class="label"><pf>C. Neilson</pf></span></a></pc></td>
@@ -260,7 +242,12 @@
 					<tr>
 						<td colspan="2" align="justify">
 							<p>
-							We analyze the prevalence and relevance of application mistakes in a seemingly strategy-proof centralized college admissions system. We use data from Chile and exploit institutional features to identify a common type of application mistake: applying to programs without meeting all requirements (admissibility mistakes). We find that the growth of admissibility mistakes over time is driven primarily by growth on active score requirements. However, this effect fades out over time, suggesting that students might adapt to the new set of requirements but not immediately. To analyze application mistakes that are not observed in the data, we design nationwide surveys and collect information about students’ true preferences, their subjective beliefs about admission probabilities, and their level of knowledge about admission requirements and admissibility mistakes. We find that between 2% - 4% of students do not list their true most preferred program, even though they face a strictly positive admission probability, and only a fraction of this skipping behavior can be rationalized by biases on students’ subjective beliefs. In addition, we find a pull-to-center effect on beliefs, i.e., students tend to attenuate the probability of extreme events and under-predict the risk of not being assigned to the system. We use these insights to design and implement a large-scale information policy to reduce application mistakes. We find that showing personalized information about admission probabilities has a causal effect on improving students’ outcomes, significantly reducing the risk of not being assigned to the centralized system and the incidence of admissibility mistakes. Our results suggest that information frictions play a significant role in affecting the performance of centralized college admissions systems, even when students do not face clear strategic incentives to misreport their preferences.
+								In this paper, we present the results of a multi-year collaboration with policy-makers to design and evaluate whether information policies implemented at scale can effectively improve students' outcomes.
+	  						Using a series of nationwide surveys,
+	  						we find that ~40% of students do not apply to their preferred college and major, and 10% of these students would have strictly benefited by including these programs.
+	  						Upon these results, we implemented with the Ministry of Education of Chile a large-scale field experiment for college admissions, which included personalized information about program characteristics, students' admission probabilities, and alternative major recommendations.
+	  						The intervention significantly reduced application mistakes, increasing the probability of assignment for unmatched students by 20% and the probability of improving the assignment of undermatched students by 38%.
+	  						After scaling-up the policy, the intervention approximately doubled the matching probability for unmatched and undermatched students and tripled the enrollment likelihood for initially unmatched students.
 							</p>
 						</td>
 				    </tr>
@@ -313,21 +300,6 @@
 				    </tr>
 					<tr><td colspan="2" align="justify"></td></tr> -->
 
-					<tr class="parent">
-						<td><span class="title">Stable Matching with Adaptive Priorities</span>
-						<br><pd>In-progress</pd>
-						<!-- <br><a href="#" id="abstract">+ Abstract</a> -->
-						</td>
-						<td class="ca"><pc>  </pc></td>
-					</tr>
-					<tr>
-						<td colspan="2" align="justify">
-							<p>
-							TBW
-							</p>
-						</td>
-				    </tr>
-
 					<tr><td colspan="2" align="justify"></td></tr>
 					<tr class="parent">
 						<td><span class="title">Designing Charity Donation Systems</span>
@@ -356,6 +328,44 @@
 						<td colspan="2" align="justify">
 							<p>
 							TBW
+							</p>
+						</td>
+				    </tr>
+					<tr><td colspan="2" align="justify"></td></tr>
+
+					<tr class="parent">
+						<td>
+							<a href="Papers/strategic_behavior_college.pdf" class="title"><span class="label">Strategic Behavior in the Chilean College Admissions Problem</span></a>
+							<br><a href="#" id="abstract">+ Abstract</a>
+						</td>
+						<td class="ca">
+							<pc> with <a href="https://tlarroucau.github.io/"><span class="label"><pf>T. Larroucau</pf></span></a></pc>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="justify">
+							<p>
+							We analyze the application process in the Chilean College Admissions problem.
+							Students can submit up to 10 preferences, but most of the students do not fill
+							their entire application list ("short-list"). Even though students face no
+							incentives to misreport, we find evidence of strategic behavior as students tend
+							to omit programs if their admission probabilities are too low. To rationalize
+							this behavior, we construct a portfolio problem where students maximize their
+							expected utility of reporting a ROL given their preferences and beliefs over
+							admission probabilities. We adapt the estimation procedure proposed
+							by Agarwal and Somaini (2018) to solve a large portfolio problem. To simplify this task, we show
+							that it is sufficient to compare a ROL with only a subset of ROLs ("one-shot
+							swaps") to ensure its optimality without running into the curse of
+							dimensionality. To better identify the model, we exploit a unique exogenous
+							variation on the admission weights over time. We find that assuming
+							truth-telling leads to biased results. Specifically, when students only include
+							programs if it is strictly profitable to do so, assuming truth-telling underestimates how
+							preferred selective programs are and overstates the value of being unassigned
+							and the degree of preference heterogeneity in the system. In addition, ignoring
+							the constraint on the length of the list can also result in biased estimates,
+							even if the proportion of constrained ROLs is relatively small. Our estimation
+							results strongly suggest that "short-list" students should not be interpret as
+							truth-tellers, even in a seemingly strategy-proof environment.
 							</p>
 						</td>
 				    </tr>
