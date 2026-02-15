@@ -1,0 +1,41 @@
+{% if site.serve_og_meta %}
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url }}">
+<meta property="og:title" content="{{ page.title | default: site.title }}">
+<meta property="og:description" content="{{ page.description | default: site.description | strip_html | strip_newlines | truncate: 160 }}">
+{% if page.og_image or site.og_image %}
+<meta property="og:image" content="{{ page.og_image | default: site.og_image | prepend: site.baseurl | prepend: site.url }}">
+{% endif %}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url }}">
+<meta property="twitter:title" content="{{ page.title | default: site.title }}">
+<meta property="twitter:description" content="{{ page.description | default: site.description | strip_html | strip_newlines | truncate: 160 }}">
+{% if page.og_image or site.og_image %}
+<meta property="twitter:image" content="{{ page.og_image | default: site.og_image | prepend: site.baseurl | prepend: site.url }}">
+{% endif %}
+{% endif %}
+
+{% if site.serve_schema_org %}
+<!-- Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ site.first_name }} {{ site.last_name }}",
+  "url": "{{ site.url }}",
+  "sameAs": [
+    "https://github.com/{{ site.github_username }}",
+    "https://linkedin.com/in/{{ site.linkedin_username }}",
+    "https://scholar.google.com/citations?user={{ site.scholar_userid }}"
+  ],
+  "jobTitle": "Assistant Professor",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "University of Texas at Dallas"
+  }
+}
+</script>
+{% endif %}

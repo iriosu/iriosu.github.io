@@ -1,0 +1,25 @@
+<div class="contact-icons">
+  {% if site.email %}
+  <a href="mailto:{{ site.email }}" title="Email"><i class="fa-solid fa-envelope"></i></a>
+  {% endif %}
+  
+  {% if site.github_username %}
+  <a href="https://github.com/{{ site.github_username }}" title="GitHub" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i></a>
+  {% endif %}
+  
+  {% if site.scholar_userid %}
+  <a href="https://scholar.google.com/citations?user={{ site.scholar_userid }}" title="Google Scholar" target="_blank" rel="noopener noreferrer"><i class="ai ai-google-scholar"></i></a>
+  {% endif %}
+  
+  {% if site.research_gate_profile %}
+  <a href="https://www.researchgate.net/profile/{{ site.research_gate_profile }}" title="ResearchGate" target="_blank" rel="noopener noreferrer"><i class="ai ai-researchgate"></i></a>
+  {% endif %}
+  
+  {% if site.linkedin_username %}
+  <a href="https://www.linkedin.com/in/{{ site.linkedin_username }}" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin"></i></a>
+  {% endif %}
+  
+  {% if site.orcid_id %}
+  <a href="https://orcid.org/{{ site.orcid_id }}" title="ORCID" target="_blank" rel="noopener noreferrer"><i class="ai ai-orcid"></i></a>
+  {% endif %}
+</div>

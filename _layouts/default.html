@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% include metadata.html %}
+    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{{ page.description | default: site.description | strip_html | strip_newlines | truncate: 160 }}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Academicons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ '/_assets/css/al-folio.css' | relative_url }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ '/assets/img/favicon.ico' | relative_url }}" type="image/x-icon">
+    
+    {% if site.enable_google_analytics %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', '{{ site.google_analytics }}');
+    </script>
+    {% endif %}
+  </head>
+
+  <body class="{% if site.navbar_fixed %}fixed-top-nav{% endif %} {% if site.enable_darkmode %}dark-mode-toggle{% endif %}">
+
+    {% include header.html %}
+    
+    <div class="container mt-5">
+      {{ content }}
+    </div>
+
+    {% include footer.html %}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ '/_assets/js/al-folio.js' | relative_url }}"></script>
+  </body>
+</html>
