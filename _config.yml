@@ -192,6 +192,7 @@ exclude:
   - FAQ.md
   - Gemfile
   - Gemfile.lock
+  - index_old.html
   - INSTALL.md
   - LICENSE
   - lighthouse_results/
