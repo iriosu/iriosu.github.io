@@ -22,7 +22,8 @@ env:
 
 # TRIGGERS
 on:
-  page_build:
+  # Disabled until site is fully configured
+  # page_build:
   # schedule: # Check your schedule here => https://crontab.guru/
   #   - cron: '55 23 * * 0' # e.g. every Sunday at 23:55
   #
