@@ -190,8 +190,8 @@
         {% assign awards = entry.award_name | split: '; ' %}
         {% for award in awards %}
           <span style="font-weight: bold; color: var(--global-text-color);">
-            <i class="fa-solid fa-trophy" style="margin-right: 0.3em;"></i>{{ award }}{% unless forloop.last %}; {% endunless %}
-          </span>
+            <i class="fa-solid fa-trophy" style="margin-right: 0.3em;"></i>{{ award }}
+          </span>{% unless forloop.last %}<br>{% endunless %}
         {% endfor %}
       </div>
     {% endif %}

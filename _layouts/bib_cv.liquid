@@ -59,7 +59,10 @@
       <!-- Awards -->
       {% if entry.award_name %}
         <div class="ml-1 ml-md-4" style="font-size: 0.85rem; color: var(--global-theme-color); font-weight: 500; margin-top: 0.5rem;">
-          <i class="fa-solid fa-trophy" style="margin-right: 0.3em;"></i>{{ entry.award_name }}
+          {% assign awards = entry.award_name | split: '; ' %}
+          {% for award in awards %}
+            <i class="fa-solid fa-trophy" style="margin-right: 0.3em;"></i>{{ award }}{% unless forloop.last %}<br>{% endunless %}
+          {% endfor %}
         </div>
       {% endif %}
     </div>
