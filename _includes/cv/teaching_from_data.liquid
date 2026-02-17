@@ -1,0 +1,43 @@
+{% comment %}
+  Dynamic teaching renderer that pulls from _data/teaching.yml
+  This ensures CV teaching section stays in sync with the teaching page
+{% endcomment %}
+
+<div class="mt-2">
+  {% for institution in site.data.teaching.courses %}
+    {% for course in institution.courses %}
+      <div class="card-text font-weight-light list-group-item">
+        <div class="row">
+          <div class="col-xs-2 col-sm-2 col-md-2 text-center" style="min-width: 90px;">
+            <table class="table-cv">
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="badge font-weight-bold info-color-dark text-uppercase align-middle" style="min-width: 75px; font-size: 0.75rem;">
+                      {{ course.years }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="col-xs-10 col-sm-10 col-md-10 mt-2 mt-md-0">
+            <div class="title font-weight-bold ml-1 ml-md-4">
+              {{ course.title }}
+              {% if course.role %} ({{ course.role }}){% endif %}
+            </div>
+            <div class="ml-1 ml-md-4" style="font-size: 0.9rem; color: var(--global-text-color-light); margin-top: 0.25rem;">
+              {{ institution.institution }}
+            </div>
+            {% if course.level %}
+              <div class="ml-1 ml-md-4" style="font-size: 0.85rem; font-style: italic; margin-top: 0.25rem;">
+                {{ course.level }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endfor %}
+</div>

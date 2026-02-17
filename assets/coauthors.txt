@@ -1,0 +1,25 @@
+Ruth Beer;Baruch;https://www.ruthybeer.com/
+Tomas Larroucau; ASU;https://tlarroucau.github.io/
+Christopher Neilson;Yale;https://christopherneilson.github.io
+Alfredo Torrico;USC;https://sites.google.com/view/atorrico
+Margarida Carvalho;U Montreal;http://margaridacarvalho.org
+Federico Bobbio;Northwestern;https://federicobobbio.github.io/
+Anyan Qi;UTD;https://sites.google.com/site/anyanqioperations
+Pramit Ghosh;UTD;https://sites.google.com/view/pramitghosh/home
+Ian Zhu;NUS;https://www.ianyzhu.com/
+Andrea Lodi;Cornell;https://tech.cornell.edu/people/andrea-lodi/
+Daniela Saban;Stanford;https://stanford.edu/~dsaban/
+Fanyin Zheng;Imperial;http://www.fanyinzheng.com
+Roberto Cominetti;PUC;https://sites.google.com/site/cominettiroberto/
+Jose Correa;U de Chile;https://www.dii.uchile.cl/~jcorrea/
+Rafael Epstein;U de Chile;http://www.dii.uchile.cl/quien/rafael-epstein/
+Juan Escobar;U de Chile;http://www.dii.uchile.cl/~jescobar/
+Roger J-B Wets;UC Davis;https://www.math.ucdavis.edu/~rjbw/mypage/Home.html
+David Woodruff;UC Davis;https://gsm.ucdavis.edu/faculty/david-woodruff
+Alejandra Mizala;U de Chile;https://amizala.wixsite.com/alejandramizala
+Andrew Frazelle;UTD;https://www.andrewfrazelle.com/
+Anais Fabre;Munich;https://www.anaisfabre.com/
+Natalie Epstein;Yale;https://www.natalieepstein.com/
+Shayak Ghosal;UTD;https://jindal.utdallas.edu/phd-students/shayak-ghosal
+Abhijit Marar;UTD;https://jindal.utdallas.edu/phd-students/abhijit-marar
+Rahul Sharma;UTD;https://jindal.utdallas.edu/phd-students/shenghui-zhai

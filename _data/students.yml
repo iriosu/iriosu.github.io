@@ -1,0 +1,38 @@
+# PhD Students - single source of truth
+# Used by both /people page and CV doctoral advisement section
+
+students:
+  - name: "Pramit Ghosh"
+    photo: "pramit_ghosh.jpeg"
+    website: "https://sites.google.com/view/pramitghosh/home"
+    affiliation: "UTD"
+    role: "Primary Advisor"
+    start_year: "2023"
+    
+  - name: "Abhijit Marar"
+    photo: "abhijit_marar.jpeg"
+    website: "https://jindal.utdallas.edu/phd-students/abhijit-marar"
+    affiliation: "UTD"
+    role: "Primary Advisor"
+    start_year: "2025"
+    
+  - name: "Shayak Ghosal"
+    photo: "shayak_ghosal.png"
+    website: "https://jindal.utdallas.edu/phd-students/shayak-ghosal"
+    affiliation: "UTD"
+    role: "Co-Advisor"
+    start_year: "2025"
+    
+  - name: "Rahul Sharma"
+    photo: "rahul_sharma.jpeg"
+    website: "https://jindal.utdallas.edu/phd-students/rahul-sharma"
+    affiliation: "UTD"
+    role: "Primary Advisor"
+    start_year: "2025"
+    
+  - name: "Shenghui Zhai"
+    photo: "shenghui_zhai.png"
+    website: "https://jindal.utdallas.edu/phd-students/shenghui-zhai"
+    affiliation: "UTD"
+    role: "Primary Advisor"
+    start_year: "2025"

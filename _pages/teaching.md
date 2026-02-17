@@ -1,29 +1,19 @@
 ---
 layout: page
-title: Teaching
 permalink: /teaching/
+title: teaching
 description: Courses I have taught at various institutions.
 nav: true
-nav_order: 3
+nav_order: 6
 ---
 
-## University of Texas at Dallas
+{% for institution in site.data.teaching.courses %}
 
-- **Operations Management** (Undergraduate)
-- **Spreadsheet Modeling** (Graduate)
+## {{ institution.institution }}
 
----
-
-## Stanford University
-
-- **Optimization, Simulation and Modelling** (MBA Core, Teaching Assistant)
-- **Online Marketplaces** (MBA Elective, Teaching Assistant)
+{% for course in institution.courses %}
+**{{ course.title }}** ({{ course.level }}{% if course.role %}, {{ course.role }}{% endif %})  
+{% endfor %}
 
 ---
-
-## Universidad de Chile
-
-- **Optimization** (Undergraduate, Teaching Assistant)
-- **Economics I** (Undergraduate, Teaching Assistant)
-- **Stochastic Processes** (Undergraduate, Teaching Assistant)
-- **Operations Management I** (Undergraduate, Teaching Assistant)
+{% endfor %}

@@ -1,5 +1,26 @@
-<footer class="fixed-bottom">
-  <div class="container mt-0">
-    © {{ 'now' | date: "%Y" }} {{ site.first_name }} {{ site.last_name }}. {{ site.footer_text }}
+<footer>
+  <div class="container">
+    <div class="social-icons">
+      {% if site.email %}
+      <a href="mailto:{{ site.email }}" title="Email"><i class="fa-solid fa-envelope"></i></a>
+      {% endif %}
+      {% if site.scholar_userid %}
+      <a href="https://scholar.google.com/citations?user={{ site.scholar_userid }}" title="Google Scholar" target="_blank"><i class="ai ai-google-scholar"></i></a>
+      {% endif %}
+      {% if site.github_username %}
+      <a href="https://github.com/{{ site.github_username }}" title="GitHub" target="_blank"><i class="fa-brands fa-github"></i></a>
+      {% endif %}
+      {% if site.linkedin_username %}
+      <a href="https://www.linkedin.com/in/{{ site.linkedin_username }}" title="LinkedIn" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+      {% endif %}
+      {% if site.rate_my_professors_url %}
+      <a href="{{ site.rate_my_professors_url }}" title="RateMyProfessors" target="_blank"><i class="fa-solid fa-graduation-cap"></i></a>
+      {% endif %}
+    </div>
+    <div class="copyright">
+      Do not hesitate to use the email above to contact me for any inquiries.<br>
+      © Copyright {{ 'now' | date: "%Y" }} {{ site.first_name }} {{ site.last_name }}. 
+      Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" target="_blank">al-folio</a> theme.
+    </div>
   </div>
 </footer>

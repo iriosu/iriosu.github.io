@@ -1,0 +1,15 @@
+{% comment %}
+  Dynamic publications renderer that pulls from BibTeX
+  This ensures CV publications stay in sync with the research page
+  Uses jekyll-scholar to load and filter bibliography entries
+  Uses bib_cv template for simplified CV-appropriate formatting
+  All papers shown together without subsection headers
+{% endcomment %}
+
+{% comment %} Render all papers in order: Published, Under Review, Working Papers, Work in Progress {% endcomment %}
+<div class="mt-2">
+  {% bibliography --query @*[keywords=published] --template bib_cv %}
+  {% bibliography --query @*[keywords=under-review] --template bib_cv %}
+  {% bibliography --query @*[keywords=working-paper] --template bib_cv %}
+  {% bibliography --query @*[keywords=work-in-progress] --template bib_cv %}
+</div>

@@ -1,0 +1,67 @@
+---
+---
+<li class="list-group-item">
+  {% comment %} Custom bibliography template for CV page {% endcomment %}
+  <div class="row">
+    <!-- Year badge on the left -->
+    <div class="col-xs-2 col-sm-2 col-md-2 text-center" style="min-width: 90px;">
+      <table class="table-cv">
+        <tbody>
+          <tr>
+            <td>
+              <span class="badge font-weight-bold info-color-dark text-uppercase align-middle" style="min-width: 75px;">
+                {% if entry.year %}{{ entry.year }}{% else %}N/A{% endif %}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Entry content -->
+    <div class="col-xs-10 col-sm-10 col-md-10 mt-2 mt-md-0">
+      <!-- Title -->
+      <div class="title font-weight-bold ml-1 ml-md-4">
+        {% if entry.html %}
+          <a href="{{ entry.html }}">{{ entry.title }}</a>
+        {% elsif entry.doi %}
+          <a href="https://doi.org/{{ entry.doi }}">{{ entry.title }}</a>
+        {% else %}
+          {{ entry.title }}
+        {% endif %}
+      </div>
+      
+      <!-- Authors -->
+      {% if entry.author %}
+        <div class="ml-1 ml-md-4" style="font-size: 0.9rem; color: var(--global-text-color-light); margin-top: 0.25rem;">
+          {{ entry.author }}
+        </div>
+      {% endif %}
+
+      <!-- Journal/Publisher -->
+      {% if entry.journal %}
+        <div class="ml-1 ml-md-4" style="font-size: 0.95rem; margin-top: 0.25rem;">
+          <em>{{ entry.journal }}</em>{% if entry.volume %}, {{ entry.volume }}{% endif %}{% if entry.number %}({{ entry.number }}){% endif %}{% if entry.pages %}, {{ entry.pages }}{% endif %}
+        </div>
+      {% elsif entry.booktitle %}
+        <div class="ml-1 ml-md-4" style="font-size: 0.95rem; margin-top: 0.25rem;">
+          <em>{{ entry.booktitle }}</em>
+        </div>
+      {% endif %}
+
+      <!-- Note (for under review status) -->
+      {% if entry.note %}
+        <div class="ml-1 ml-md-4" style="font-size: 0.9rem; font-style: italic; margin-top: 0.25rem;">
+          {{ entry.note }}
+        </div>
+      {% endif %}
+
+      <!-- Awards -->
+      {% if entry.award_name %}
+        <div class="ml-1 ml-md-4" style="font-size: 0.85rem; color: var(--global-theme-color); font-weight: 500; margin-top: 0.5rem;">
+          <i class="fa-solid fa-trophy" style="margin-right: 0.3em;"></i>{{ entry.award_name }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</li>

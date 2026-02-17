@@ -1,0 +1,48 @@
+---
+# Teaching data - single source of truth for teaching section
+# Used by both /teaching page and CV page
+
+courses:
+  - institution: "University of Texas at Dallas"
+    courses:
+      - title: "Operations Management"
+        level: "Undergraduate"
+        years: "2020-2022, 2025"
+      
+      - title: "Spreadsheet Modeling"
+        level: "Graduate"
+        years: "2022-2025"
+
+  - institution: "Stanford University"
+    courses:
+      - title: "Optimization, Simulation and Modelling"
+        level: "MBA Core"
+        role: "Teaching Assistant"
+        years: "2016-2018"
+      
+      - title: "Online Marketplaces"
+        level: "MBA Elective"
+        role: "Teaching Assistant"
+        years: "2018"
+
+  - institution: "Universidad de Chile"
+    courses:
+      - title: "Optimization"
+        level: "Undergraduate"
+        role: "Teaching Assistant"
+        years: "2012"
+      
+      - title: "Economics I"
+        level: "Undergraduate"
+        role: "Teaching Assistant"
+        years: "2011"
+      
+      - title: "Stochastic Processes"
+        level: "Undergraduate"
+        role: "Teaching Assistant"
+        years: "2011-2012"
+      
+      - title: "Operations Management I"
+        level: "Undergraduate"
+        role: "Teaching Assistant"
+        years: "2012"

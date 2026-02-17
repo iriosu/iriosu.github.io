@@ -1,0 +1,377 @@
+cv:
+  name: Ignacio Rios
+  label: Assistant Professor
+  email: ignacio.riosuribe@utdallas.edu
+  location: Richardson, TX
+  image: ""
+  summary: Assistant Professor at UT Dallas Naveen Jindal School of Management. Research interests include operations research, matching markets, school choice, college admissions, and behavioral operations.
+
+  social_networks:
+    - network: GitHub
+      username: iriosu
+    - network: LinkedIn
+      username: ignacio-rios-25b07228
+    - network: Google Scholar
+      username: pgmk7egAAAAJ
+
+  address:
+    street: 800 W Campbell Road
+    city: Richardson
+    region: Texas
+    postalCode: "75080"
+    countryCode: US
+
+  sections:
+    Academic Appointments:
+      - company: University of Texas at Dallas
+        position: Assistant Professor of Operations Management
+        location: Richardson, TX
+        start_date: "2020"
+        end_date: Present
+        summary: Naveen Jindal School of Management
+
+    Education:
+      - institution: Stanford University
+        location: Stanford, CA
+        url: https://www.stanford.edu/
+        area: Operations, Information and Technology
+        studyType: PhD
+        start_date: "2015"
+        end_date: "2020"
+
+      - institution: Stanford University
+        location: Stanford, CA
+        url: https://www.stanford.edu/
+        area: Economics
+        studyType: Master
+        start_date: "2015"
+        end_date: "2020"
+
+      - institution: University of Chile
+        location: Santiago, Chile
+        area: Operations Management
+        studyType: Master
+        start_date: "2013"
+        end_date: "2014"
+
+      - institution: University of Chile
+        location: Santiago, Chile
+        area: Industrial Engineering
+        studyType: Industrial Engineering
+        start_date: "2011"
+        end_date: "2013"
+
+      - institution: University of Chile
+        location: Santiago, Chile
+        area: Industrial Engineering
+        studyType: BS
+        start_date: "2007"
+        end_date: "2011"
+
+    # NOTE: Publications are now dynamically loaded from _bibliography/papers.bib
+    # This section is kept for reference only and is no longer used.
+    # To update publications, edit _bibliography/papers.bib and change the 'keywords' field
+    # Available statuses: published, under-review, working-paper, work-in-progress
+    Research:
+      - title: "Capacity Planning in Stable Matching: An Application to School Choice"
+        authors: "F. Bobbio, M. Carvalho, A. Lodi, A. Torrico, and I. Rios"
+        publisher: "Operations Research"
+        releaseDate: "2026"
+        highlights:
+          - "Second Place, CORS Student Paper Competition, 2023"
+
+      - title: "Behavioral Externalities of Process Automation in Sequential Tasks"
+        authors: "R. Beer, A. Qi, and I. Rios"
+        publisher: "Management Science"
+        releaseDate: "2026"
+
+      - title: "Competition in Sequential Search"
+        authors: "P. Ghosh and I. Rios"
+        publisher: "M&SOM"
+        releaseDate: "2024"
+        summary: "26(6):2256-2273"
+        highlights:
+          - "First Place, Best Working Paper - Behavioral Operations, 2023"
+
+      - title: "Improving Match Rates in Dating Markets through Assortment Optimization"
+        authors: "D. Saban, F. Zheng, and I. Rios"
+        publisher: "M&SOM"
+        releaseDate: "2023"
+        summary: "25(4), 1304-1323"
+        highlights:
+          - "Second Place, M&SOM Practice Based Competition, 2021"
+
+      - title: "School Choice in Chile"
+        authors: "J. Correa, N. Epstein, R. Espstein, J. Escobar, B. Bahamondes, C. Bonet, N. Epstein, N. Aramayo, M. Castillo, A. Cristi, B. Epstein, F. Subiabre, and I. Rios"
+        publisher: "Operations Research"
+        releaseDate: "2022"
+        summary: "70(2), 1066-1087"
+        highlights:
+          - "Finalist, Euro Excellence in Operations Award, 2019"
+          - "Finalist, IFORS Prize for OR in Development, 2020"
+
+      - title: "Improving the Chilean College Admissions System"
+        authors: "T. Larroucau, G. Parra, R. Cominetti, and I. Rios"
+        publisher: "Operations Research"
+        releaseDate: "2021"
+        summary: "69(4), 1015-1348"
+        highlights:
+          - "First Place, Doing Good with Good OR, 2018"
+
+      - title: "Increased Transparency in Procurement: the Role of Peer-Effects"
+        authors: "R. Beer, D. Saban, and I. Rios"
+        publisher: "Management Science"
+        releaseDate: "2021"
+        summary: "67(12), 7291-7950"
+        highlights:
+          - "Second Place, Best Working Paper - Behavioral Operations, 2018"
+
+      - title: "Building a stochastic programming model from scratch: A harvesting management example"
+        authors: "A. Weintraub, R. J-B Wets, and I. Rios"
+        publisher: "Quantitative Finance"
+        releaseDate: "2016"
+        summary: "16(2), 189-199"
+
+      - title: "Multi-period forecasting and scenario generation with limited data"
+        authors: "R. J-B. Wets, D. Woodruff, and I. Rios"
+        publisher: "Computational Management Science"
+        releaseDate: "2015"
+        summary: "12(2), 267-295"
+
+      - title: "Modeling and estimating commodity prices"
+        authors: "R. J-B. Wets and I. Rios"
+        publisher: "Mathematics and Financial Economics"
+        releaseDate: "2015"
+        summary: "9(4), 247-270"
+
+      - title: "Toward Scalable Stochastic Unit Commitment - Part 1: Load Scenario Generation"
+        authors: "Y. Feng, S. Ryan, K. Spürkel, J.P. Watson, R.J. Wets, D. Woodruff, and I. Rios"
+        publisher: "Energy Systems"
+        releaseDate: "2015"
+        summary: "6(3), 309-329"
+
+      - title: "Effect of Including High-School Grades in the Admission Process to Chilean Universities"
+        authors: "A. Mizala, T. Larroucau, and I. Rios"
+        publisher: "Pensamiento Educativo"
+        releaseDate: "2015"
+        summary: "52(1), 95-118"
+
+      - title: "Stochastic Unit Commitment at ISO Scale"
+        authors: "K. Cheung, Y. Feng, D. Gade, Y. Lee, C. Monroy, F. Rüdel, J.P. Watson, R.J. Wets, D. Woodruff, and I. Rios"
+        publisher: "Proc. of the IEEE Power & Energy Society"
+        releaseDate: "2013"
+
+    Teaching:
+      - position: "Undergraduate Operations Management"
+        company: University of Texas at Dallas
+        start_date: "2020"
+        end_date: "2022, 2025"
+
+      - position: "Graduate Spreadsheet Modeling"
+        company: University of Texas at Dallas
+        start_date: "2022"
+        end_date: "2025"
+
+      - position: "MBA Optimization, Simulation and Modeling (TA)"
+        company: Stanford University
+        start_date: "2016"
+        end_date: "2018"
+
+      - position: "MBA Online Marketplaces (TA)"
+        company: Stanford University
+        start_date: "2018"
+        end_date: "2018"
+
+      - position: "Stochastic Processes (TA)"
+        company: University of Chile
+        start_date: "2011"
+        end_date: "2012"
+
+      - position: "Optimization (TA)"
+        company: University of Chile
+        start_date: "2012"
+        end_date: "2012"
+
+      - position: "Operations Management (TA)"
+        company: University of Chile
+        start_date: "2012"
+        end_date: "2012"
+
+      - position: "Introduction to Economics (TA)"
+        company: University of Chile
+        start_date: "2011"
+        end_date: "2011"
+
+    # NOTE: Doctoral Advisement is now dynamically loaded from _data/students.yml
+    # This section is kept for reference only and is no longer used.
+    # To update students, edit _data/students.yml
+    Doctoral Advisement:
+      - name: "Pramit Ghosh"
+        role: "PhD student (Primary Advisor)"
+        start_date: "2023"
+        end_date: Present
+
+      - name: "Abhijit Marar"
+        role: "PhD student (Primary Advisor)"
+        start_date: "2025"
+        end_date: Present
+
+      - name: "Rahul Sharma"
+        role: "PhD student (Primary Advisor)"
+        start_date: "2025"
+        end_date: Present
+
+      - name: "Shayak Ghosal"
+        role: "PhD student (Co-Advisor)"
+        start_date: "2025"
+        end_date: Present
+
+      - name: "Shenghui Zhai"
+        role: "PhD student (Primary Advisor)"
+        start_date: "2025"
+        end_date: Present
+
+    Honors and Awards:
+      - title: "Management Science Meritorious Service Award"
+        date: "2025"
+
+      - title: "Naveen Jindal School of Management Outstanding Graduate Teacher of the Year"
+        date: "2025"
+
+      - title: "40 Under 40, Best Business School Professors, Poets & Quants"
+        date: "2025"
+
+      - title: "Nominee, President's Teaching Excellence Award in Graduate/Professional Instruction"
+        date: "2025"
+
+      - title: "Winner, Owlie Best Graduate Teaching Award"
+        date: "2024"
+
+      - title: "First Place, BOM Best Working Paper Competition"
+        date: "2023"
+
+      - title: "Second Place (Hon. Mention), CORS Student Paper Competition"
+        date: "2023"
+
+      - title: "Second Place (runner-up), IFORS Prize for OR in Development"
+        date: "2021"
+
+      - title: "Second Place (Hon. Mention), M&SOM Practice Based Competition"
+        date: "2021"
+
+      - title: "Finalist, Owlie Best Undergraduate Teaching Award"
+        date: "2021"
+
+      - title: "Finalist, Excellence in Practice Award, EURO"
+        date: "2019"
+
+      - title: "First Place, Doing Good with Good OR Competition"
+        date: "2018"
+
+      - title: "Second Place, BOM Best Working Paper Competition"
+        date: "2018"
+
+      - title: "Community Impact Award, Stanford University"
+        date: "2018"
+
+      - title: "Jaedicke Award, Stanford GSB"
+        date: "2015"
+
+      - title: "Best Teaching Assistant, University of Chile"
+        date: "2013"
+
+      - title: "Community Award, University of Chile"
+        date: "2011-2012"
+
+      - title: "Outstanding Student Award, University of Chile"
+        date: "2007-2011"
+
+    Fellowships and Grants:
+      - title: "Sydney Smith Hicks Faculty Fellowship"
+        date: "2024-2025"
+
+      - title: "Stanford GSB Fellowship"
+        date: "2015-2020"
+
+      - title: "FONDEF ID15I10468 - Desarrollo de Tecnologías para la Admisión Escolar"
+        date: "2016-2018"
+
+      - title: "CONICYT Fellowship for Master Studies"
+        date: "2013"
+
+    Presentations:
+      - year: "2026"
+        venues: "Yale - SOM (scheduled); MIT - Sloan (scheduled); NUS - Department of Analytics and Operations (scheduled); SMU - Singapur (scheduled); INSEAD - Singapur (scheduled)"
+
+      - year: "2025"
+        venues: "ASSA; UCLA - Anderson; UT Dallas - Jindal; Universidad de Montevideo; BOC; M&SOM Conference; EC; Challenges in Digital Platforms Workshop, Chile; Universidad de Chile - DII; UT Austin - McCombs; Cornell Tech (guest-lecture); INFORMS Annual Meeting; U. of Notre Dame - Mendoza"
+
+      - year: "2024"
+        venues: "EURO; Wisconsin - School of Business; INFORMS Annual Meeting"
+
+      - year: "2023"
+        venues: "Vanderbilt - Owen; Duke - Fuqua; POMS; M&SOM Conference; BOC; INFORMS Annual Meeting"
+
+      - year: "2022"
+        venues: "Rotman Young Scholar Seminar Series; Workshop in Management Science; INFORMS Annual Meeting"
+
+      - year: "2021"
+        venues: "M&SOM Conference; EC; IFORS Meeting; INFORMS Annual Meeting"
+
+      - year: "2020"
+        venues: "MIT - Sloan; University of Chile; Pontificia Universidad Católica; UT Dallas - Jindal; INFORMS Annual Meeting"
+
+      - year: "2019"
+        venues: "EC; INFORMS Annual Meeting"
+
+      - year: "2018"
+        venues: "M&SOM Conference; BOC; INFORMS Annual Meeting"
+
+      - year: "2017"
+        venues: "INFORMS Annual Meeting"
+
+    Service and Organizations:
+      - role: "Treasurer, INFORMS Auctions and Market Design Section"
+        date: "2024-2026"
+
+      - role: "Co-chair, BOM Best Working Paper Competition"
+        date: "2025"
+
+      - role: "PC Member, EC Conference"
+        date: "2025"
+
+      - role: "Chair, BOM Best Working Paper Competition"
+        date: "2024"
+
+      - role: "PC Member EAAMO"
+        date: "2024"
+
+      - role: "Reviewer for: Management Science, M&SOM, Operations Research, POMS, Mathematical Programming, International Economic Review, Mathematics of Operations Research, Nature - Cities, EC Conference, EAAMO Conference"
+        date: "2020-2025"
+
+      - role: "Member: INFORMS, MSOM, POMS, ACM"
+        date: "2020-2025"
+
+    Skills:
+      - name: Programming
+        keywords: "Python, Julia"
+
+      - name: Data Analysis
+        keywords: "Stata, R, SQL"
+
+      - name: Writing Tools
+        keywords: "LaTeX, Office"
+
+    Languages:
+      - name: Spanish
+        summary: "Native speaker"
+
+      - name: English
+        summary: "Fluent"
+
+      - name: French
+        summary: "Conversational"
+
+    Patents:
+      - title: "G-Match"
+        number: "N 254.243"

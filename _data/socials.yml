@@ -1,0 +1,10 @@
+# this file contains the social media links and usernames of the author
+# the socials will be displayed in the order they are defined here
+# for more information, please refer to the documentation of jekyll-socials plugin: https://github.com/george-gca/jekyll-socials
+cv_pdf: /assets/pdf/cv_new.pdf
+email: ignacio.rios.u@gmail.com
+github_username: iriosu
+scholar_userid: pgmk7egAAAAJ
+orcid_id: 0000-0002-8526-9353
+research_gate_profile: Ignacio_Rios2
+linkedin_username: ignacio-rios-25b07228

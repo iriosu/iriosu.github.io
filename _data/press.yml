@@ -1,0 +1,82 @@
+articles:
+  - year: 2025
+    title: "2025 Best 40-Under-40 MBA Professors: Ignacio Rios"
+    url: "https://poetsandquants.com/2025/05/21/2025-best-40-under-40-mba-professors-ignacio-rios-naveen-jindal-school-of-management-the-university-of-texas-at-dallas/"
+    outlet: "Poets&Quants"
+
+  - year: 2025
+    title: "News & Notes, Autumn 2025"
+    url: "https://managementmagazine.utdallas.edu/news-notes-autumn-2025/"
+    outlet: "JSOM Management Magazine, The University of Texas at Dallas"
+
+  - year: 2025
+    title: "Poets&Quants' World's Best 40-Under-40 MBA Professors Of 2025"
+    url: "https://poetsandquants.com/2025/05/21/poetsquants-worlds-best-40-under-40-mba-professors-of-2025/"
+    outlet: "Poets&Quants"
+
+  - year: 2025
+    title: "Jindal School Faculty Member Named One of 40 Under 40 MBA Professors"
+    url: "https://jindal.utdallas.edu/news/jindal-school-faculty-member-named-one-of-40-under-40-mba-professors/"
+    outlet: "Naveen Jindal School of Management, The University of Texas at Dallas"
+
+  - year: 2024
+    title: "Congratulations, 2024 OWLIE Winners!"
+    url: "https://jindal.utdallas.edu/blog/congratulations-2024-owlie-winners/"
+    outlet: "Naveen Jindal School of Management, The University of Texas at Dallas"
+
+  - year: 2023
+    title: "How Hinge's Algorithm Picks Your Dates"
+    url: "https://gizmodo.com/hinge-dating-app-algorithm-1850744140"
+    outlet: "Gizmodo"
+
+  - year: 2022
+    title: "Cupid's Code: Tweaking an Algorithm Can Alter the Course of Finding Love Online"
+    url: "https://www.gsb.stanford.edu/insights/cupids-code-tweaking-algorithm-can-alter-course-finding-love-online?sf214784086=1"
+    outlet: "Stanford Graduate School of Business"
+
+  - year: 2022
+    title: "These dating app tweaks could lead to better matches"
+    url: "https://www.futurity.org/dating-apps-algorithms-2694422-2/"
+    outlet: "Futurity"
+
+  - year: 2022
+    title: "The Last Word: UTD's Dr. Ignacio Rios on a New Algorithm for Dating Apps"
+    url: "https://dallasinnovates.com/the-last-word-utds-dr-ignacio-rios-on-a-new-algorithm-for-dating-apps/"
+    outlet: "Dallas Innovates"
+
+  - year: 2022
+    title: "Researchers Sharpen Cupid's Aim on Dating Apps with New Algorithm"
+    url: "https://news.utdallas.edu/business-management/online-dating-matches-2022/"
+    outlet: "UTD News Center"
+
+  - year: 2022
+    title: "Algoritmo desarrollado por Ingeniería Industrial es reconocido a nivel internacional"
+    url: "https://www.dii.uchile.cl/2022/03/30/algoritmo-desarrollado-por-ingenieria-industrial-es-reconocido-a-nivel-internacional/"
+    outlet: "Ingeniería Industrial, Universidad de Chile"
+
+  - year: 2019
+    title: "Software que optimiza postulaciones PSU corrió por séptima vez en proceso de admisión 2019"
+    url: "https://www.dii.uchile.cl/2019/01/17/software-que-optimiza-postulaciones-psu-corrio-por-septima-vez-en-proceso-de-admision-2019/"
+    outlet: "Ingeniería Industrial, Universidad de Chile"
+
+  - year: 2017
+    title: "Resultados y desafíos del nuevo sistema de admisión escolar"
+    url: "https://www.latercera.com/voces/resultados-desafios-del-nuevo-sistema-admision-escolar/"
+    outlet: "La Tercera"
+
+  - year: 2016
+    title: "El Nuevo Mecanismo de Admisión Escolar"
+    url: "https://www.dii.uchile.cl/2016/08/24/el-nuevo-mecanismo-de-admision-escolar/"
+    outlet: "Ingeniería Industrial, Universidad de Chile"
+
+  - year: 2016
+    title: "Software que optimiza postulaciones PSU corrió por cuarta vez en proceso de admisión 2016"
+    url: "http://www.dii.uchile.cl/2016/01/29/software-que-optimiza-postulaciones-psu-corrio-por-cuarta-vez-en-proceso-de-admision-2016/"
+    outlet: "Ingeniería Industrial, Universidad de Chile"
+
+podcasts:
+  - year: 2022
+    title: "The Gist: Single? Listen Now. Seriously. This is Important."
+    url: "https://open.spotify.com/episode/6YgsEHY1a7vKXBwbk2fsyN?si=d0321d8ad8434218"
+    outlet: "Slate Podcasts"
+    description: "Discussion of research on dating app algorithms"
