@@ -1,6 +1,7 @@
 ---
 layout: post
-title: "Attending the 2026 Early-Career Sustainable Operations Workshop With My Kids"
+title: "I attended the 2026 Early-Career Sustainable Operations Workshop at UTD with my kids"
+link_text: "with my kids"
 date: 2026-02-28 10:00:00-0600
 related_posts: false
 ---
