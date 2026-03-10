@@ -449,7 +449,12 @@ ninja.data = [{
           section: "News",},{id: "news-thrilled-to-announce-that-our-paper-the-dating-heuristic-a-provably-strong-matching-algorithm-for-dating-platforms-has-been-accepted-at-manufacturing-amp-amp-service-operations-management-m-amp-amp-som-this-work-co-authored-with-alfredo-torrico-develops-provably-strong-algorithms-for-matching-in-online-dating-platforms-i-m-deeply-grateful-to-alfredo-for-being-such-a-great-co-author-and-to-the-editorial-team-and-reviewers-at-m-amp-amp-som-for-their-thoughtful-feedback-that-greatly-improved-the-paper",
           title: 'Thrilled to announce that our paper “The Dating Heuristic: A Provably Strong Matching...',
           description: "",
-          section: "News",},{id: "projects-project-1",
+          section: "News",},{id: "news-attending-the-2026-early-career-sustainable-operations-workshop-with-my-kids",
+          title: 'Attending the 2026 Early-Career Sustainable Operations Workshop With My Kids',
+          description: "",
+          section: "News",handler: () => {
+              window.location.href = "/news/announcement_2026_02_28/";
+            },},{id: "projects-project-1",
           title: 'project 1',
           description: "with background image",
           section: "Projects",handler: () => {
