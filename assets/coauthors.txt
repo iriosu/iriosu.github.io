@@ -23,3 +23,4 @@ Natalie Epstein;Yale;https://www.natalieepstein.com/
 Shayak Ghosal;UTD;https://jindal.utdallas.edu/phd-students/shayak-ghosal
 Abhijit Marar;UTD;https://jindal.utdallas.edu/phd-students/abhijit-marar
 Rahul Sharma;UTD;https://jindal.utdallas.edu/phd-students/shenghui-zhai
+Christopher Campos;Chicago;https://www.cqcampos.com/

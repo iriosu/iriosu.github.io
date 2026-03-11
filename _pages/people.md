@@ -27,6 +27,14 @@ I've been fortunate to collaborate with exceptional researchers across instituti
     <p class="mb-0"><strong>Tomás Larroucau</strong></p>
     <p class="small text-muted">ASU</p>
   </div>
+
+  <div class="col text-center">
+    <a href="https://www.cqcampos.com/" target="_blank">
+      <img src="{{ '/assets/coauthors/christopher_campos.jpeg' | relative_url }}" alt="Christopher Campos" class="rounded-circle mb-2" style="width: 120px; height: 120px; object-fit: cover;">
+    </a>
+    <p class="mb-0"><strong>Christopher Campos</strong></p>
+    <p class="small text-muted">Chicago</p>
+  </div>
   
   <div class="col text-center">
     <a href="https://christopherneilson.github.io/" target="_blank">
