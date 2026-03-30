@@ -1,12 +1,12 @@
 metadata:
-  last_updated: '2026-03-02'
+  last_updated: '2026-03-30'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
-    citations: 13
+    citations: 14
     title: Application mistakes and information frictions in college admissions
     year: '2021'
   pgmk7egAAAAJ:BqipwSGYUEgC:
-    citations: 32
+    citations: 34
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
@@ -25,18 +25,14 @@ papers:
     citations: 106
     title: The Effect of Including High School Grade Rankings in the Admission Process for Chilean Universities
     year: '2015'
+  pgmk7egAAAAJ:J_g5lzvAfSwC:
+    citations: 0
+    title: 'Admission Policies with Exam Retakes: Efficiency-Equity Trade-offs in Multidimensional Scoring'
+    year: '2026'
   pgmk7egAAAAJ:M3NEmzRMIkIC:
     citations: 0
     title: Tailoring Density Fraction for Structural Strength Optimization in Fused Polylactic Acid Deposition Modeling
     year: Unknown Year
-  pgmk7egAAAAJ:NaGl4SEjCO4C:
-    citations: 0
-    title: College Application Mistakes and the Design of Information Policies at Scale
-    year: '2025'
-  pgmk7egAAAAJ:RGFaLdJalmkC:
-    citations: 0
-    title: College Application Mistakes and the Design Of
-    year: '2025'
   pgmk7egAAAAJ:RHpTSmoSYBkC:
     citations: 0
     title: "Efectos del remplazo del puntaje de Historia en el proceso de selecci\xF3n"
@@ -58,11 +54,11 @@ papers:
     title: Essays in Behavioral Market Design
     year: '2020'
   pgmk7egAAAAJ:_kc_bZDykSQC:
-    citations: 63
+    citations: 68
     title: Improving the Chilean College Admissions System
     year: '2021'
   pgmk7egAAAAJ:aqlVkmm33-oC:
-    citations: 49
+    citations: 50
     title: "Do \u201Cshort-list\u201D students report truthfully? Strategic behavior in the Chilean college admissions problem"
     year: '2018'
   pgmk7egAAAAJ:d1gkVwhDpl0C:
@@ -70,7 +66,7 @@ papers:
     title: 'Modeling and estimating commodity prices: copper prices'
     year: '2015'
   pgmk7egAAAAJ:dhFuZR0502QC:
-    citations: 139
+    citations: 140
     title: School choice in Chile
     year: '2021'
   pgmk7egAAAAJ:e5wmG9Sq2KIC:
@@ -82,7 +78,7 @@ papers:
     title: Platform Design in Curated Dating Markets
     year: '2023'
   pgmk7egAAAAJ:isC4tDSrTZIC:
-    citations: 26
+    citations: 27
     title: 'Capacity Planning in Stable Matching: An Application to School Choice'
     year: '2022'
   pgmk7egAAAAJ:j3f4tGmQtD8C:
@@ -90,11 +86,11 @@ papers:
     title: "Efecto de la incorporaci\xF3n del ranking de notas en la selecci\xF3n universitaria, Departamento de Evaluaci\xF3n, Medici\xF3n y Registro Educacional (DEMRE)"
     year: '2013'
   pgmk7egAAAAJ:k_IJM867U9cC:
-    citations: 26
+    citations: 28
     title: Behavioral externalities of process automation
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
-    citations: 56
+    citations: 59
     title: "Dynamic College Admissions and the Determinants of Students\u2019 College Retention"
     year: '2020'
   pgmk7egAAAAJ:maZDTaKrznsC:
