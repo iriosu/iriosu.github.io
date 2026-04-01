@@ -1,12 +1,12 @@
 metadata:
-  last_updated: '2026-03-30'
+  last_updated: '2026-04-01'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
     citations: 14
     title: Application mistakes and information frictions in college admissions
     year: '2021'
   pgmk7egAAAAJ:BqipwSGYUEgC:
-    citations: 34
+    citations: 35
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
@@ -18,7 +18,7 @@ papers:
     title: "Diagn\xF3stico y propuesta de desarrollo ChileAtiende"
     year: '2014'
   pgmk7egAAAAJ:IWHjjKOFINEC:
-    citations: 52
+    citations: 53
     title: Improving match rates in dating markets through assortment optimization
     year: '2023'
   pgmk7egAAAAJ:IjCSPb-OGe4C:
@@ -37,6 +37,10 @@ papers:
     citations: 0
     title: "Efectos del remplazo del puntaje de Historia en el proceso de selecci\xF3n"
     year: '2020'
+  pgmk7egAAAAJ:RYcK_YlVTxYC:
+    citations: 0
+    title: 'The Dating Heuristic: A Provably Strong Matching Algorithm for Dating Platforms'
+    year: '2026'
   pgmk7egAAAAJ:UebtZRa9Y70C:
     citations: 15
     title: 'Building a stochastic programming model from scratch: a harvesting management example'
@@ -66,7 +70,7 @@ papers:
     title: 'Modeling and estimating commodity prices: copper prices'
     year: '2015'
   pgmk7egAAAAJ:dhFuZR0502QC:
-    citations: 140
+    citations: 141
     title: School choice in Chile
     year: '2021'
   pgmk7egAAAAJ:e5wmG9Sq2KIC:
@@ -90,11 +94,11 @@ papers:
     title: Behavioral externalities of process automation
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
-    citations: 59
+    citations: 60
     title: "Dynamic College Admissions and the Determinants of Students\u2019 College Retention"
     year: '2020'
   pgmk7egAAAAJ:maZDTaKrznsC:
-    citations: 4
+    citations: 5
     title: 'Competition in optimal stopping: Behavioral insights'
     year: '2024'
   pgmk7egAAAAJ:ns9cj8rnVeAC:
