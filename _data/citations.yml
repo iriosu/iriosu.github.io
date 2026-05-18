@@ -1,12 +1,12 @@
 metadata:
-  last_updated: '2026-05-06'
+  last_updated: '2026-05-18'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
-    citations: 15
+    citations: 14
     title: Application mistakes and information frictions in college admissions
     year: '2021'
   pgmk7egAAAAJ:BqipwSGYUEgC:
-    citations: 40
+    citations: 41
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
@@ -18,7 +18,7 @@ papers:
     title: "Diagn\xF3stico y propuesta de desarrollo ChileAtiende"
     year: '2014'
   pgmk7egAAAAJ:IWHjjKOFINEC:
-    citations: 53
+    citations: 54
     title: Improving match rates in dating markets through assortment optimization
     year: '2023'
   pgmk7egAAAAJ:IjCSPb-OGe4C:
@@ -58,7 +58,7 @@ papers:
     title: Essays in Behavioral Market Design
     year: '2020'
   pgmk7egAAAAJ:_kc_bZDykSQC:
-    citations: 70
+    citations: 69
     title: Improving the Chilean College Admissions System
     year: '2021'
   pgmk7egAAAAJ:aqlVkmm33-oC:
@@ -70,7 +70,7 @@ papers:
     title: 'Modeling and estimating commodity prices: copper prices'
     year: '2015'
   pgmk7egAAAAJ:dhFuZR0502QC:
-    citations: 146
+    citations: 147
     title: School choice in Chile
     year: '2021'
   pgmk7egAAAAJ:e5wmG9Sq2KIC:
@@ -90,7 +90,7 @@ papers:
     title: "Efecto de la incorporaci\xF3n del ranking de notas en la selecci\xF3n universitaria, Departamento de Evaluaci\xF3n, Medici\xF3n y Registro Educacional (DEMRE)"
     year: '2013'
   pgmk7egAAAAJ:k_IJM867U9cC:
-    citations: 28
+    citations: 29
     title: Behavioral externalities of process automation
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
@@ -110,10 +110,10 @@ papers:
     title: "Modelamiento, estimaci\xF3n y generaci\xF3n de \xE1rboles de escenarios para precios del cobre"
     year: '2014'
   pgmk7egAAAAJ:u-x6o8ySG0sC:
-    citations: 51
+    citations: 52
     title: Multi-period forecasting and scenario generation with limited data
     year: '2015'
   pgmk7egAAAAJ:u5HHmVD_uO8C:
-    citations: 42
+    citations: 43
     title: 'Toward scalable stochastic unit commitment. Part 1: load scenario generation'
     year: '2015'
