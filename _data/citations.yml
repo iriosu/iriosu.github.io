@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-05-22'
+  last_updated: '2026-05-25'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
     citations: 15
@@ -110,10 +110,10 @@ papers:
     title: "Modelamiento, estimaci\xF3n y generaci\xF3n de \xE1rboles de escenarios para precios del cobre"
     year: '2014'
   pgmk7egAAAAJ:u-x6o8ySG0sC:
-    citations: 52
+    citations: 53
     title: Multi-period forecasting and scenario generation with limited data
     year: '2015'
   pgmk7egAAAAJ:u5HHmVD_uO8C:
-    citations: 43
+    citations: 44
     title: 'Toward scalable stochastic unit commitment. Part 1: load scenario generation'
     year: '2015'
