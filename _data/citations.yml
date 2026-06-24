@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-06-17'
+  last_updated: '2026-06-24'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
     citations: 15
@@ -18,7 +18,7 @@ papers:
     title: "Diagn\xF3stico y propuesta de desarrollo ChileAtiende"
     year: '2014'
   pgmk7egAAAAJ:IWHjjKOFINEC:
-    citations: 54
+    citations: 55
     title: Improving match rates in dating markets through assortment optimization
     year: '2023'
   pgmk7egAAAAJ:IjCSPb-OGe4C:
@@ -92,6 +92,10 @@ papers:
   pgmk7egAAAAJ:k_IJM867U9cC:
     citations: 30
     title: Behavioral externalities of process automation
+    year: '2026'
+  pgmk7egAAAAJ:lSLTfruPkqcC:
+    citations: 0
+    title: Capacity Planning in Stable Matching
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
     citations: 64
