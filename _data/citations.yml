@@ -1,12 +1,12 @@
 metadata:
-  last_updated: '2026-07-06'
+  last_updated: '2026-07-17'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
     citations: 15
     title: Application mistakes and information frictions in college admissions
     year: '2021'
   pgmk7egAAAAJ:BqipwSGYUEgC:
-    citations: 43
+    citations: 44
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
@@ -22,7 +22,7 @@ papers:
     title: Improving match rates in dating markets through assortment optimization
     year: '2023'
   pgmk7egAAAAJ:IjCSPb-OGe4C:
-    citations: 109
+    citations: 110
     title: The Effect of Including High School Grade Rankings in the Admission Process for Chilean Universities
     year: '2015'
   pgmk7egAAAAJ:J_g5lzvAfSwC:
@@ -38,7 +38,7 @@ papers:
     title: "Efectos del remplazo del puntaje de Historia en el proceso de selecci\xF3n"
     year: '2020'
   pgmk7egAAAAJ:RYcK_YlVTxYC:
-    citations: 0
+    citations: 1
     title: 'The Dating Heuristic: A Provably Strong Matching Algorithm for Dating Platforms'
     year: '2026'
   pgmk7egAAAAJ:UebtZRa9Y70C:
@@ -58,11 +58,11 @@ papers:
     title: Essays in Behavioral Market Design
     year: '2020'
   pgmk7egAAAAJ:_kc_bZDykSQC:
-    citations: 71
+    citations: 72
     title: Improving the Chilean College Admissions System
     year: '2021'
   pgmk7egAAAAJ:aqlVkmm33-oC:
-    citations: 53
+    citations: 54
     title: "Do \u201Cshort-list\u201D students report truthfully? Strategic behavior in the Chilean college admissions problem"
     year: '2018'
   pgmk7egAAAAJ:d1gkVwhDpl0C:
@@ -98,7 +98,7 @@ papers:
     title: Capacity Planning in Stable Matching
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
-    citations: 65
+    citations: 67
     title: "Dynamic College Admissions and the Determinants of Students\u2019 College Retention"
     year: '2020'
   pgmk7egAAAAJ:maZDTaKrznsC:
