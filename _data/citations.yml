@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-07-17'
+  last_updated: '2026-07-24'
 papers:
   pgmk7egAAAAJ:4JMBOYKVnBMC:
     citations: 15
@@ -10,7 +10,7 @@ papers:
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
-    citations: 2
+    citations: 3
     title: Team building and incentive schemes in collaborative projects
     year: '2024'
   pgmk7egAAAAJ:HDshCWvjkbEC:
@@ -70,7 +70,7 @@ papers:
     title: 'Modeling and estimating commodity prices: copper prices'
     year: '2015'
   pgmk7egAAAAJ:dhFuZR0502QC:
-    citations: 151
+    citations: 152
     title: School choice in Chile
     year: '2021'
   pgmk7egAAAAJ:e5wmG9Sq2KIC:
@@ -90,7 +90,7 @@ papers:
     title: "Efecto de la incorporaci\xF3n del ranking de notas en la selecci\xF3n universitaria, Departamento de Evaluaci\xF3n, Medici\xF3n y Registro Educacional (DEMRE)"
     year: '2013'
   pgmk7egAAAAJ:k_IJM867U9cC:
-    citations: 31
+    citations: 32
     title: Behavioral externalities of process automation
     year: '2026'
   pgmk7egAAAAJ:lSLTfruPkqcC:
@@ -98,7 +98,7 @@ papers:
     title: Capacity Planning in Stable Matching
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
-    citations: 67
+    citations: 66
     title: "Dynamic College Admissions and the Determinants of Students\u2019 College Retention"
     year: '2020'
   pgmk7egAAAAJ:maZDTaKrznsC:
@@ -118,6 +118,6 @@ papers:
     title: Multi-period forecasting and scenario generation with limited data
     year: '2015'
   pgmk7egAAAAJ:u5HHmVD_uO8C:
-    citations: 43
+    citations: 44
     title: 'Toward scalable stochastic unit commitment. Part 1: load scenario generation'
     year: '2015'
