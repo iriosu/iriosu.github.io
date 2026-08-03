@@ -1,12 +1,20 @@
 metadata:
-  last_updated: '2026-07-24'
+  last_updated: '2026-08-03'
 papers:
+  pgmk7egAAAAJ:35N4QoGY0k4C:
+    citations: 3
+    title: Capacity planning in stable matching
+    year: '2026'
   pgmk7egAAAAJ:4JMBOYKVnBMC:
     citations: 15
     title: Application mistakes and information frictions in college admissions
     year: '2021'
+  pgmk7egAAAAJ:70eg2SAEIzsC:
+    citations: 0
+    title: 'Modeling and estimating commodity prices: copper prices'
+    year: '2015'
   pgmk7egAAAAJ:BqipwSGYUEgC:
-    citations: 44
+    citations: 46
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
@@ -18,15 +26,15 @@ papers:
     title: "Diagn\xF3stico y propuesta de desarrollo ChileAtiende"
     year: '2014'
   pgmk7egAAAAJ:IWHjjKOFINEC:
-    citations: 56
+    citations: 55
     title: Improving match rates in dating markets through assortment optimization
     year: '2023'
   pgmk7egAAAAJ:IjCSPb-OGe4C:
-    citations: 110
+    citations: 108
     title: The Effect of Including High School Grade Rankings in the Admission Process for Chilean Universities
     year: '2015'
   pgmk7egAAAAJ:J_g5lzvAfSwC:
-    citations: 0
+    citations: 1
     title: 'Admission Policies with Exam Retakes: Efficiency-Equity Trade-offs in Multidimensional Scoring'
     year: '2026'
   pgmk7egAAAAJ:M3NEmzRMIkIC:
@@ -46,11 +54,11 @@ papers:
     title: 'Building a stochastic programming model from scratch: a harvesting management example'
     year: '2016'
   pgmk7egAAAAJ:YFjsv_pBGBYC:
-    citations: 3
+    citations: 4
     title: Stable Matching with Contingent Priorities
     year: '2023'
   pgmk7egAAAAJ:YOwf2qJgpHMC:
-    citations: 45
+    citations: 43
     title: 'Increased Transparency in Procurement: The Role of Peer-Effects'
     year: '2021'
   pgmk7egAAAAJ:ZeXyd9-uunAC:
@@ -82,7 +90,7 @@ papers:
     title: Platform Design in Curated Dating Markets
     year: '2023'
   pgmk7egAAAAJ:isC4tDSrTZIC:
-    citations: 28
+    citations: 24
     title: 'Capacity Planning in Stable Matching: An Application to School Choice'
     year: '2022'
   pgmk7egAAAAJ:j3f4tGmQtD8C:
@@ -90,19 +98,15 @@ papers:
     title: "Efecto de la incorporaci\xF3n del ranking de notas en la selecci\xF3n universitaria, Departamento de Evaluaci\xF3n, Medici\xF3n y Registro Educacional (DEMRE)"
     year: '2013'
   pgmk7egAAAAJ:k_IJM867U9cC:
-    citations: 32
+    citations: 31
     title: Behavioral externalities of process automation
     year: '2026'
-  pgmk7egAAAAJ:lSLTfruPkqcC:
-    citations: 0
-    title: Capacity Planning in Stable Matching
-    year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
-    citations: 66
+    citations: 64
     title: "Dynamic College Admissions and the Determinants of Students\u2019 College Retention"
     year: '2020'
   pgmk7egAAAAJ:maZDTaKrznsC:
-    citations: 5
+    citations: 3
     title: 'Competition in optimal stopping: Behavioral insights'
     year: '2024'
   pgmk7egAAAAJ:ns9cj8rnVeAC:
@@ -114,10 +118,14 @@ papers:
     title: "Modelamiento, estimaci\xF3n y generaci\xF3n de \xE1rboles de escenarios para precios del cobre"
     year: '2014'
   pgmk7egAAAAJ:u-x6o8ySG0sC:
-    citations: 52
+    citations: 50
     title: Multi-period forecasting and scenario generation with limited data
     year: '2015'
   pgmk7egAAAAJ:u5HHmVD_uO8C:
     citations: 44
     title: 'Toward scalable stochastic unit commitment. Part 1: load scenario generation'
     year: '2015'
+  pgmk7egAAAAJ:vV6vV6tmYwMC:
+    citations: 1
+    title: 'Competition in optimal stopping: Behavioral insights'
+    year: '2022'
