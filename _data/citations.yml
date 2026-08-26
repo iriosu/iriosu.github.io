@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-08-07'
+  last_updated: '2026-08-26'
 papers:
   pgmk7egAAAAJ:35N4QoGY0k4C:
     citations: 3
@@ -14,7 +14,7 @@ papers:
     title: 'Modeling and estimating commodity prices: copper prices'
     year: '2015'
   pgmk7egAAAAJ:BqipwSGYUEgC:
-    citations: 46
+    citations: 50
     title: College application mistakes and the design of information policies at scale
     year: '2025'
   pgmk7egAAAAJ:GnPB-g6toBAC:
@@ -26,11 +26,11 @@ papers:
     title: "Diagn\xF3stico y propuesta de desarrollo ChileAtiende"
     year: '2014'
   pgmk7egAAAAJ:IWHjjKOFINEC:
-    citations: 55
+    citations: 56
     title: Improving match rates in dating markets through assortment optimization
     year: '2023'
   pgmk7egAAAAJ:IjCSPb-OGe4C:
-    citations: 108
+    citations: 109
     title: The Effect of Including High School Grade Rankings in the Admission Process for Chilean Universities
     year: '2015'
   pgmk7egAAAAJ:J_g5lzvAfSwC:
@@ -58,7 +58,7 @@ papers:
     title: Stable Matching with Contingent Priorities
     year: '2023'
   pgmk7egAAAAJ:YOwf2qJgpHMC:
-    citations: 44
+    citations: 45
     title: 'Increased Transparency in Procurement: The Role of Peer-Effects'
     year: '2021'
   pgmk7egAAAAJ:ZeXyd9-uunAC:
@@ -66,7 +66,7 @@ papers:
     title: Essays in Behavioral Market Design
     year: '2020'
   pgmk7egAAAAJ:_kc_bZDykSQC:
-    citations: 72
+    citations: 73
     title: Improving the Chilean College Admissions System
     year: '2021'
   pgmk7egAAAAJ:aqlVkmm33-oC:
@@ -74,11 +74,11 @@ papers:
     title: "Do \u201Cshort-list\u201D students report truthfully? Strategic behavior in the Chilean college admissions problem"
     year: '2018'
   pgmk7egAAAAJ:d1gkVwhDpl0C:
-    citations: 38
+    citations: 40
     title: 'Modeling and estimating commodity prices: copper prices'
     year: '2015'
   pgmk7egAAAAJ:dhFuZR0502QC:
-    citations: 153
+    citations: 156
     title: School choice in Chile
     year: '2021'
   pgmk7egAAAAJ:e5wmG9Sq2KIC:
@@ -98,7 +98,7 @@ papers:
     title: "Efecto de la incorporaci\xF3n del ranking de notas en la selecci\xF3n universitaria, Departamento de Evaluaci\xF3n, Medici\xF3n y Registro Educacional (DEMRE)"
     year: '2013'
   pgmk7egAAAAJ:k_IJM867U9cC:
-    citations: 31
+    citations: 33
     title: Behavioral externalities of process automation
     year: '2026'
   pgmk7egAAAAJ:mB3voiENLucC:
@@ -118,7 +118,7 @@ papers:
     title: "Modelamiento, estimaci\xF3n y generaci\xF3n de \xE1rboles de escenarios para precios del cobre"
     year: '2014'
   pgmk7egAAAAJ:u-x6o8ySG0sC:
-    citations: 51
+    citations: 53
     title: Multi-period forecasting and scenario generation with limited data
     year: '2015'
   pgmk7egAAAAJ:u5HHmVD_uO8C:
