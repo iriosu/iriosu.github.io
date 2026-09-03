@@ -3,12 +3,18 @@
 # Used by both /teaching page and CV page
 
 courses:
+  - institution: "University of Notre Dame"
+    courses:
+      - title: "MBA 60310: Decision Modeling and Analytics"
+        level: "MBA"
+        years: "2026"
+
   - institution: "University of Texas at Dallas"
     courses:
       - title: "Operations Management"
         level: "Undergraduate"
         years: "2020-2022, 2025"
-      
+
       - title: "Spreadsheet Modeling"
         level: "Graduate"
         years: "2022-2025"
@@ -19,7 +25,7 @@ courses:
         level: "MBA Core"
         role: "Teaching Assistant"
         years: "2016-2018"
-      
+
       - title: "Online Marketplaces"
         level: "MBA Elective"
         role: "Teaching Assistant"
@@ -31,17 +37,17 @@ courses:
         level: "Undergraduate"
         role: "Teaching Assistant"
         years: "2012"
-      
+
       - title: "Economics I"
         level: "Undergraduate"
         role: "Teaching Assistant"
         years: "2011"
-      
+
       - title: "Stochastic Processes"
         level: "Undergraduate"
         role: "Teaching Assistant"
         years: "2011-2012"
-      
+
       - title: "Operations Management I"
         level: "Undergraduate"
         role: "Teaching Assistant"

@@ -169,6 +169,11 @@ cv:
         releaseDate: "2013"
 
     Teaching:
+      - position: "MBA 60310: Decision Modeling and Analytics"
+        company: University of Notre Dame
+        start_date: "2026"
+        end_date: "2026"
+
       - position: "Undergraduate Operations Management"
         company: University of Texas at Dallas
         start_date: "2020"
@@ -239,6 +244,9 @@ cv:
         end_date: Present
 
     Honors and Awards:
+      - title: "MSOM Meritorious Service Award"
+        date: "2026"
+
       - title: "Management Science Meritorious Service Award"
         date: "2025"
 
