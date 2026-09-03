@@ -10,7 +10,7 @@ I was very glad to attend the [2026 Early-Career Sustainable Operations Workshop
 
 What made this day even more special is that I attended with my kids. This was their very first academic conference, and they got to experience the trivia games and dinner. Sharing this moment with them made me incredibly happy, and it is a memory I will always treasure.
 
-{% include figure.liquid path="/images/kids_first_conference.jpg" class="img-fluid rounded z-depth-1" alt="My kids at their first academic conference" %}
+{% include figure.liquid path="/images/kids_first_conference.jpg" class="img-fluid rounded z-depth-1" alt="My kids at their first academic conference" avoid_scaling=true %}
 
 I also shared a short update on LinkedIn:
 [Workshop announcement on LinkedIn](https://www.linkedin.com/posts/jsom-operations-management-phd-program_sustainableoperations-operationsmanagement-activity-7434355289010774016-_SBD?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAAW0RecBd6duYMpr0lg3d3FxPKTtOTf2jFo)
