@@ -454,7 +454,16 @@ ninja.data = [{
           description: "",
           section: "News",handler: () => {
               window.location.href = "/news/announcement_2026_02_28/";
-            },},{id: "projects-project-1",
+            },},{id: "news-i-was-lucky-to-visit-the-national-university-of-singapore-nus-singapore-management-university-smu-and-insead-in-singapore-many-thanks-to-my-hosts-for-the-warm-welcome-and-stimulating-conversations",
+          title: 'I was lucky to visit the National University of Singapore (NUS), Singapore Management...',
+          description: "",
+          section: "News",},{id: "news-i-am-delighted-to-share-that-i-received-tenure-at-the-university-of-texas-at-dallas-i-am-grateful-to-my-colleagues-mentors-co-authors-students-and-family-for-their-support",
+          title: 'I am delighted to share that I received tenure at the University of...',
+          description: "",
+          section: "News",},{id: "news-i-am-excited-to-share-that-i-moved-to-the-university-of-notre-dame-as-an-associate-professor-at-the-mendoza-college-of-business-i-am-grateful-to-my-colleagues-and-friends-at-ut-dallas-and-look-forward-to-this-next-chapter-at-notre-dame",
+          title: 'I am excited to share that I moved to the University of Notre...',
+          description: "",
+          section: "News",},{id: "projects-project-1",
           title: 'project 1',
           description: "with background image",
           section: "Projects",handler: () => {
@@ -521,7 +530,7 @@ ninja.data = [{
         title: 'email',
         section: 'Socials',
         handler: () => {
-          window.open("mailto:%69%67%6E%61%63%69%6F.%72%69%6F%73.%75@%67%6D%61%69%6C.%63%6F%6D", "_blank");
+          window.open("mailto:%69%72%69%6F%73@%6E%64.%65%64%75", "_blank");
         },
       },{
         id: 'social-github',
