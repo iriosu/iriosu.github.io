@@ -1,10 +1,10 @@
 cv:
   name: Ignacio Rios
-  label: Assistant Professor
-  email: ignacio.riosuribe@utdallas.edu
-  location: Richardson, TX
+  label: Associate Professor
+  email: irios@nd.edu
+  location: Notre Dame, IN
   image: ""
-  summary: Assistant Professor at UT Dallas Naveen Jindal School of Management. Research interests include operations research, matching markets, school choice, college admissions, and behavioral operations.
+  summary: Associate Professor at Mendoza College of Business, University of Notre Dame. Research interests include operations research, matching markets, school choice, college admissions, and behavioral operations.
 
   social_networks:
     - network: GitHub
@@ -23,11 +23,18 @@ cv:
 
   sections:
     Academic Appointments:
+      - company: University of Notre Dame
+        position: Associate Professor of Operations Management
+        location: Notre Dame, IN
+        start_date: "August 2026"
+        end_date: Present
+        summary: Mendoza College of Business
+
       - company: University of Texas at Dallas
         position: Assistant Professor of Operations Management
         location: Richardson, TX
         start_date: "2020"
-        end_date: Present
+        end_date: "July 2026"
         summary: Naveen Jindal School of Management
 
     Education:

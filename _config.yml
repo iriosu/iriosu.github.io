@@ -9,7 +9,7 @@ last_name: Rios
 contact_note: >
   You can reach me via email.
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Academic website of Ignacio Rios, Assistant Professor at UT Dallas Naveen Jindal School of Management.
+  Academic website of Ignacio Rios, Associate Professor at Mendoza College of Business, University of Notre Dame.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
 keywords: operations-research, matching-markets, school-choice, college-admissions, behavioral-operations # add your own keywords or leave empty

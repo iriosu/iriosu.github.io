@@ -14,7 +14,7 @@ nav_order: 2
 <!-- Filter buttons -->
 <div class="text-center mb-4">
   <button class="btn btn-sm btn-secondary filter-btn active" data-filter="all">All</button>
-  <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="published">Published</button>
+  <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="published">Published / Accepted</button>
   <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="under-review">Under Review</button>
   <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="working-paper">Working Paper</button>
   <button class="btn btn-sm btn-outline-secondary filter-btn" data-filter="work-in-progress">Work in Progress</button>

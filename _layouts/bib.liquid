@@ -35,7 +35,7 @@
       {% for category in categories %}
         {% assign cat_trimmed = category | strip %}
         {% if cat_trimmed == 'published' %}
-          <span class="badge badge-pill badge-secondary publication-category" data-category="published">Published</span>
+          <span class="badge badge-pill badge-secondary publication-category" data-category="published">Published / Accepted</span>
         {% elsif cat_trimmed == 'under-review' %}
           <span class="badge badge-pill badge-secondary publication-category" data-category="under-review">Under Review</span>
         {% elsif cat_trimmed == 'working-paper' %}

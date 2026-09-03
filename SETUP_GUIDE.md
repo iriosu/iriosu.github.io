@@ -39,7 +39,7 @@ The following has been set up for you:
 
 - **Personal Information** in [_config.yml](_config.yml):
   - Name: Ignacio Rios
-  - Email: ignacio.riosuribe@utdallas.edu
+  - Email: irios@nd.edu
   - Institution: UT Dallas Naveen Jindal School of Management
   - Website URL: https://iriosu.github.io
 
