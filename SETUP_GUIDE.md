@@ -7,11 +7,13 @@ Your website has been successfully set up using the [al-folio](https://github.co
 ### Using Docker (Recommended)
 
 1. **Pull the Docker image:**
+
    ```bash
    docker compose pull
    ```
 
 2. **Start the development server:**
+
    ```bash
    docker compose up
    ```
@@ -37,13 +39,13 @@ Then visit `http://localhost:4000`
 
 The following has been set up for you:
 
-- **Personal Information** in [_config.yml](_config.yml):
+- **Personal Information** in [\_config.yml](_config.yml):
   - Name: Ignacio Rios
   - Email: irios@nd.edu
-  - Institution: UT Dallas Naveen Jindal School of Management
+  - Institution: Mendoza College of Business, University of Notre Dame
   - Website URL: https://iriosu.github.io
 
-- **About Page** ([_pages/about.md](_pages/about.md)):
+- **About Page** ([\_pages/about.md](_pages/about.md)):
   - Basic biographical information
   - Contact details
   - Research interests
@@ -54,17 +56,22 @@ The following has been set up for you:
 ## Next Steps
 
 ### 1. Add Your Profile Picture
+
 Replace `assets/img/prof_pic.jpg` with your photo
 
 ### 2. Update Your CV
+
 - Add your CV PDF to `assets/pdf/`
 - Update the path in `_data/socials.yml`
 
 ### 3. Add Publications
+
 Edit `_bibliography/papers.bib` and add your publications in BibTeX format
 
 ### 4. Customize Social Media Links
+
 Edit `_data/socials.yml` to add:
+
 - Google Scholar ID
 - LinkedIn
 - GitHub
@@ -73,21 +80,24 @@ Edit `_data/socials.yml` to add:
 - And more...
 
 ### 5. Add News/Announcements
+
 Create files in the `_news/` directory to add news items to your homepage
 
 ### 6. Add Projects
+
 Create files in the `_projects/` directory to showcase your research projects
 
 ### 7. Add Blog Posts (Optional)
+
 Create files in the `_posts/` directory following the format: `YYYY-MM-DD-title.md`
 
 ## Important Files
 
-- **_config.yml** - Main configuration file
-- **_pages/about.md** - Home page content
-- **_bibliography/papers.bib** - Your publications
-- **_data/socials.yml** - Social media and contact links
-- **_data/cv.yml** - CV data (alternative to PDF)
+- **\_config.yml** - Main configuration file
+- **\_pages/about.md** - Home page content
+- **\_bibliography/papers.bib** - Your publications
+- **\_data/socials.yml** - Social media and contact links
+- **\_data/cv.yml** - CV data (alternative to PDF)
 - **assets/img/** - Images and profile picture
 
 ## Deployment
@@ -97,6 +107,7 @@ Since your repository is named `iriosu.github.io`, GitHub Pages will automatical
 ### To deploy:
 
 1. Commit and push your changes:
+
    ```bash
    git add .
    git commit -m "Setup al-folio website"
@@ -110,6 +121,7 @@ Since your repository is named `iriosu.github.io`, GitHub Pages will automatical
 ## Documentation
 
 For detailed customization options, check out:
+
 - [CUSTOMIZE.md](CUSTOMIZE.md) - Comprehensive customization guide
 - [FAQ.md](FAQ.md) - Frequently asked questions
 - [INSTALL.md](INSTALL.md) - Detailed installation instructions
@@ -120,6 +132,7 @@ For detailed customization options, check out:
 If you encounter any issues:
 
 1. **Port already in use:**
+
    ```bash
    docker compose down
    ```
@@ -137,6 +150,7 @@ If you encounter any issues:
 ## Support
 
 For issues and questions:
+
 - Check the [al-folio Issues](https://github.com/alshedivat/al-folio/issues)
 - Read the [FAQ](FAQ.md)
 - Consult the [TROUBLESHOOTING guide](TROUBLESHOOTING.md)
