@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Multiple-choice practice on logical constraints with binary variables, for MBA 60310." />
+    <title>Logical Constraints Practice</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap"
+    />
+    <style>
+      /* Layout: one question at a time; the explanation opens under the options once you answer. */
+      :root {
+        --bg: #f4f6f9;
+        --panel: #ffffff;
+        --ink: #172031;
+        --muted: #5a6577;
+        --line: #d8dee7;
+        --grid: #e9edf2;
+        --accent: #1f4fa3;
+        --accent-soft: #e3ebf8;
+        --good: #1b7a48;
+        --good-soft: #dcefe4;
+        --bad: #b3261e;
+        --bad-soft: #f8dedb;
+        --warn: #9a6a00;
+        --warn-soft: #f6ebcf;
+        --f-display: "IBM Plex Serif", Georgia, serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141b;
+          --panel: #161d27;
+          --ink: #e5eaf1;
+          --muted: #98a4b5;
+          --line: #2a3442;
+          --grid: #1e2732;
+          --accent: #8ab0ff;
+          --accent-soft: #1d2a44;
+          --good: #5fcf8f;
+          --good-soft: #17352a;
+          --bad: #ff8a80;
+          --bad-soft: #43201f;
+          --warn: #e6c25c;
+          --warn-soft: #3a3015;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141b;
+        --panel: #161d27;
+        --ink: #e5eaf1;
+        --muted: #98a4b5;
+        --line: #2a3442;
+        --grid: #1e2732;
+        --accent: #8ab0ff;
+        --accent-soft: #1d2a44;
+        --good: #5fcf8f;
+        --good-soft: #17352a;
+        --bad: #ff8a80;
+        --bad-soft: #43201f;
+        --warn: #e6c25c;
+        --warn-soft: #3a3015;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 20px 40px;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      header h1 {
+        font-family: var(--f-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+        text-wrap: balance;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+      }
+      header a {
+        color: var(--accent);
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 18px;
+        min-width: 0;
+      }
+      .panel h2 {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .bar select {
+        flex: 1 1 220px;
+        min-width: 0;
+      }
+      select {
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 4px 6px;
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--panel);
+        font-weight: 600;
+      }
+      button.primary:hover:not(:disabled) {
+        color: var(--panel);
+        filter: brightness(1.08);
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .score {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+        align-items: center;
+      }
+      .pill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+        color: var(--muted);
+      }
+      .pill.ok {
+        color: var(--good);
+      }
+      .pill.bad {
+        color: var(--bad);
+      }
+      .dots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 10px;
+      }
+      .dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        font-size: 0.68rem;
+        padding: 0;
+        color: var(--muted);
+        font-family: var(--f-mono);
+      }
+      .dot.cur {
+        border-color: var(--accent);
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .dot.ok {
+        background: var(--good);
+        border-color: var(--good);
+        color: var(--panel);
+      }
+      .dot.bad {
+        background: var(--bad);
+        border-color: var(--bad);
+        color: var(--panel);
+      }
+      .meta {
+        font-size: 0.78rem;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin: 0 0 4px;
+      }
+      .context {
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+      .q {
+        font-family: var(--f-display);
+        font-size: 1.25rem;
+        line-height: 1.45;
+        margin: 0 0 16px;
+        text-wrap: pretty;
+      }
+      .opts {
+        display: grid;
+        gap: 8px;
+      }
+      .opt {
+        display: grid;
+        grid-template-columns: 2em 1fr auto;
+        gap: 8px;
+        align-items: center;
+        text-align: left;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+      .opt .k {
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .opt .m {
+        font-family: var(--f-mono);
+      }
+      .opt .m .and {
+        font-family: var(--f-body);
+        color: var(--muted);
+        font-size: 0.85rem;
+        padding: 0 4px;
+      }
+      .opt .tag {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .opt.picked {
+        border-color: var(--accent);
+      }
+      .opt.right {
+        border-color: var(--good);
+        background: var(--good-soft);
+      }
+      .opt.right .tag {
+        color: var(--good);
+      }
+      .opt.wrong {
+        border-color: var(--bad);
+        background: var(--bad-soft);
+      }
+      .opt.wrong .tag {
+        color: var(--bad);
+      }
+      .opt:disabled {
+        opacity: 1;
+        cursor: default;
+      }
+      .result {
+        font-family: var(--f-display);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .result.ok {
+        color: var(--good);
+      }
+      .result.bad {
+        color: var(--bad);
+      }
+      .why {
+        padding: 10px 12px;
+        border-radius: 6px;
+        background: var(--good-soft);
+        font-size: 0.93rem;
+        margin: 0 0 14px;
+      }
+      .each {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .each li {
+        display: grid;
+        grid-template-columns: 2em 1fr;
+        gap: 4px 8px;
+        font-size: 0.9rem;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+      }
+      .each li:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .each .k {
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .each .v {
+        font-weight: 600;
+      }
+      .v.ok {
+        color: var(--good);
+      }
+      .v.loose {
+        color: var(--bad);
+      }
+      .v.strict {
+        color: var(--warn);
+      }
+      .v.err {
+        color: var(--bad);
+      }
+      .mono {
+        font-family: var(--f-mono);
+      }
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .small {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .legend {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin: 12px 0 0;
+      }
+      .legend b {
+        font-weight: 600;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Logical Constraints Practice</h1>
+        <p>
+          Multiple-choice practice in the format of the MBA 60310 final. Pick the option that captures each requirement. After you answer, every
+          option is checked against every combination of the decisions, so you see why each wrong one fails. To test a formulation of your own, use
+          the <a href="../logical-constraints-lab/">Logical Constraints Lab</a>.
+        </p>
+      </header>
+
+      <div class="panel">
+        <div class="bar">
+          <label for="topic" class="small">Topic</label>
+          <select id="topic"></select>
+          <button id="shuffle" type="button">Shuffle order</button>
+          <button id="reset" type="button">Reset score</button>
+        </div>
+        <div class="score" id="score"></div>
+        <div class="dots" id="dots" aria-label="Questions in this set"></div>
+      </div>
+
+      <div class="panel">
+        <p class="meta" id="meta"></p>
+        <p class="context" id="context"></p>
+        <p class="q" id="question"></p>
+        <div class="opts" id="opts" role="group" aria-label="Options"></div>
+        <p class="legend" id="legend" hidden>
+          <b>Too strict</b>: rules out a case the requirement allows. <b>Too loose</b>: allows a case the requirement forbids.
+        </p>
+      </div>
+
+      <div class="panel" id="explain" hidden aria-live="polite">
+        <p class="result" id="result"></p>
+        <div class="why" id="why"></div>
+        <h2>Every option, checked</h2>
+        <ul class="each" id="each"></ul>
+      </div>
+
+      <div class="nav">
+        <button id="prev" type="button">‹ Previous</button>
+        <span class="small" id="pos"></span>
+        <button id="next" type="button" class="primary">Next question ›</button>
+      </div>
+    </div>
+
+    <script>
+      // ---------- Question bank ----------
+      // Each question: vars (binary, or X integer 0..U and binary Y for big-M), rule(a) -> true / false / null (either is fine),
+      // four options (constraints separated by " and "). "None of the above" is added as option e.
+      // The correct option is not stored: it is computed by checking every combination, and e is right when none of a-d is.
+      const SITES = "A, B, C, D, E, F are binary: 1 if the site is built, 0 otherwise.";
+      const PROJ = "Each letter is a binary decision: 1 if the project is selected, 0 otherwise.";
+      const any = (...v) => v.some(Boolean),
+        all = (...v) => v.every(Boolean),
+        sum = (...v) => v.reduce((s, x) => s + x, 0);
+
+      const BANK = [
+        // From the Fall 2026 final, Problem 1, Question 1 (ApexAI data centers)
+        {
+          t: "final",
+          src: "Final, Q1.i",
+          ctx: SITES,
+          q: "ApexAI must build exactly one of sites A and E.",
+          vars: ["A", "E"],
+          rule: (a) => a.A + a.E === 1,
+          opts: ["A + E = 1", "A + E <= 1", "A + E >= 1", "A = E"],
+          why: "Exactly one of the two means the two binaries add up to exactly 1.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.ii",
+          ctx: SITES,
+          q: "If ApexAI builds site B, then it cannot build site C.",
+          vars: ["B", "C"],
+          rule: (a) => !(a.B && a.C),
+          opts: ["C <= B", "B + C >= 1", "B + C = 1", "B <= C"],
+          why: "“If B then not C” only forbids building both, so the right constraint is B + C ≤ 1 (or B ≤ 1 − C). None of the listed options says that.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.iii",
+          ctx: SITES,
+          q: "If ApexAI builds site A or site C, then it must build site D.",
+          vars: ["A", "C", "D"],
+          rule: (a) => !any(a.A, a.C) || a.D,
+          opts: ["A + C <= D", "D <= A + C", "A + C + D >= 1", "A + C <= 2D"],
+          why: "If either A or C is built, the left side is at least 1, so D must be 1. The 2 on the right leaves room for building both A and C.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.iv",
+          ctx: SITES,
+          q: "If ApexAI builds site B and site C, then it must build site F.",
+          vars: ["B", "C", "F"],
+          rule: (a) => !all(a.B, a.C) || a.F,
+          opts: ["B + C <= F", "B + C <= 2F", "B + C - F <= 1", "F <= B + C - 1"],
+          why: "B + C − F ≤ 1 is the same as B + C ≤ 1 + F: when both B and C are built the left side is 2, so F must be 1. Otherwise F is free.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.v",
+          ctx: SITES,
+          q: "If ApexAI builds site D, then it must also build site A or site F.",
+          vars: ["D", "A", "F"],
+          rule: (a) => !a.D || any(a.A, a.F),
+          opts: ["A + F <= D", "D = A + F", "D <= A + F", "2D <= A + F"],
+          why: "When D = 1 the right side must be at least 1, so A or F (or both) is built. When D = 0 the constraint never binds.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.vi",
+          ctx: SITES,
+          q: "If ApexAI builds site A, then it must build exactly one of sites B and C.",
+          vars: ["A", "B", "C"],
+          rule: (a) => !a.A || a.B + a.C === 1,
+          opts: ["B + C = A", "B + C >= A", "B + C <= 2 - A", "B + C >= A and B + C <= 2 - A"],
+          why: "With A = 1 the pair reads 1 ≤ B + C ≤ 1, so exactly one. With A = 0 it reads 0 ≤ B + C ≤ 2, which allows anything.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.vii",
+          ctx: SITES,
+          q: "If ApexAI builds site E, then it must build at least three sites in total.",
+          vars: ["A", "B", "C", "D", "E", "F"],
+          rule: (a) => !a.E || sum(a.A, a.B, a.C, a.D, a.E, a.F) >= 3,
+          opts: ["A + B + C + D + F >= 3E", "A + B + C + D + E + F >= 3", "A + B + C + D + F >= 3 - 3E", "A + B + C + D + E + F <= 3E"],
+          why: "Three in total includes E itself, so E needs at least two other sites: A + B + C + D + F ≥ 2E, or equivalently A + B + C + D + E + F ≥ 3E. Option a asks for three other sites (four in total), which is too strict.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.viii",
+          ctx: SITES,
+          q: "If ApexAI builds site F, then it can build at most one of sites A and B.",
+          vars: ["F", "A", "B"],
+          rule: (a) => !a.F || a.A + a.B <= 1,
+          opts: ["A + B <= F", "A + B + F <= 2", "A + B <= 1 + F", "A + B <= 1 - F"],
+          why: "The only forbidden case is building A, B and F together. A + B + F ≤ 2 rules out exactly that case; it is the same as A + B ≤ 2 − F.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.ix",
+          ctx: SITES,
+          q: "ApexAI can build site C only if it also builds at least two of sites A, B and D.",
+          vars: ["C", "A", "B", "D"],
+          rule: (a) => !a.C || sum(a.A, a.B, a.D) >= 2,
+          opts: ["A + B + D >= 2 - 2C", "A + B + D - C >= 1", "A + B + D >= 2C", "A + B + D >= 2 + C"],
+          why: "With C = 1 it reads A + B + D ≥ 2. With C = 0 it reads A + B + D ≥ 0, which always holds.",
+        },
+        {
+          t: "final",
+          src: "Final, Q1.x",
+          ctx: SITES,
+          q: "ApexAI builds site F if and only if it builds both sites B and D.",
+          vars: ["F", "B", "D"],
+          rule: (a) => a.F === (a.B && a.D ? 1 : 0),
+          opts: ["F <= B + D and F >= B + D - 1", "F = B + D - 1", "F <= B + D - 1", "2F = B + D"],
+          why: "The correct set is F ≤ B, F ≤ D and F ≥ B + D − 1. Option a uses F ≤ B + D, which lets F = 1 with only one of B and D built.",
+        },
+
+        // Counting
+        {
+          t: "count",
+          ctx: PROJ,
+          q: "Select at least two of A, B, C and D.",
+          vars: ["A", "B", "C", "D"],
+          rule: (a) => sum(a.A, a.B, a.C, a.D) >= 2,
+          opts: ["A + B + C + D = 2", "A + B + C + D <= 2", "2 - A - B - C - D <= 0", "A + B >= 1 and C + D >= 1"],
+          why: "2 − A − B − C − D ≤ 0 is A + B + C + D ≥ 2 with everything moved to one side. Requiring A + B ≥ 1 and C + D ≥ 1 is too strict: it rules out selecting A and B only.",
+        },
+        {
+          t: "count",
+          ctx: PROJ,
+          q: "Select between two and four of the six projects A to F (inclusive).",
+          vars: ["A", "B", "C", "D", "E", "F"],
+          rule: (a) => {
+            const s = sum(a.A, a.B, a.C, a.D, a.E, a.F);
+            return s >= 2 && s <= 4;
+          },
+          opts: [
+            "A + B + C + D + E + F = 3",
+            "A + B + C + D + E + F >= 2 and A + B + C + D + E + F <= 4",
+            "A + B + C + D + E + F <= 4",
+            "A + B + C + D + E + F >= 2",
+          ],
+          why: "A range needs two constraints on the same sum: one for the lower bound and one for the upper bound.",
+        },
+        {
+          t: "count",
+          ctx: PROJ,
+          q: "Select exactly two of A, B and C.",
+          vars: ["A", "B", "C"],
+          rule: (a) => sum(a.A, a.B, a.C) === 2,
+          opts: ["A + B + C >= 2", "A + B + C = 2", "A + B = 1 and C = 1", "A + B + C <= 2"],
+          why: "The sum counts selected projects, so “exactly two” is an equality.",
+        },
+        {
+          t: "count",
+          ctx: PROJ,
+          q: "Select at most three of the six projects A to F.",
+          vars: ["A", "B", "C", "D", "E", "F"],
+          rule: (a) => sum(a.A, a.B, a.C, a.D, a.E, a.F) <= 3,
+          opts: ["A + B + C + D + E + F >= 3", "A + B + C <= 1 and D + E + F <= 2", "A + B + C + D + E + F <= 3", "A + B + C + D + E + F <= 4"],
+          why: "Cap the total count at 3. Splitting it into A + B + C ≤ 1 and D + E + F ≤ 2 is too strict: it rules out, for example, selecting A and B only.",
+        },
+        {
+          t: "count",
+          ctx: "A, B, C are projects in the East and D, E, F in the West. " + PROJ,
+          q: "Select strictly more projects in the East than in the West.",
+          vars: ["A", "B", "C", "D", "E", "F"],
+          rule: (a) => sum(a.A, a.B, a.C) > sum(a.D, a.E, a.F),
+          opts: ["A + B + C >= D + E + F", "A + B + C >= 2", "A + B + C >= D + E + F + 1", "A + B + C = 3 - D - E - F"],
+          why: "Solver can't use “>”. Because both sides are whole numbers, “more than” is the same as “at least one more than”: A + B + C ≥ D + E + F + 1.",
+        },
+
+        // If ... then
+        {
+          t: "ifthen",
+          ctx: PROJ,
+          q: "If A is not selected, then B cannot be selected either.",
+          vars: ["A", "B"],
+          rule: (a) => a.A || !a.B,
+          opts: ["A <= B", "B <= A", "1 - A <= B", "A + B <= 1"],
+          why: "“If not A then not B” is the same as “if B then A”, which is B ≤ A.",
+        },
+        {
+          t: "ifthen",
+          ctx: PROJ,
+          q: "If neither A nor B is selected, then C must be selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => any(a.A, a.B, a.C),
+          opts: ["(1 - A) + (1 - B) <= C", "A + B + C >= 1", "C <= A + B", "2 - A - B <= 2C"],
+          why: "The only forbidden case is selecting none of the three, so at least one must be selected. The versions built from (1 − A) + (1 − B) also force C when just one of A or B is missing.",
+        },
+        {
+          t: "ifthen",
+          ctx: PROJ,
+          q: "If A is selected, then B and C must both be selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => !a.A || all(a.B, a.C),
+          opts: ["A <= B + C", "2A <= B + C", "A <= B*C", "A + B + C >= 3"],
+          why: "2A ≤ B + C is the sum of A ≤ B and A ≤ C. With A = 1 it needs both; with A = 0 it never binds. A ≤ B·C has the right idea, but a product of two decisions is not linear.",
+        },
+        {
+          t: "ifthen",
+          ctx: PROJ,
+          q: "A and B cannot both be selected.",
+          vars: ["A", "B"],
+          rule: (a) => !(a.A && a.B),
+          opts: ["A <= 1 - B", "A + B = 1", "A = 1 - B", "B <= A"],
+          why: "A ≤ 1 − B is A + B ≤ 1: at most one of them. A + B = 1 and A = 1 − B also force one of them to be selected.",
+        },
+        {
+          t: "ifthen",
+          ctx: PROJ,
+          q: "Project C can be selected only if project A is selected.",
+          vars: ["A", "C"],
+          rule: (a) => !a.C || a.A,
+          opts: ["A <= C", "C <= A", "A + C = 2", "A + C >= 1"],
+          why: "“C only if A” means “if C then A”, which is C ≤ A.",
+        },
+        {
+          t: "ifthen",
+          ctx: PROJ,
+          q: "If A is selected then C cannot be selected, and vice versa.",
+          vars: ["A", "C"],
+          rule: (a) => !(a.A && a.C),
+          opts: ["A + C = 1", "A + C <= 1", "A = 1 - C", "A <= C and C <= A"],
+          why: "Both directions say the same thing: A and C never go together. Selecting neither is still allowed, so it's ≤ 1, not = 1.",
+        },
+
+        // AND / OR conditions
+        {
+          t: "andor",
+          ctx: PROJ,
+          q: "If A or B is selected, then C and D must both be selected.",
+          vars: ["A", "B", "C", "D"],
+          rule: (a) => !any(a.A, a.B) || all(a.C, a.D),
+          opts: ["A + B <= 2C and A + B <= 2D", "A + B <= C + D", "A + B <= C and A + B <= D", "A + B <= 2C + 2D"],
+          why: "Each of C and D gets its own “OR trigger” constraint. A + B ≤ C and A + B ≤ D is too strict because it rules out selecting A and B together.",
+        },
+        {
+          t: "andor",
+          ctx: PROJ,
+          q: "If A and B are both selected, then C or D must be selected.",
+          vars: ["A", "B", "C", "D"],
+          rule: (a) => !all(a.A, a.B) || any(a.C, a.D),
+          opts: ["A + B - 1 <= C + D", "A + B <= C + D", "A + B - 1 <= C and A + B - 1 <= D", "A + B <= 1 + C*D"],
+          why: "A + B − 1 is 1 only when both are selected, and then C + D must be at least 1.",
+        },
+        {
+          t: "andor",
+          ctx: PROJ,
+          q: "If A, B and C are all selected, then D must be selected.",
+          vars: ["A", "B", "C", "D"],
+          rule: (a) => !all(a.A, a.B, a.C) || a.D,
+          opts: ["A + B + C <= 2 + D", "A + B + C <= 3D", "A + B + C - 1 <= D", "D <= A + B + C - 2"],
+          why: "The left side reaches 3 only when all three are selected, and then D must be 1. A + B + C ≤ 3D is the OR version: it forces D as soon as any one is selected.",
+        },
+        {
+          t: "andor",
+          ctx: PROJ,
+          q: "If any of A, B or C is selected, then D cannot be selected.",
+          vars: ["A", "B", "C", "D"],
+          rule: (a) => !any(a.A, a.B, a.C) || !a.D,
+          opts: ["A + B + C + D <= 1", "A + B + C <= 3 - 3D", "A + B + C <= 1 - D", "D <= A + B + C"],
+          why: "With D = 1 it forces A = B = C = 0. With D = 0 it reads A + B + C ≤ 3, which always holds. A + B + C + D ≤ 1 and A + B + C ≤ 1 − D also stop A, B and C from being selected together.",
+        },
+        {
+          t: "andor",
+          ctx: PROJ,
+          q: "If D is selected, then at least two of A, B and C must be selected.",
+          vars: ["D", "A", "B", "C"],
+          rule: (a) => !a.D || sum(a.A, a.B, a.C) >= 2,
+          opts: ["A + B + C >= 2D", "A + B + C >= 2 + D", "A + B + C - D >= 1", "A + B + C >= 2 - 2D"],
+          why: "With D = 1 it reads A + B + C ≥ 2. With D = 0 it reads ≥ 0. A + B + C − D ≥ 1 also forces a selection when D = 0.",
+        },
+        {
+          t: "andor",
+          ctx: PROJ,
+          q: "If A is not selected, then neither B nor C can be selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => a.A || (!a.B && !a.C),
+          opts: ["B + C <= A", "B + C <= 2A", "B + C <= 2 - 2A", "A + B + C <= 1"],
+          why: "This is “if B then A” and “if C then A” combined: B + C ≤ 2A. B + C ≤ A is too strict because it rules out B and C together even when A is selected.",
+        },
+
+        // Conditional counts
+        {
+          t: "cond",
+          ctx: PROJ,
+          q: "If C is selected, exactly one of A and B must be selected. If C is not selected, neither A nor B can be selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => a.A + a.B === a.C,
+          opts: ["A + B <= C", "A + B >= C", "A + B = C", "A + B + C = 2"],
+          why: "Both cases together say the number of selected projects among A and B equals C.",
+        },
+        {
+          t: "cond",
+          ctx: PROJ,
+          q: "If A is not selected, then exactly one of B and C must be selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => a.A || a.B + a.C === 1,
+          opts: ["B + C = 1 - A", "B + C >= 1 - A and B + C <= 1 + A", "B + C >= 1 - A", "B + C <= 1 + A"],
+          why: "With A = 0 the pair reads 1 ≤ B + C ≤ 1. With A = 1 it reads 0 ≤ B + C ≤ 2, which allows anything. B + C = 1 − A is too strict: with A = 1 it forbids both B and C.",
+        },
+        {
+          t: "cond",
+          ctx: PROJ,
+          q: "Select exactly two of the six projects A to F, and if A is selected, B must be one of them.",
+          vars: ["A", "B", "C", "D", "E", "F"],
+          rule: (a) => sum(a.A, a.B, a.C, a.D, a.E, a.F) === 2 && (!a.A || a.B),
+          opts: ["A + B + C + D + E + F = 2 and A = B", "A + B + C + D + E + F = 2 and A <= B", "A + B + C + D + E + F <= 2 and A <= B", "A + B = 2"],
+          why: "Two separate requirements, two constraints: the count and the implication. Writing A = B instead also forces A whenever B is selected.",
+        },
+        {
+          t: "cond",
+          ctx: PROJ,
+          q: "If E is selected, then at most two of the other projects (A, B, C, D, F) can be selected.",
+          vars: ["A", "B", "C", "D", "E", "F"],
+          rule: (a) => !a.E || sum(a.A, a.B, a.C, a.D, a.F) <= 2,
+          opts: ["A + B + C + D + F <= 2E", "A + B + C + D + F <= 5 - 3E", "A + B + C + D + E + F <= 2", "A + B + C + D + F <= 2 + 5E"],
+          why: "With E = 1 it reads ≤ 2. With E = 0 it reads ≤ 5, the most the left side can ever be, so it never binds. The 3 is the “big M” (5 − 2).",
+        },
+
+        // If and only if
+        {
+          t: "iff",
+          ctx: PROJ,
+          q: "A is selected if and only if at least one of B and C is selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => a.A === (a.B || a.C ? 1 : 0),
+          opts: ["A = B + C", "B <= A and C <= A and A <= B + C", "B + C <= 2A", "A <= B + C"],
+          why: "B ≤ A and C ≤ A give “if B or C then A”. A ≤ B + C gives “if A then B or C”. A = B + C breaks when B and C are both selected (A would have to be 2).",
+        },
+        {
+          t: "iff",
+          ctx: PROJ,
+          q: "A is selected if and only if B is not selected.",
+          vars: ["A", "B"],
+          rule: (a) => a.A !== a.B,
+          opts: ["A + B = 1", "A = B", "A + B <= 1", "A <= 1 - B"],
+          why: "A must equal 1 − B, which is A + B = 1.",
+        },
+        {
+          t: "iff",
+          ctx: PROJ,
+          q: "A is selected if and only if both B and C are selected.",
+          vars: ["A", "B", "C"],
+          rule: (a) => a.A === (a.B && a.C ? 1 : 0),
+          opts: ["A >= B + C - 1", "2A = B + C", "A <= B and A <= C and A >= B + C - 1", "A <= B and A <= C"],
+          why: "A ≤ B and A ≤ C give “if A then B and C”. A ≥ B + C − 1 gives “if B and C then A”. You need all three.",
+        },
+
+        // Bonus and penalty variables
+        {
+          t: "bonus",
+          ctx: PROJ + " Z is a new binary. The objective (maximize) includes + 500·Z.",
+          q: "The bonus (Z = 1) can be earned only if A, B and C are all selected.",
+          vars: ["A", "B", "C", "Z"],
+          rule: (a) => {
+            const ok = all(a.A, a.B, a.C);
+            return a.Z ? ok : ok ? null : true;
+          },
+          opts: ["Z <= A + B + C", "3Z <= A + B + C", "Z >= A + B + C - 2", "Z <= A + B + C - 2"],
+          why: "3Z ≤ A + B + C allows Z = 1 only when the sum is 3. Because we maximize, Solver sets Z = 1 whenever it can, so nothing has to force it up.",
+          note: "Rows where A, B and C are all selected but Z = 0 don't matter: a maximizing Solver never stops there.",
+        },
+        {
+          t: "bonus",
+          ctx: PROJ + " Z is a new binary. The objective (maximize) includes + 300·Z.",
+          q: "The bonus (Z = 1) can be earned if at least one of A and B is selected.",
+          vars: ["A", "B", "Z"],
+          rule: (a) => {
+            const ok = any(a.A, a.B);
+            return a.Z ? ok : ok ? null : true;
+          },
+          opts: ["2Z <= A + B", "Z <= A and Z <= B", "Z <= A + B", "Z >= A + B"],
+          why: "Z ≤ A + B lets Z = 1 as soon as one of them is selected. 2Z ≤ A + B, and the pair Z ≤ A and Z ≤ B, need both.",
+        },
+        {
+          t: "bonus",
+          ctx: PROJ + " Z is a new binary. The objective (minimize cost) includes + 200·Z, a penalty.",
+          q: "The penalty (Z = 1) must be paid whenever A and B are both selected.",
+          vars: ["A", "B", "Z"],
+          rule: (a) => {
+            const both = all(a.A, a.B);
+            return both ? a.Z === 1 : a.Z ? null : true;
+          },
+          opts: ["Z <= A and Z <= B", "Z >= A + B - 1", "2Z >= A + B", "Z >= A + B"],
+          why: "Here Solver wants Z = 0 (it's a cost), so the constraint has to force Z up when both are selected: Z ≥ A + B − 1. Compare with the bonus questions, where the constraint has to hold Z down.",
+          note: "Rows where Z = 1 without both selected don't matter: a minimizing Solver never pays a penalty it doesn't have to.",
+        },
+        {
+          t: "bonus",
+          ctx: "C and D are binary (1 if the site is built). Z is a new binary; the objective (minimize cost) includes − 20·Z, a $20M saving.",
+          q: "The saving (Z = 1) applies only if both C and D are built.",
+          vars: ["C", "D", "Z"],
+          rule: (a) => {
+            const ok = all(a.C, a.D);
+            return a.Z ? ok : ok ? null : true;
+          },
+          opts: ["Z >= C + D - 1", "Z <= C and Z <= D", "Z <= C + D", "Z = C + D"],
+          why: "A saving is something Solver wants, so the constraints have to hold Z down: Z ≤ C and Z ≤ D. This is the economies-of-scale part of the final (Problem 1, Question 3).",
+          note: "Rows where C and D are both built but Z = 0 don't matter: Solver always takes the saving when it can.",
+        },
+        {
+          t: "bonus",
+          ctx: "T1, T2, T3 are binary: 1 if that capacity tier at site D is activated.",
+          q: "Tier 2 can be activated only if Tier 1 is, and Tier 3 only if Tier 2 is.",
+          vars: ["T1", "T2", "T3"],
+          rule: (a) => (!a.T2 || a.T1) && (!a.T3 || a.T2),
+          opts: ["T1 <= T2 and T2 <= T3", "T3 <= T1 and T2 <= T1", "T3 <= T2 <= T1", "T1 + T2 + T3 >= 2"],
+          why: "Two implications, T2 ≤ T1 and T3 ≤ T2, written as one chain. T3 ≤ T1 and T2 ≤ T1 would allow Tier 3 without Tier 2. This is the sequencing in the final's bonus question.",
+        },
+
+        // Big M
+        {
+          t: "bigm",
+          U: 5000,
+          ctx: "X = compute units installed at site A, a whole number from 0 to 5,000. Y is binary: 1 if site A is built.",
+          q: "Capacity can be installed at site A only if the site is built.",
+          rule: (x, y) => y === 1 || x === 0,
+          opts: ["X <= Y", "X <= 5000Y", "X >= 5000Y", "X <= 5000(1 - Y)"],
+          why: "With Y = 0 it forces X = 0. With Y = 1 it reads X ≤ 5,000, the site's maximum, so it never gets in the way. X ≤ Y uses M = 1, which is far too small.",
+        },
+        {
+          t: "bigm",
+          U: 7000,
+          ctx: "X = compute units at site D, a whole number from 0 to 7,000. Y is binary: 1 if site D is built.",
+          q: "If site D is built it must host at least 3,000 CU; if it isn't built, it hosts nothing.",
+          rule: (x, y) => (y ? x >= 3000 : x === 0),
+          opts: ["X >= 3000Y", "X >= 3000Y and X <= 7000Y", "X >= 3000 and X <= 7000Y", "3000Y <= X <= 7000"],
+          why: "One constraint sets the minimum when Y = 1, the other shuts X off when Y = 0.",
+        },
+        {
+          t: "bigm",
+          U: 6000,
+          ctx: "X = units produced, a whole number from 0 to 6,000. Y is binary: 1 if we hire an extra shift.",
+          q: "If we produce more than 4,000 units, we must hire the extra shift.",
+          rule: (x, y) => x <= 4000 || y === 1,
+          opts: ["X <= 4000Y", "X - 4000 <= Y", "X <= 4000 + 2000Y", "X >= 4000Y"],
+          why: "With Y = 0 it caps X at 4,000. With Y = 1 the cap is 6,000, the most X can be, so it never binds. X − 4000 ≤ Y uses M = 1.",
+        },
+        {
+          t: "bigm",
+          U: 6000,
+          ctx: "X = order size, a whole number from 0 to 6,000. Y is binary: 1 for a large order, 0 for a small one.",
+          q: "Either the order is small (X ≤ 2,000, Y = 0) or large (X ≥ 4,000, Y = 1).",
+          rule: (x, y) => (y ? x >= 4000 : x <= 2000),
+          opts: ["X <= 2000 + 4000Y", "X <= 2000 and X >= 4000", "X <= 2000 + 4000Y and X >= 4000Y", "X <= 2000Y and X >= 4000(1 - Y)"],
+          why: "Each condition gets a big-M term so it only bites for its own value of Y: with Y = 0, X ≤ 2,000; with Y = 1, X ≥ 4,000.",
+        },
+      ];
+      const TOPICS = {
+        final: "From the final exam",
+        count: "Counting",
+        ifthen: "If … then",
+        andor: "AND / OR conditions",
+        cond: "Conditional counts",
+        iff: "If and only if",
+        bonus: "Bonus, penalty and tier variables",
+        bigm: "Big M",
+      };
+
+      // ---------- Linear constraint parser (same engine as the Logical Constraints Lab) ----------
+      class ParseError extends Error {}
+      const fail = (m) => {
+        throw new ParseError(m);
+      };
+      const NONLIN = "two decisions multiplied together is not linear, so Solver's linear engine can't use it.";
+      function tokenize(s) {
+        s = s.replace(/≤/g, "<=").replace(/≥/g, ">=").replace(/[−–]/g, "-").replace(/[×·]/g, "*");
+        const toks = [];
+        let i = 0;
+        while (i < s.length) {
+          const rest = s.slice(i);
+          let m;
+          if (/^\s/.test(rest)) {
+            i++;
+            continue;
+          }
+          if ((m = /^(\d+\.?\d*|\.\d+)/.exec(rest))) {
+            toks.push({ t: "num", v: parseFloat(m[0]) });
+            i += m[0].length;
+            continue;
+          }
+          if ((m = /^[A-Za-z_][A-Za-z0-9_]*/.exec(rest))) {
+            toks.push({ t: "id", v: m[0] });
+            i += m[0].length;
+            continue;
+          }
+          if ((m = /^(<=|>=|=)/.exec(rest))) {
+            toks.push({ t: "cmp", v: m[0] });
+            i += m[0].length;
+            continue;
+          }
+          if ("+-*/()".includes(rest[0])) {
+            toks.push({ t: rest[0] });
+            i++;
+            continue;
+          }
+          fail(`Unknown symbol “${rest[0]}”.`);
+        }
+        return toks;
+      }
+      const lin = (c = 0, k = {}) => ({ c, k });
+      const isConst = (e) => Object.values(e.k).every((v) => Math.abs(v) < 1e-12);
+      const scale = (e, s) => lin(e.c * s, Object.fromEntries(Object.entries(e.k).map(([n, v]) => [n, v * s])));
+      const add = (a, b, s = 1) => {
+        const k = { ...a.k };
+        for (const [n, v] of Object.entries(b.k)) k[n] = (k[n] || 0) + s * v;
+        return lin(a.c + s * b.c, k);
+      };
+      function parseLine(text, names) {
+        const toks = tokenize(text);
+        let p = 0;
+        const peek = () => toks[p],
+          next = () => toks[p++];
+        const mul = (a, b) => {
+          if (!isConst(a) && !isConst(b)) fail(`${[...Object.keys(a.k), ...Object.keys(b.k)].join(" × ")}: ${NONLIN}`);
+          return isConst(a) ? scale(b, a.c) : scale(a, b.c);
+        };
+        function primary() {
+          const t = next();
+          if (!t) fail("Incomplete expression.");
+          if (t.t === "num") return lin(t.v);
+          if (t.t === "(") {
+            const e = expr();
+            next();
+            return e;
+          }
+          if (t.t === "id") {
+            const n = names.find((x) => x.toUpperCase() === t.v.toUpperCase());
+            if (!n) fail(`Unknown variable “${t.v}”.`);
+            return lin(0, { [n]: 1 });
+          }
+          fail("Unexpected symbol.");
+        }
+        function unary() {
+          const t = peek();
+          if (t && t.t === "-") {
+            next();
+            return scale(unary(), -1);
+          }
+          return primary();
+        }
+        function term() {
+          let e = unary();
+          for (;;) {
+            const t = peek();
+            if (t && t.t === "*") {
+              next();
+              e = mul(e, unary());
+            } else if (t && t.t === "/") {
+              next();
+              const d = unary();
+              if (!isConst(d)) fail("Dividing by a decision is not linear.");
+              e = scale(e, 1 / d.c);
+            } else if (t && (t.t === "num" || t.t === "id" || t.t === "(")) e = mul(e, unary());
+            else return e;
+          }
+        }
+        function expr() {
+          let e = term();
+          for (;;) {
+            const t = peek();
+            if (t && t.t === "+") {
+              next();
+              e = add(e, term());
+            } else if (t && t.t === "-") {
+              next();
+              e = add(e, term(), -1);
+            } else return e;
+          }
+        }
+        const sides = [expr()],
+          ops = [];
+        while (peek()) {
+          const t = next();
+          if (t.t !== "cmp") fail("Unexpected symbol.");
+          ops.push(t.v);
+          sides.push(expr());
+        }
+        return ops.map((op, i) => ({ e: add(sides[i], sides[i + 1], -1), op }));
+      }
+      function test(row, a) {
+        let v = row.e.c;
+        for (const [n, k] of Object.entries(row.e.k)) v += k * (a[n] || 0);
+        return row.op === "<=" ? v <= 1e-9 : row.op === ">=" ? v >= -1e-9 : Math.abs(v) <= 1e-9;
+      }
+      function parseOption(opt, names) {
+        try {
+          return { rows: opt.split(/\s+and\s+/).flatMap((part) => parseLine(part, names)) };
+        } catch (e) {
+          if (e instanceof ParseError) return { error: e.message };
+          throw e;
+        }
+      }
+
+      // ---------- Checking an option against the requirement ----------
+      function cases(q) {
+        if (q.t === "bigm") {
+          const out = [];
+          for (const y of [0, 1]) for (let x = 0; x <= q.U; x++) out.push({ X: x, Y: y });
+          return out;
+        }
+        const out = [];
+        for (let m = 0; m < 1 << q.vars.length; m++) {
+          const a = {};
+          q.vars.forEach((v, i) => {
+            a[v] = (m >> (q.vars.length - 1 - i)) & 1;
+          });
+          out.push(a);
+        }
+        return out;
+      }
+      const ruleOf = (q, a) => (q.t === "bigm" ? q.rule(a.X, a.Y) : q.rule(a));
+      function evaluate(q, opt) {
+        const names = q.t === "bigm" ? ["X", "Y"] : q.vars;
+        const p = parseOption(opt, names);
+        if (p.error) return { kind: "err", msg: p.error };
+        const loose = [],
+          strict = [];
+        for (const a of cases(q)) {
+          const r = ruleOf(q, a);
+          if (r === null) continue;
+          const s = p.rows.every((row) => test(row, a));
+          if (s && !r) loose.push(a);
+          else if (!s && r) strict.push(a);
+        }
+        return {
+          kind: !loose.length && !strict.length ? "ok" : loose.length && strict.length ? "both" : loose.length ? "loose" : "strict",
+          loose,
+          strict,
+        };
+      }
+      function analyze(q) {
+        if (!q._res) {
+          q._res = q.opts.map((o) => evaluate(q, o));
+          const ok = q._res.map((r, i) => (r.kind === "ok" ? i : -1)).filter((i) => i >= 0);
+          q._correct = ok.length ? ok[0] : 4;
+          q._multi = ok.length > 1;
+        }
+        return q;
+      }
+
+      // ---------- Describing cases ----------
+      function caseText(q, a) {
+        if (q.t === "bigm") return `<span class="mono">X = ${a.X.toLocaleString("en-US")}, Y = ${a.Y}</span>`;
+        const on = q.vars.filter((v) => a[v]),
+          plain = on.length ? "select " + on.join(", ") : "select none";
+        return `<span class="mono">${q.vars.map((v) => `${v} = ${a[v]}`).join(", ")}</span> (${plain.replace("select", q.ctx === SITES ? "build" : "select")})`;
+      }
+      function rangeText(q, list) {
+        // Big M: summarize consecutive X values for the first Y that has any.
+        const y = list[0].Y,
+          xs = list.filter((a) => a.Y === y).map((a) => a.X);
+        let lo = xs[0],
+          hi = xs[0];
+        for (const x of xs) {
+          if (x === hi + 1 || x === hi) hi = x;
+          else break;
+        }
+        return `<span class="mono">Y = ${y}, X ${lo === hi ? "= " + lo.toLocaleString("en-US") : "from " + lo.toLocaleString("en-US") + " to " + hi.toLocaleString("en-US")}</span>`;
+      }
+      function explainOption(q, r) {
+        if (r.kind === "ok") return '<span class="v ok">Correct.</span> It allows exactly the cases the requirement allows.';
+        if (r.kind === "err") return `<span class="v err">Not linear.</span> ${r.msg.replace(/^.*?: /, "").replace(/^./, (c) => c.toUpperCase())}`;
+        const parts = [];
+        const show = (list) => (q.t === "bigm" ? rangeText(q, list) : caseText(q, list[0]));
+        if (r.strict.length) {
+          parts.push(`<span class="v strict">Too strict.</span> It rules out ${show(r.strict)}, which the requirement allows.`);
+        }
+        if (r.loose.length) parts.push(`<span class="v loose">Too loose.</span> It allows ${show(r.loose)}, which the requirement forbids.`);
+        return parts.join(" ");
+      }
+
+      // ---------- State and rendering ----------
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+      const pretty = (s) =>
+        esc(s)
+          .replace(/&lt;=/g, "≤")
+          .replace(/&gt;=/g, "≥")
+          .replace(/\*/g, "·")
+          .replace(/ - /g, " − ")
+          .replace(/\s+and\s+/g, '<span class="and">and</span>');
+      const store = {
+        get(k, d) {
+          try {
+            const v = localStorage.getItem("lcq:" + k);
+            return v ? JSON.parse(v) : d;
+          } catch (e) {
+            return d;
+          }
+        },
+        set(k, v) {
+          try {
+            localStorage.setItem("lcq:" + k, JSON.stringify(v));
+          } catch (e) {}
+        },
+      };
+      BANK.forEach((q, i) => {
+        q.id = i;
+      });
+      let answers = store.get("answers", {}); // id -> {pick, ok, order}
+      let topic = "all",
+        list = [],
+        pos = 0;
+
+      function buildTopics() {
+        const counts = {};
+        BANK.forEach((q) => {
+          counts[q.t] = (counts[q.t] || 0) + 1;
+        });
+        $("topic").innerHTML =
+          `<option value="all">All topics (${BANK.length})</option>` +
+          Object.entries(TOPICS)
+            .map(([k, v]) => `<option value="${k}">${v} (${counts[k] || 0})</option>`)
+            .join("");
+      }
+      function setList(shuffle) {
+        list = BANK.filter((q) => topic === "all" || q.t === topic).map((q) => q.id);
+        if (shuffle)
+          for (let i = list.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [list[i], list[j]] = [list[j], list[i]];
+          }
+        pos = 0;
+        render();
+      }
+      function optionOrder(q) {
+        const saved = answers[q.id];
+        if (saved && saved.order) return saved.order;
+        if (!q._order) {
+          const o = [0, 1, 2, 3];
+          for (let i = 3; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [o[i], o[j]] = [o[j], o[i]];
+          }
+          q._order = q.t === "final" ? [0, 1, 2, 3] : o;
+        }
+        return q._order;
+      }
+
+      function renderScore() {
+        const inSet = list.map((id) => answers[id]).filter(Boolean);
+        const ok = inSet.filter((a) => a.ok).length;
+        $("score").innerHTML =
+          `<span class="pill">${inSet.length} of ${list.length} answered</span><span class="pill ok">${ok} correct</span>${inSet.length - ok ? `<span class="pill bad">${inSet.length - ok} wrong</span>` : ""}`;
+        $("dots").innerHTML = list
+          .map((id, i) => {
+            const a = answers[id];
+            return `<button type="button" class="dot${i === pos ? " cur" : ""}${a ? (a.ok ? " ok" : " bad") : ""}" data-i="${i}" aria-label="Question ${i + 1}">${i + 1}</button>`;
+          })
+          .join("");
+      }
+
+      function render() {
+        const q = analyze(BANK[list[pos]]),
+          order = optionOrder(q),
+          ans = answers[q.id];
+        $("meta").textContent = `${TOPICS[q.t]}${q.src ? " · " + q.src : ""}`;
+        $("context").textContent = q.ctx;
+        $("question").textContent = q.q;
+        const letters = "abcde",
+          shown = [...order, 4];
+        $("opts").innerHTML = shown
+          .map((oi, k) => {
+            const text = oi === 4 ? "None of the above" : pretty(q.opts[oi]);
+            let cls = "opt",
+              tag = "";
+            if (ans) {
+              if (oi === q._correct) {
+                cls += " right";
+                tag = "Correct";
+              } else if (oi === ans.pick) {
+                cls += " wrong";
+                tag = "Your answer";
+              }
+            }
+            return `<button type="button" class="${cls}" data-o="${oi}"${ans ? " disabled" : ""}><span class="k">${letters[k]}.</span><span class="${oi === 4 ? "" : "m"}">${text}</span><span class="tag">${tag}</span></button>`;
+          })
+          .join("");
+        $("legend").hidden = !ans;
+        $("explain").hidden = !ans;
+        if (ans) {
+          $("result").className = "result " + (ans.ok ? "ok" : "bad");
+          $("result").textContent = ans.ok ? "Correct" : `Not quite. The answer is ${letters[shown.indexOf(q._correct)]}.`;
+          $("why").innerHTML = esc(q.why) + (q.note ? `<br><span class="small">${esc(q.note)}</span>` : "");
+          $("each").innerHTML =
+            order
+              .map(
+                (oi, k) =>
+                  `<li><span class="k">${letters[k]}.</span><div><span class="mono">${pretty(q.opts[oi])}</span><br>${explainOption(q, q._res[oi])}</div></li>`
+              )
+              .join("") +
+            `<li><span class="k">e.</span><div>None of the above<br>${q._correct === 4 ? '<span class="v ok">Correct.</span> Every listed option fails, as shown above.' : "Not this time: one of the options above is correct."}</div></li>`;
+        }
+        $("prev").disabled = pos === 0;
+        $("next").textContent = pos === list.length - 1 ? "Back to the first question" : "Next question ›";
+        $("pos").textContent = `Question ${pos + 1} of ${list.length}`;
+        renderScore();
+      }
+
+      $("opts").addEventListener("click", (e) => {
+        const b = e.target.closest(".opt");
+        if (!b || b.disabled) return;
+        const q = BANK[list[pos]],
+          pick = +b.dataset.o;
+        answers[q.id] = { pick, ok: pick === q._correct, order: optionOrder(q) };
+        store.set("answers", answers);
+        render();
+        $("explain").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+      $("next").addEventListener("click", () => {
+        pos = pos === list.length - 1 ? 0 : pos + 1;
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      $("prev").addEventListener("click", () => {
+        if (pos > 0) {
+          pos--;
+          render();
+        }
+      });
+      $("dots").addEventListener("click", (e) => {
+        const b = e.target.closest(".dot");
+        if (b) {
+          pos = +b.dataset.i;
+          render();
+        }
+      });
+      $("topic").addEventListener("change", (e) => {
+        topic = e.target.value;
+        setList(false);
+      });
+      $("shuffle").addEventListener("click", () => setList(true));
+      $("reset").addEventListener("click", () => {
+        list.forEach((id) => {
+          delete answers[id];
+          delete BANK[id]._order;
+        });
+        store.set("answers", answers);
+        render();
+      });
+      buildTopics();
+      setList(false);
+    </script>
+  </body>
+</html>
