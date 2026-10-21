@@ -15,6 +15,8 @@ courses:
             url: "/logical-constraints-lab/"
           - title: "Logical Constraints Practice"
             url: "/logical-constraints-practice/"
+          - title: "Monte Carlo Lab"
+            url: "/monte-carlo-lab/"
 
   - institution: "University of Texas at Dallas"
     courses:

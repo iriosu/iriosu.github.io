@@ -1,0 +1,1852 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive Monte Carlo simulation lab for MBA 60310, built on the RideWave scooter case." />
+    <title>Monte Carlo Lab</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap"
+    />
+    <style>
+      /* Layout: model card on top, station tabs, one station visible at a time (chart left, explanation and controls right). */
+      :root {
+        --bg: #f4f6f9;
+        --panel: #ffffff;
+        --ink: #172031;
+        --muted: #5a6577;
+        --line: #d8dee7;
+        --grid: #e9edf2;
+        --accent: #1f4fa3;
+        --accent-soft: #e3ebf8;
+        --s1: #2a78d6;
+        --s2: #eb6834;
+        --s3: #1baf7a;
+        --s4: #eda100;
+        --ghost: #a3acb9;
+        --good: #1b7a48;
+        --bad: #b3261e;
+        --f-display: "IBM Plex Serif", Georgia, serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141b;
+          --panel: #161d27;
+          --ink: #e5eaf1;
+          --muted: #98a4b5;
+          --line: #2a3442;
+          --grid: #1e2732;
+          --accent: #8ab0ff;
+          --accent-soft: #1d2a44;
+          --s1: #3987e5;
+          --s2: #d95926;
+          --s3: #199e70;
+          --s4: #c98500;
+          --ghost: #4c5767;
+          --good: #5fcf8f;
+          --bad: #ff8a80;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141b;
+        --panel: #161d27;
+        --ink: #e5eaf1;
+        --muted: #98a4b5;
+        --line: #2a3442;
+        --grid: #1e2732;
+        --accent: #8ab0ff;
+        --accent-soft: #1d2a44;
+        --s1: #3987e5;
+        --s2: #d95926;
+        --s3: #199e70;
+        --s4: #c98500;
+        --ghost: #4c5767;
+        --good: #5fcf8f;
+        --bad: #ff8a80;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 20px 40px;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      header h1 {
+        font-family: var(--f-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        max-width: 80ch;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .panel h2,
+      h3.lbl {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .model {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .model {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .eqs {
+        font-family: var(--f-mono);
+        font-size: 0.84rem;
+        display: grid;
+        gap: 3px;
+      }
+      .eqs .c {
+        color: var(--muted);
+        font-family: var(--f-body);
+      }
+      .ctl {
+        display: grid;
+        grid-template-columns: 8.5em 1fr 5.5em;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+      }
+      .ctl output {
+        font-family: var(--f-mono);
+        text-align: right;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+      .fitnote {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tab {
+        font: inherit;
+        font-size: 0.88rem;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 12px;
+        cursor: pointer;
+        text-align: left;
+      }
+      .tab b {
+        color: var(--muted);
+        margin-right: 6px;
+        font-weight: 600;
+      }
+      .tab[aria-selected="true"] {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .tab[aria-selected="true"] b {
+        color: var(--accent);
+      }
+      .station {
+        display: grid;
+        grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .station {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .station h2.title {
+        font-family: var(--f-display);
+        font-size: 1.3rem;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+      .lead {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--panel);
+        font-weight: 600;
+      }
+      button.primary:hover:not(:disabled) {
+        color: var(--panel);
+        filter: brightness(1.08);
+      }
+      button.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .row .small {
+        margin-right: 4px;
+      }
+      select {
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 3px 6px;
+      }
+      .small {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .ax {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 11.5px;
+      }
+      .axt {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 12px;
+      }
+      .gl {
+        stroke: var(--grid);
+        stroke-width: 1;
+      }
+      .base {
+        stroke: var(--line);
+        stroke-width: 1;
+      }
+      .dl {
+        font-family: var(--f-body);
+        font-size: 12px;
+        font-weight: 500;
+        fill: var(--ink);
+        paint-order: stroke;
+        stroke: var(--panel);
+        stroke-width: 4px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        vertical-align: -1px;
+        margin-right: 6px;
+      }
+      .legend i.ln {
+        height: 0;
+        border-top: 2px solid;
+        border-radius: 0;
+        width: 16px;
+        vertical-align: 3px;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .tile {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .tile .k {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .tile .v {
+        font-family: var(--f-mono);
+        font-size: 1.05rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 6px 0 12px;
+      }
+      .hero .tile .v {
+        font-size: 1.5rem;
+      }
+      .box {
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+        border-radius: 0 6px 6px 0;
+        padding: 8px 12px;
+        font-size: 0.88rem;
+      }
+      .box p {
+        margin: 0 0 6px;
+      }
+      .box p:last-child {
+        margin: 0;
+      }
+      .box code,
+      .mono {
+        font-family: var(--f-mono);
+        font-size: 0.84rem;
+      }
+      .side {
+        display: grid;
+        gap: 14px;
+        align-content: start;
+      }
+      .side p {
+        margin: 0;
+        font-size: 0.92rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.85rem;
+        font-variant-numeric: tabular-nums;
+      }
+      th,
+      td {
+        padding: 5px 8px;
+        text-align: right;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+      thead th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        font-weight: 600;
+        white-space: normal;
+        vertical-align: bottom;
+      }
+      td {
+        font-family: var(--f-mono);
+      }
+      td:first-child {
+        font-family: var(--f-body);
+      }
+      td.f {
+        font-size: 0.76rem;
+        color: var(--muted);
+        text-align: left;
+        white-space: normal;
+      }
+      tr.sep td {
+        border-top: 2px solid var(--line);
+      }
+      tr.out td {
+        font-weight: 600;
+      }
+      tr.best td {
+        background: var(--accent-soft);
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
+      .readout {
+        font-family: var(--f-mono);
+        font-size: 0.82rem;
+        color: var(--muted);
+        min-height: 1.4em;
+        margin-top: 4px;
+      }
+      .formula {
+        font-family: var(--f-mono);
+        font-size: 0.9rem;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg);
+        display: grid;
+        gap: 4px;
+      }
+      .formula .c {
+        font-family: var(--f-body);
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .tip {
+        position: fixed;
+        pointer-events: none;
+        background: var(--panel);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        z-index: 10;
+        font-variant-numeric: tabular-nums;
+        max-width: 260px;
+      }
+      .chk {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 0.88rem;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Monte Carlo Lab</h1>
+        <p>
+          RideWave's scooter business from the midterm and final, simulated in your browser. Six short stations, each one key idea of Monte Carlo
+          simulation, with the matching Excel <span class="mono">RAND()</span> and @RISK steps. MBA 60310, Simulation module.
+        </p>
+      </header>
+
+      <section class="panel model">
+        <div>
+          <h2>The model (one month)</h2>
+          <div class="eqs">
+            <div><span class="c">Rides per scooter</span> R ~ <span id="rdist">Normal(180, 50)</span></div>
+            <div><span class="c">Demand (rides)</span> D ~ Normal(20,000 − 1,500 × price, 2,000)</div>
+            <div><span class="c">Cost per ride</span> c ~ Uniform($2, $3)</div>
+            <div><span class="c">Unavailable scooters</span> U ~ Discrete(0, 5, 10, 15, 20, 25 with probs 0, .1, .2, .3, .2, .2)</div>
+            <div><span class="c">Rides served</span> = MIN(D, (scooters − U) × R)</div>
+            <div><span class="c">Profit</span> = rides × (price − c) − $20,000 fixed cost</div>
+          </div>
+          <p class="fitnote" id="fitnote" hidden>
+            Rides per scooter uses the distribution fitted in station 6. <button type="button" id="unfit">Back to Normal(180, 50)</button>
+          </p>
+        </div>
+        <div>
+          <h2>Decisions</h2>
+          <div class="ctl">
+            <label for="price">Price per ride</label><input id="price" type="range" min="6" max="11" step="0.5" value="8" /><output id="priceOut"
+              >$8.00</output
+            >
+          </div>
+          <div class="ctl">
+            <label for="scoot">Scooters owned</label><input id="scoot" type="range" min="30" max="70" step="5" value="50" /><output id="scootOut"
+              >50</output
+            >
+          </div>
+          <p class="small" style="margin: 0">Both apply to every station. Negative normal draws are set to 0.</p>
+        </div>
+      </section>
+
+      <nav class="tabs" role="tablist" id="tabs">
+        <button class="tab" role="tab" data-s="1"><b>1</b>From RAND() to a draw</button>
+        <button class="tab" role="tab" data-s="2"><b>2</b>One row, then many</button>
+        <button class="tab" role="tab" data-s="3"><b>3</b>The flaw of averages</button>
+        <button class="tab" role="tab" data-s="4"><b>4</b>How many iterations?</button>
+        <button class="tab" role="tab" data-s="5"><b>5</b>Comparing prices</button>
+        <button class="tab" role="tab" data-s="6"><b>6</b>Fitting data</button>
+      </nav>
+
+      <!-- Station 1 -->
+      <section class="panel station" data-st="1">
+        <div>
+          <h2 class="title">From RAND() to a random draw</h2>
+          <p class="lead">
+            Every random input starts as a uniform number between 0 and 1. Reading that number on the vertical axis and across the distribution's
+            cumulative curve gives the draw. This is what <span class="mono">NORM.INV(RAND(), …)</span> and <span class="mono">RiskNormal</span> do.
+          </p>
+          <div class="row">
+            <label for="s1var" class="small">Input</label>
+            <select id="s1var">
+              <option value="R">Rides per scooter</option>
+              <option value="D">Demand</option>
+              <option value="c">Cost per ride</option>
+              <option value="U">Unavailable scooters</option>
+            </select>
+          </div>
+          <svg id="s1cdf" viewBox="0 0 640 300" role="img" aria-label="Cumulative distribution with the RAND value mapped to a draw"></svg>
+          <svg id="s1hist" viewBox="0 0 640 130" role="img" aria-label="Histogram of the draws so far"></svg>
+          <div class="legend">
+            <span><i class="ln" style="border-color: var(--s1)"></i>Cumulative probability (CDF)</span
+            ><span><i style="background: var(--s2)"></i>Your RAND() and its draw</span
+            ><span><i style="background: var(--s1); opacity: 0.55"></i>Histogram of draws so far</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="ctl" style="grid-template-columns: 5em 1fr 4.5em; margin: 0">
+            <label for="s1u" class="small">RAND() =</label><input id="s1u" type="range" min="0.001" max="0.999" step="0.001" value="0.73" /><output
+              id="s1uOut"
+              >0.730</output
+            >
+          </div>
+          <div class="row" style="margin: 0">
+            <button id="s1one" class="primary" type="button">Press F9 (new RAND)</button><button id="s1many" type="button">Draw 500 more</button
+            ><button id="s1clear" type="button">Clear</button>
+          </div>
+          <div class="formula" id="s1formula"></div>
+          <div class="box">
+            <p>
+              <b>Why it works.</b> A RAND() value lands in any slice of [0, 1] with probability equal to the slice's width. The CDF is steepest where
+              the distribution has the most probability, so many RAND() values map there.
+            </p>
+            <p>
+              Drag the slider: values of RAND() near 0.5 give draws near the middle; values near 0 or 1 give the tails. Then draw 500 and watch the
+              histogram take the distribution's shape.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Station 2 -->
+      <section class="panel station" data-st="2" hidden>
+        <div>
+          <h2 class="title">One row is one possible month</h2>
+          <p class="lead">
+            One iteration draws every input once and computes profit, exactly like one row of your spreadsheet. A simulation repeats that row
+            thousands of times and looks at the whole distribution of profit.
+          </p>
+          <div class="tablewrap"><table id="s2row"></table></div>
+          <div class="row"><button id="s2f9" type="button">Draw a new month (F9)</button></div>
+          <h3 class="lbl" style="margin-top: 16px">Profit distribution</h3>
+          <div class="row" style="margin-top: 0">
+            <span class="small">Run</span>
+            <button type="button" class="s2run" data-n="10">10</button>
+            <button type="button" class="s2run" data-n="100">100</button>
+            <button type="button" class="s2run" data-n="1000">1,000</button>
+            <button type="button" class="s2run primary" data-n="10000">10,000</button>
+            <span class="small">iterations</span>
+          </div>
+          <svg id="s2hist" viewBox="0 0 640 280" role="img" aria-label="Histogram of simulated monthly profit"></svg>
+          <div class="legend">
+            <span><i style="background: var(--s2)"></i>Months with a loss</span><span><i style="background: var(--s1)"></i>Months with a profit</span
+            ><span><i class="ln" style="border-color: var(--ink)"></i>Mean</span>
+          </div>
+        </div>
+        <div class="side">
+          <div>
+            <h3 class="lbl">Summary statistics <span id="s2n"></span></h3>
+            <div class="tiles" id="s2tiles"></div>
+          </div>
+          <div>
+            <h3 class="lbl">Main drivers of profit (tornado)</h3>
+            <svg id="s2tor" viewBox="0 0 420 170" role="img" aria-label="Rank correlation of each input with profit"></svg>
+            <p class="small">Rank correlation between each input and profit. The longest bar is the main driver.</p>
+          </div>
+          <div class="box">
+            <p>
+              <b>Excel:</b> build one row with <span class="mono">RAND()</span> formulas, copy it down 10,000 rows, then use
+              <span class="mono">AVERAGE</span>, <span class="mono">STDEV.S</span>, <span class="mono">COUNTIF(profit, "&lt;0")/10000</span>.
+            </p>
+            <p>
+              <b>@RISK:</b> one row only. Mark profit with <span class="mono">RiskOutput</span>, set Iterations to 10,000, click Start Simulation, and
+              read <span class="mono">RiskMean</span>, <span class="mono">RiskStdDev</span> and the tornado graph.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Station 3 -->
+      <section class="panel station" data-st="3" hidden>
+        <div>
+          <h2 class="title">The flaw of averages</h2>
+          <p class="lead">
+            Plugging the average of every input into the spreadsheet does not give the average profit. Each dot below is one simulated month: demand
+            against the capacity the available scooters can serve.
+          </p>
+          <svg id="s3sc" viewBox="0 0 640 380" role="img" aria-label="Scatter of capacity against demand for simulated months"></svg>
+          <div class="legend">
+            <span><i style="background: var(--s2)"></i>Capacity runs out (rides = capacity)</span
+            ><span><i style="background: var(--s1)"></i>Demand runs out (rides = demand)</span
+            ><span><i style="background: var(--ink); border-radius: 0; transform: rotate(45deg) scale(0.8)"></i>Average inputs</span>
+          </div>
+          <div class="readout" id="s3read">Hover over a dot to see that month.</div>
+        </div>
+        <div class="side">
+          <div class="hero" id="s3hero"></div>
+          <label class="chk"><input type="checkbox" id="s3nocap" /> Remove the capacity limit (rides = demand)</label>
+          <div class="box" id="s3box"></div>
+        </div>
+      </section>
+
+      <!-- Station 4 -->
+      <section class="panel station" data-st="4" hidden>
+        <div>
+          <h2 class="title">How many iterations are enough?</h2>
+          <p class="lead">
+            The running average of profit after each iteration. Early on it jumps around; it settles as iterations accumulate. The shaded band is the
+            95% confidence interval for the true mean.
+          </p>
+          <svg id="s4ln" viewBox="0 0 640 320" role="img" aria-label="Running mean of profit against the number of iterations, log scale"></svg>
+          <div class="legend">
+            <span><i class="ln" style="border-color: var(--s1)"></i>This run</span
+            ><span><i style="background: var(--s1); opacity: 0.18"></i>95% confidence band</span
+            ><span><i class="ln" style="border-color: var(--ghost)"></i>Earlier runs</span>
+          </div>
+          <div class="readout" id="s4read">Hover over the chart to read the running mean.</div>
+        </div>
+        <div class="side">
+          <div class="row" style="margin: 0">
+            <button id="s4new" class="primary" type="button">Run with a new seed</button>
+            <button id="s4same" type="button">Run again, same seed</button>
+            <button id="s4clear" type="button">Clear</button>
+          </div>
+          <p class="small" id="s4seed"></p>
+          <div class="tablewrap"><table id="s4tab"></table></div>
+          <div class="box">
+            <p>
+              <b>The square-root rule.</b> The band's half-width is 1.96 × std dev ÷ √n. Ten times more iterations make it only about 3 times
+              narrower; halving it takes 4 times more.
+            </p>
+            <p>
+              <b>Seeds.</b> A run is a sequence of RAND() values. Fixing the seed replays the same sequence, so “run again, same seed” lands exactly
+              on top of the last line. In @RISK: Simulation Settings → Sampling → fixed random seed.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Station 5 -->
+      <section class="panel station" data-st="5" hidden>
+        <div>
+          <h2 class="title">Comparing decisions: which price?</h2>
+          <p class="lead">
+            Mean profit for each price from $6 to $11. Same random numbers for every price compares the prices on the same set of months, like
+            <span class="mono">RiskSimtable</span> with a fixed seed. Fresh random numbers give each price its own months.
+          </p>
+          <svg id="s5ln" viewBox="0 0 640 320" role="img" aria-label="Mean profit by price under two sampling schemes"></svg>
+          <div class="legend">
+            <span><i class="ln" style="border-color: var(--s1)"></i>Same random numbers for every price</span
+            ><span><i class="ln" style="border-color: var(--s2)"></i>Fresh random numbers for each price</span><span>○ Best price in this run</span>
+          </div>
+          <div class="readout" id="s5read">Hover over the chart to compare prices.</div>
+        </div>
+        <div class="side">
+          <div class="row" style="margin: 0">
+            <label for="s5n" class="small">Iterations per price</label>
+            <select id="s5n">
+              <option value="200" selected>200</option>
+              <option value="1000">1,000</option>
+              <option value="5000">5,000</option>
+            </select>
+            <button id="s5run" class="primary" type="button">Re-run</button>
+          </div>
+          <div>
+            <h3 class="lbl">Best price in each re-run</h3>
+            <div class="tablewrap"><table id="s5tally"></table></div>
+          </div>
+          <div class="tablewrap"><table id="s5tab"></table></div>
+          <div class="box">
+            <p>
+              <b>Why same random numbers?</b> With fresh numbers, a price can win just because it happened to draw good months. Using the same months
+              for every price removes that luck from the comparison, so the curve is smooth and the ranking is much more stable. If the winner still
+              alternates between two neighbors, those prices are practically tied.
+            </p>
+            <p>
+              <b>@RISK:</b> put <span class="mono">=RiskSimtable({6, 6.5, …, 11})</span> in the price cell, set # Simulations to 11, fix the seed, and
+              compare <span class="mono">RiskMean(profit, k)</span>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Station 6 -->
+      <section class="panel station" data-st="6" hidden>
+        <div>
+          <h2 class="title">Fitting a distribution to data</h2>
+          <p class="lead">
+            Instead of assuming Normal(180, 50), use data on rides per scooter. Each candidate distribution is fitted by maximum likelihood and ranked
+            by AIC (lower is better), as in @RISK's Distribution Fitting.
+          </p>
+          <svg id="s6h" viewBox="0 0 640 300" role="img" aria-label="Histogram of observed rides per scooter with fitted densities"></svg>
+          <div class="legend" id="s6leg"></div>
+        </div>
+        <div class="side">
+          <div class="row" style="margin: 0">
+            <span class="small">Data points</span>
+            <button type="button" class="s6n" data-n="20">20</button>
+            <button type="button" class="s6n on" data-n="60">60</button>
+            <button type="button" class="s6n" data-n="300">300</button>
+            <button id="s6new" type="button">New sample</button>
+          </div>
+          <div class="tablewrap"><table id="s6tab"></table></div>
+          <div class="row" style="margin: 0"><button id="s6use" class="primary" type="button">Use the best fit in the model</button></div>
+          <p class="small" id="s6eff"></p>
+          <div class="box">
+            <p>
+              <b>AIC = 2 × (number of parameters) − 2 × log-likelihood.</b> It rewards fitting the data and penalizes extra parameters. Only
+              differences matter: a gap under about 2 means the fits are practically tied.
+            </p>
+            <p>Try 20 data points and click New sample a few times: with little data the ranking flips. With 300 it settles.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="tip" id="tip" hidden></div>
+
+    <script>
+      // ---------- Random numbers and distributions ----------
+      function mulberry32(a) {
+        return () => {
+          a |= 0;
+          a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const newSeed = () => Math.floor(Math.random() * 1e9);
+      // Inverse standard normal (Acklam), so every draw is literally NORM.INV(RAND()).
+      function zInv(p) {
+        const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+        const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+        const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+        const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+        p = Math.min(Math.max(p, 1e-12), 1 - 1e-12);
+        if (p < 0.02425) {
+          const q = Math.sqrt(-2 * Math.log(p));
+          return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+        }
+        if (p > 1 - 0.02425) {
+          const q = Math.sqrt(-2 * Math.log(1 - p));
+          return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+        }
+        const q = p - 0.5,
+          r = q * q;
+        return (
+          ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) /
+          (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1)
+        );
+      }
+      function erf(x) {
+        const s = Math.sign(x);
+        x = Math.abs(x);
+        const t = 1 / (1 + 0.3275911 * x);
+        return s * (1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x));
+      }
+      const zCdf = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+      function lnGamma(z) {
+        const g = 7,
+          c = [
+            0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905,
+            -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7,
+          ];
+        if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+        z -= 1;
+        let x = c[0];
+        for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+        const t = z + g + 0.5;
+        return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+      }
+      function gammaP(k, x) {
+        // regularized lower incomplete gamma
+        if (x <= 0) return 0;
+        if (x < k + 1) {
+          let sum = 1 / k,
+            term = sum;
+          for (let n = 1; n < 200; n++) {
+            term *= x / (k + n);
+            sum += term;
+            if (term < sum * 1e-12) break;
+          }
+          return sum * Math.exp(-x + k * Math.log(x) - lnGamma(k));
+        }
+        let b = x + 1 - k,
+          c = 1e300,
+          d = 1 / b,
+          h = d;
+        for (let i = 1; i < 200; i++) {
+          const an = -i * (i - k);
+          b += 2;
+          d = an * d + b;
+          if (Math.abs(d) < 1e-300) d = 1e-300;
+          c = b + an / c;
+          if (Math.abs(c) < 1e-300) c = 1e-300;
+          d = 1 / d;
+          const del = d * c;
+          h *= del;
+          if (Math.abs(del - 1) < 1e-12) break;
+        }
+        return 1 - Math.exp(-x + k * Math.log(x) - lnGamma(k)) * h;
+      }
+      const digamma = (x) => {
+        let r = 0;
+        while (x < 6) {
+          r -= 1 / x;
+          x += 1;
+        }
+        const f = 1 / (x * x);
+        return r + Math.log(x) - 0.5 / x - f * (1 / 12 - f * (1 / 120 - f / 252));
+      };
+      const trigamma = (x) => {
+        let r = 0;
+        while (x < 6) {
+          r += 1 / (x * x);
+          x += 1;
+        }
+        const f = 1 / (x * x);
+        return r + 1 / x + f / 2 + (f / x) * (1 / 6 - f * (1 / 30 - f / 42));
+      };
+
+      // Candidate distributions for rides per scooter: pdf, cdf, inverse cdf, fit.
+      const FAMILIES = {
+        normal: {
+          name: "Normal",
+          k: 2,
+          fit: (x) => {
+            const n = x.length,
+              m = x.reduce((s, v) => s + v, 0) / n,
+              sd = Math.sqrt(x.reduce((s, v) => s + (v - m) ** 2, 0) / n);
+            return { m, sd };
+          },
+          label: (p) => `Normal(${p.m.toFixed(1)}, ${p.sd.toFixed(1)})`,
+          pdf: (p, v) => Math.exp(-0.5 * ((v - p.m) / p.sd) ** 2) / (p.sd * Math.sqrt(2 * Math.PI)),
+          cdf: (p, v) => zCdf((v - p.m) / p.sd),
+          inv: (p, u) => p.m + p.sd * zInv(u),
+        },
+        lognormal: {
+          name: "Lognormal",
+          k: 2,
+          fit: (x) => {
+            const l = x.map(Math.log),
+              n = l.length,
+              mu = l.reduce((s, v) => s + v, 0) / n,
+              s = Math.sqrt(l.reduce((t, v) => t + (v - mu) ** 2, 0) / n);
+            return { mu, s };
+          },
+          label: (p) => {
+            const m = Math.exp(p.mu + (p.s * p.s) / 2),
+              sd = m * Math.sqrt(Math.exp(p.s * p.s) - 1);
+            return `Lognormal(${m.toFixed(1)}, ${sd.toFixed(1)})`;
+          },
+          pdf: (p, v) => (v <= 0 ? 0 : Math.exp(-0.5 * ((Math.log(v) - p.mu) / p.s) ** 2) / (v * p.s * Math.sqrt(2 * Math.PI))),
+          cdf: (p, v) => (v <= 0 ? 0 : zCdf((Math.log(v) - p.mu) / p.s)),
+          inv: (p, u) => Math.exp(p.mu + p.s * zInv(u)),
+        },
+        gamma: {
+          name: "Gamma",
+          k: 2,
+          fit: (x) => {
+            const n = x.length,
+              m = x.reduce((s, v) => s + v, 0) / n,
+              lm = x.reduce((s, v) => s + Math.log(v), 0) / n,
+              s = Math.log(m) - lm;
+            let k = (3 - s + Math.sqrt((s - 3) ** 2 + 24 * s)) / (12 * s);
+            for (let i = 0; i < 20; i++) k -= (Math.log(k) - digamma(k) - s) / (1 / k - trigamma(k));
+            return { k, th: m / k };
+          },
+          label: (p) => `Gamma(${p.k.toFixed(2)}, ${p.th.toFixed(2)})`,
+          pdf: (p, v) => (v <= 0 ? 0 : Math.exp((p.k - 1) * Math.log(v) - v / p.th - p.k * Math.log(p.th) - lnGamma(p.k))),
+          cdf: (p, v) => gammaP(p.k, v / p.th),
+          inv: (p, u) => {
+            // tabulated once per fit, then interpolated
+            if (!p.tab) {
+              p.tab = [];
+              let lo = 0;
+              const hi0 = p.k * p.th * 10;
+              for (let i = 0; i <= 2000; i++) {
+                const q = Math.min(Math.max(i / 2000, 1e-6), 1 - 1e-6);
+                let a = lo,
+                  b = hi0;
+                for (let it = 0; it < 50; it++) {
+                  const mid = (a + b) / 2;
+                  if (gammaP(p.k, mid / p.th) < q) a = mid;
+                  else b = mid;
+                }
+                p.tab.push((a + b) / 2);
+                lo = (a + b) / 2;
+              }
+            }
+            const f = u * 2000,
+              i = Math.min(1999, Math.floor(f));
+            return p.tab[i] + (p.tab[i + 1] - p.tab[i]) * (f - i);
+          },
+        },
+        expon: {
+          name: "Exponential",
+          k: 1,
+          fit: (x) => ({ m: x.reduce((s, v) => s + v, 0) / x.length }),
+          label: (p) => `Exponential(${p.m.toFixed(1)})`,
+          pdf: (p, v) => (v < 0 ? 0 : Math.exp(-v / p.m) / p.m),
+          cdf: (p, v) => (v <= 0 ? 0 : 1 - Math.exp(-v / p.m)),
+          inv: (p, u) => -p.m * Math.log(1 - u),
+        },
+      };
+      const FAMORDER = ["normal", "lognormal", "gamma", "expon"];
+      const FAMCOLOR = { normal: "var(--s1)", lognormal: "var(--s2)", gamma: "var(--s3)", expon: "var(--s4)" };
+
+      // ---------- The RideWave model ----------
+      const FIXED = 20000,
+        DEM_SD = 2000,
+        U_VALS = [0, 5, 10, 15, 20, 25],
+        U_CUM = [0, 0.1, 0.3, 0.6, 0.8, 1];
+      const state = { price: 8, scooters: 50, rides: { fam: "normal", p: { m: 180, sd: 50 } } };
+      const demandMean = (p) => 20000 - 1500 * p;
+      const uInv = (u) => {
+        for (let i = 0; i < U_VALS.length; i++) if (u <= U_CUM[i] && U_CUM[i] > (i ? U_CUM[i - 1] : -1)) return U_VALS[i];
+        return 25;
+      };
+      const drawR = (u) => Math.max(0, FAMILIES[state.rides.fam].inv(state.rides.p, u));
+      const drawD = (u, p) => Math.max(0, demandMean(p) + DEM_SD * zInv(u));
+      function month(u, price = state.price, S = state.scooters, noCap = false) {
+        const R = drawR(u[0]),
+          D = drawD(u[1], price),
+          c = 2 + u[2],
+          U = uInv(u[3]);
+        const cap = (S - U) * R,
+          rides = noCap ? D : Math.min(D, cap);
+        return { R, D, c, U, cap, rides, profit: rides * (price - c) - (rides > 0 ? FIXED : 0) };
+      }
+      function simulate(n, seed, opt = {}) {
+        const rng = mulberry32(seed),
+          out = {
+            n,
+            R: new Float64Array(n),
+            D: new Float64Array(n),
+            c: new Float64Array(n),
+            U: new Float64Array(n),
+            cap: new Float64Array(n),
+            profit: new Float64Array(n),
+          };
+        for (let i = 0; i < n; i++) {
+          const m = month([rng(), rng(), rng(), rng()], opt.price ?? state.price, opt.scooters ?? state.scooters, opt.noCap);
+          out.R[i] = m.R;
+          out.D[i] = m.D;
+          out.c[i] = m.c;
+          out.U[i] = m.U;
+          out.cap[i] = m.cap;
+          out.profit[i] = m.profit;
+        }
+        return out;
+      }
+      const mean = (a) => {
+        let s = 0;
+        for (const v of a) s += v;
+        return s / a.length;
+      };
+      const sdev = (a) => {
+        const m = mean(a);
+        let s = 0;
+        for (const v of a) s += (v - m) ** 2;
+        return Math.sqrt(s / Math.max(1, a.length - 1));
+      };
+      const quant = (sorted, q) => {
+        const i = (sorted.length - 1) * q,
+          lo = Math.floor(i);
+        return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (i - lo);
+      };
+      function ranks(a) {
+        const idx = Array.from(a.keys()).sort((i, j) => a[i] - a[j]),
+          r = new Float64Array(a.length);
+        idx.forEach((i, k) => {
+          r[i] = k;
+        });
+        return r;
+      }
+      function spearman(a, b) {
+        const ra = ranks(a),
+          rb = ranks(b),
+          ma = mean(ra),
+          mb = mean(rb);
+        let s = 0,
+          sa = 0,
+          sb = 0;
+        for (let i = 0; i < a.length; i++) {
+          s += (ra[i] - ma) * (rb[i] - mb);
+          sa += (ra[i] - ma) ** 2;
+          sb += (rb[i] - mb) ** 2;
+        }
+        return sa && sb ? s / Math.sqrt(sa * sb) : 0;
+      }
+
+      // ---------- Formatting and chart helpers ----------
+      const $ = (id) => document.getElementById(id);
+      const money = (v) => (v < 0 ? "−$" : "$") + Math.abs(Math.round(v)).toLocaleString("en-US");
+      const kMoney = (v) =>
+        (v < 0 ? "−$" : "$") +
+        (Math.abs(v) >= 1000 ? (Math.abs(v) / 1000).toFixed(Math.abs(v) % 1000 ? (Math.abs(v) >= 10000 ? 0 : 1) : 0) + "k" : Math.abs(v).toFixed(0));
+      const num = (v, d = 0) => v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+      function ticks(lo, hi, count = 6) {
+        const span = hi - lo || 1,
+          step0 = span / count,
+          mag = 10 ** Math.floor(Math.log10(step0)),
+          err = step0 / mag;
+        const step = (err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1) * mag,
+          out = [];
+        for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+        return out;
+      }
+      const scale = (d0, d1, r0, r1) => (v) => r0 + ((v - d0) / (d1 - d0 || 1)) * (r1 - r0);
+      const tip = $("tip");
+      function showTip(evt, html) {
+        tip.innerHTML = html;
+        tip.hidden = false;
+        const w = tip.offsetWidth,
+          h = tip.offsetHeight;
+        let x = evt.clientX + 14,
+          y = evt.clientY - h - 10;
+        if (x + w > innerWidth - 8) x = evt.clientX - w - 14;
+        if (y < 8) y = evt.clientY + 16;
+        tip.style.left = x + "px";
+        tip.style.top = y + "px";
+      }
+      const hideTip = () => {
+        tip.hidden = true;
+      };
+      function svgPoint(svg, evt) {
+        const pt = svg.createSVGPoint();
+        pt.x = evt.clientX;
+        pt.y = evt.clientY;
+        return pt.matrixTransform(svg.getScreenCTM().inverse());
+      }
+      function xAxis(x, y0, tks, fmt, label, W = 640) {
+        let g = `<line class="base" x1="${x(tks[0] ?? 0)}" x2="${x(tks[tks.length - 1] ?? 0)}" y1="${y0}" y2="${y0}"/>`;
+        for (const t of tks) g += `<text class="ax" x="${x(t)}" y="${y0 + 16}" text-anchor="middle">${fmt(t)}</text>`;
+        if (label) g += `<text class="axt" x="${W / 2}" y="${y0 + 32}" text-anchor="middle">${label}</text>`;
+        return g;
+      }
+      function yGrid(y, x0, x1, tks, fmt) {
+        let g = "";
+        for (const t of tks)
+          g += `<line class="gl" x1="${x0}" x2="${x1}" y1="${y(t)}" y2="${y(t)}"/><text class="ax" x="${x0 - 8}" y="${y(t) + 4}" text-anchor="end">${fmt(t)}</text>`;
+        return g;
+      }
+
+      // ---------- Station 1: inverse transform ----------
+      const S1 = { draws: [] };
+      function s1Spec() {
+        const v = $("s1var").value,
+          p = state.price;
+        if (v === "R") {
+          const f = FAMILIES[state.rides.fam],
+            P = state.rides.p;
+          return {
+            lo: 0,
+            hi: 400,
+            cdf: (x) => f.cdf(P, x),
+            inv: drawR,
+            unit: "rides",
+            dec: 1,
+            xl: "Rides per scooter in the month",
+            excel: state.rides.fam === "normal" ? `=MAX(0, NORM.INV(u, ${num(P.m, 0)}, ${num(P.sd, 0)}))` : `inverse CDF of the fitted ${f.name}`,
+            risk: state.rides.fam === "normal" ? `=RiskNormal(${num(P.m, 0)}, ${num(P.sd, 0)})` : `=RiskFit(…) → ${f.label(P)}`,
+          };
+        }
+        if (v === "D") {
+          const m = demandMean(p);
+          return {
+            lo: Math.max(0, m - 4 * DEM_SD),
+            hi: m + 4 * DEM_SD,
+            cdf: (x) => zCdf((x - m) / DEM_SD),
+            inv: (u) => drawD(u, p),
+            dec: 0,
+            xl: `Demand (rides) at a price of $${p.toFixed(2)}`,
+            excel: `=NORM.INV(u, ${num(m)}, 2,000)`,
+            risk: `=RiskNormal(${num(m)}, 2000)`,
+          };
+        }
+        if (v === "c")
+          return {
+            lo: 1.5,
+            hi: 3.5,
+            cdf: (x) => Math.min(1, Math.max(0, x - 2)),
+            inv: (u) => 2 + u,
+            dec: 2,
+            pre: "$",
+            xl: "Cost per ride ($)",
+            excel: "=2 + (3 − 2) * u",
+            risk: "=RiskUniform(2, 3)",
+          };
+        return {
+          lo: -2,
+          hi: 28,
+          discrete: true,
+          cdf: (x) => {
+            let c = 0;
+            U_VALS.forEach((v, i) => {
+              if (x >= v) c = U_CUM[i];
+            });
+            return c;
+          },
+          inv: uInv,
+          dec: 0,
+          xl: "Unavailable scooters",
+          excel: "=VLOOKUP(u, {0,5; 0.1,10; 0.3,15; 0.6,20; 0.8,25}, 2)",
+          risk: "=RiskDiscrete({0,5,10,15,20,25}, {0,.1,.2,.3,.2,.2})",
+        };
+      }
+      function s1Draw() {
+        const sp = s1Spec(),
+          u = +$("s1u").value,
+          val = sp.inv(u);
+        const L = 56,
+          R = 624,
+          T = 14,
+          B = 256,
+          x = scale(sp.lo, sp.hi, L, R),
+          y = scale(0, 1, B, T);
+        let g = yGrid(y, L, R, [0, 0.25, 0.5, 0.75, 1], (t) => t.toFixed(2));
+        const xt = ticks(sp.lo, sp.hi, 7).filter((t) => t >= sp.lo && t <= sp.hi);
+        g += xAxis(x, B, xt, (t) => (sp.pre || "") + num(t, sp.dec === 2 ? 1 : 0), sp.xl);
+        g += `<text class="axt" x="14" y="${(T + B) / 2}" transform="rotate(-90 14 ${(T + B) / 2})" text-anchor="middle">RAND()</text>`;
+        if (sp.discrete) {
+          let prev = 0,
+            xs = sp.lo;
+          U_VALS.forEach((v, i) => {
+            g += `<line x1="${x(xs)}" x2="${x(v)}" y1="${y(prev)}" y2="${y(prev)}" stroke="var(--s1)" stroke-width="2"/>`;
+            g += `<line x1="${x(v)}" x2="${x(v)}" y1="${y(prev)}" y2="${y(U_CUM[i])}" stroke="var(--s1)" stroke-width="1" stroke-dasharray="2 3"/>`;
+            prev = U_CUM[i];
+            xs = v;
+          });
+          g += `<line x1="${x(xs)}" x2="${x(sp.hi)}" y1="${y(1)}" y2="${y(1)}" stroke="var(--s1)" stroke-width="2"/>`;
+        } else {
+          let d = "";
+          for (let i = 0; i <= 200; i++) {
+            const v = sp.lo + ((sp.hi - sp.lo) * i) / 200;
+            d += (i ? "L" : "M") + x(v).toFixed(1) + "," + y(sp.cdf(v)).toFixed(1);
+          }
+          g += `<path d="${d}" fill="none" stroke="var(--s1)" stroke-width="2"/>`;
+        }
+        const xv = x(Math.min(Math.max(val, sp.lo), sp.hi));
+        g += `<line x1="${L}" x2="${xv}" y1="${y(u)}" y2="${y(u)}" stroke="var(--s2)" stroke-width="2"/><line x1="${xv}" x2="${xv}" y1="${y(u)}" y2="${B}" stroke="var(--s2)" stroke-width="2" marker-end="url(#arr)"/>`;
+        g += `<circle cx="${L}" cy="${y(u)}" r="5" fill="var(--s2)" stroke="var(--panel)" stroke-width="2"/><circle cx="${xv}" cy="${y(u)}" r="4" fill="var(--s2)" stroke="var(--panel)" stroke-width="2"/>`;
+        g += `<text class="dl" x="${L + 8}" y="${y(u) - 8}">u = ${u.toFixed(3)}</text><text class="dl" x="${xv + 6}" y="${B - 8}">${(sp.pre || "") + num(val, sp.dec)}</text>`;
+        $("s1cdf").innerHTML =
+          `<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--s2)"/></marker></defs>` +
+          g;
+        $("s1formula").innerHTML =
+          `<span class="c">Excel</span><span>${sp.excel.replace(/u/g, u.toFixed(3)).replace("VLOOKUP(" + u.toFixed(3), "VLOOKUP(" + u.toFixed(3))} = ${(sp.pre || "") + num(val, sp.dec)}</span><span class="c">@RISK</span><span>${sp.risk}</span>`;
+        // Histogram of the draws so far
+        const H = $("s1hist"),
+          bins = sp.discrete ? U_VALS.length : 30,
+          cnt = new Array(bins).fill(0);
+        const binOf = (v) => (sp.discrete ? U_VALS.indexOf(v) : Math.min(bins - 1, Math.max(0, Math.floor(((v - sp.lo) / (sp.hi - sp.lo)) * bins))));
+        S1.draws.forEach((v) => {
+          cnt[binOf(v)]++;
+        });
+        const mx = Math.max(1, ...cnt),
+          yh = scale(0, mx, 104, 14);
+        let h = `<line class="base" x1="${L}" x2="${R}" y1="104" y2="104"/>`;
+        cnt.forEach((c, i) => {
+          if (!c) return;
+          const x0 = sp.discrete ? x(U_VALS[i]) - 10 : x(sp.lo + ((sp.hi - sp.lo) * i) / bins) + 1,
+            w = sp.discrete ? 20 : (R - L) / bins - 2;
+          h += `<rect x="${x0}" y="${yh(c)}" width="${w}" height="${104 - yh(c)}" rx="2" fill="var(--s1)" opacity=".55"><title>${c} draws</title></rect>`;
+        });
+        h += `<text class="ax" x="${L}" y="124">${S1.draws.length ? num(S1.draws.length) + " draws so far" : "No draws yet: press F9 or draw 500."}</text>`;
+        H.innerHTML = h;
+      }
+
+      // ---------- Station 2: one iteration, then many ----------
+      const S2 = { u: null, run: null, anim: 0 };
+      function s2Row() {
+        if (!S2.u) S2.u = [Math.random(), Math.random(), Math.random(), Math.random()];
+        const u = S2.u,
+          m = month(u),
+          p = state.price,
+          S = state.scooters;
+        const rows = [
+          [
+            "Rides per scooter",
+            u[0],
+            num(m.R, 1),
+            state.rides.fam === "normal" ? "=MAX(0, NORM.INV(RAND(), 180, 50))" : "=fitted inverse CDF (RAND())",
+          ],
+          ["Demand", u[1], num(m.D), `=MAX(0, NORM.INV(RAND(), ${num(demandMean(p))}, 2000))`],
+          ["Cost per ride", u[2], "$" + m.c.toFixed(2), "=2 + RAND()"],
+          ["Unavailable scooters", u[3], num(m.U), "=VLOOKUP(RAND(), table, 2)"],
+        ];
+        const calc = [
+          ["Available scooters", num(S - m.U), `=${S} − unavailable`],
+          ["Capacity (rides)", num(m.cap), "=available × rides per scooter"],
+          ["Rides served", num(m.rides), "=MIN(demand, capacity)"],
+          ["Revenue", money(m.rides * p), `=rides × $${p.toFixed(2)}`],
+          ["Variable cost", money(m.rides * m.c), "=rides × cost per ride"],
+          ["Fixed cost", money(m.rides > 0 ? FIXED : 0), "=IF(rides > 0, 20000, 0)"],
+        ];
+        $("s2row").innerHTML =
+          `<thead><tr><th>Cell</th><th>RAND()</th><th>Value</th><th style="text-align:left">Formula</th></tr></thead><tbody>` +
+          rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1].toFixed(3)}</td><td>${r[2]}</td><td class="f">${r[3]}</td></tr>`).join("") +
+          calc
+            .map((r, i) => `<tr${i === 0 ? ' class="sep"' : ""}><td>${r[0]}</td><td></td><td>${r[1]}</td><td class="f">${r[2]}</td></tr>`)
+            .join("") +
+          `<tr class="out"><td>Profit</td><td></td><td style="color:${m.profit < 0 ? "var(--bad)" : "var(--good)"}">${money(m.profit)}</td><td class="f">=revenue − variable − fixed</td></tr></tbody>`;
+      }
+      function s2Run(n) {
+        const full = simulate(n, newSeed());
+        S2.run = full;
+        S2.anim++;
+        const token = S2.anim,
+          steps = Math.min(n, 40);
+        let k = 0;
+        const frame = () => {
+          if (token !== S2.anim) return;
+          k++;
+          s2Hist(Math.round((n * k) / steps));
+          if (k < steps) requestAnimationFrame(frame);
+          else s2Stats();
+        };
+        $("s2tiles").innerHTML = "";
+        $("s2tor").innerHTML = "";
+        requestAnimationFrame(frame);
+      }
+      function s2Hist(m) {
+        const svg = $("s2hist"),
+          run = S2.run;
+        if (!run) {
+          svg.innerHTML = `<text class="ax" x="320" y="140" text-anchor="middle">Pick a number of iterations to run the simulation.</text>`;
+          return;
+        }
+        const pr = run.profit.subarray(0, m),
+          all = run.profit;
+        let lo = Infinity,
+          hi = -Infinity;
+        for (const v of all) {
+          if (v < lo) lo = v;
+          if (v > hi) hi = v;
+        }
+        const xt = ticks(lo, hi, 7);
+        lo = Math.min(lo, xt[0]);
+        hi = Math.max(hi, xt[xt.length - 1]);
+        const bins = 40,
+          w = (hi - lo) / bins,
+          cnt = new Array(bins).fill(0);
+        for (const v of pr) cnt[Math.min(bins - 1, Math.floor((v - lo) / w))]++;
+        const L = 56,
+          R = 624,
+          T = 14,
+          B = 232,
+          x = scale(lo, hi, L, R),
+          mx = Math.max(...cnt, 1),
+          yt = ticks(0, (mx / m) * 100, 4),
+          y = scale(0, Math.max(yt[yt.length - 1], (mx / m) * 100), B, T);
+        let g = yGrid(y, L, R, yt, (t) => t + "%");
+        cnt.forEach((c, i) => {
+          if (!c) return;
+          const a = lo + i * w,
+            pct = (c / m) * 100;
+          g += `<rect class="hb" data-i="${i}" x="${x(a) + 1}" y="${y(pct)}" width="${Math.max(1, x(a + w) - x(a) - 2)}" height="${B - y(pct)}" rx="2" fill="${a + w / 2 < 0 ? "var(--s2)" : "var(--s1)"}" data-tip="${money(a)} to ${money(a + w)}<br>${num(c)} months (${pct.toFixed(1)}%)"/>`;
+        });
+        const mu = mean(pr);
+        g += `<line x1="${x(mu)}" x2="${x(mu)}" y1="${T}" y2="${B}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/><text class="dl" x="${x(mu) + 6}" y="${T + 12}">Mean ${money(mu)}</text>`;
+        g += xAxis(x, B, xt, kMoney, "Monthly profit");
+        g += `<text class="ax" x="${R}" y="${T + 12}" text-anchor="end">${num(m)} iterations</text>`;
+        svg.innerHTML = g;
+      }
+      function s2Stats() {
+        const run = S2.run,
+          pr = run.profit,
+          sorted = Float64Array.from(pr).sort(),
+          n = pr.length;
+        let loss = 0;
+        for (const v of pr) if (v < 0) loss++;
+        const se = sdev(pr) / Math.sqrt(n);
+        const t = [
+          ["Mean", money(mean(pr))],
+          ["Median", money(quant(sorted, 0.5))],
+          ["Std dev", money(sdev(pr))],
+          ["P(loss)", ((loss / n) * 100).toFixed(1) + "%"],
+          ["5th percentile", money(quant(sorted, 0.05))],
+          ["95th percentile", money(quant(sorted, 0.95))],
+        ];
+        $("s2n").textContent = `(${num(n)} iterations, mean ± ${money(1.96 * se)})`;
+        $("s2tiles").innerHTML = t.map(([k, v]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+        const inputs = [
+          ["Rides per scooter", run.R],
+          ["Demand", run.D],
+          ["Cost per ride", run.c],
+          ["Unavailable scooters", run.U],
+        ]
+          .map(([k, a]) => [k, spearman(a, pr)])
+          .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+        const L = 150,
+          R = 404,
+          x = scale(-1, 1, L, R);
+        let g = `<line class="base" x1="${x(0)}" x2="${x(0)}" y1="8" y2="${inputs.length * 34 + 8}"/>`;
+        inputs.forEach(([k, r], i) => {
+          const y0 = 12 + i * 34;
+          g += `<text class="ax" x="${L - 8}" y="${y0 + 15}" text-anchor="end">${k}</text>`;
+          g += `<rect x="${Math.min(x(0), x(r))}" y="${y0}" width="${Math.max(1, Math.abs(x(r) - x(0)))}" height="22" rx="3" fill="${i === 0 ? "var(--s1)" : "var(--ghost)"}" data-tip="${k}: rank correlation ${r.toFixed(2)}"/>`;
+          g += `<text class="ax" x="${r >= 0 ? x(r) + 5 : x(r) - 5}" y="${y0 + 15}" text-anchor="${r >= 0 ? "start" : "end"}">${r.toFixed(2)}</text>`;
+        });
+        g += `<text class="ax" x="${x(-1)}" y="160" text-anchor="middle">−1</text><text class="ax" x="${x(0)}" y="160" text-anchor="middle">0</text><text class="ax" x="${x(1)}" y="160" text-anchor="middle">+1</text>`;
+        $("s2tor").innerHTML = g;
+      }
+
+      // ---------- Station 3: flaw of averages ----------
+      const S3 = { seed: 20261021 };
+      function s3Draw() {
+        const noCap = $("s3nocap").checked,
+          N = 10000,
+          run = simulate(N, S3.seed, { noCap });
+        const p = state.price,
+          S = state.scooters,
+          Ubar = 16,
+          Rbar = state.rides.fam === "normal" ? state.rides.p.m : mean(run.R);
+        const Dbar = demandMean(p),
+          capBar = (S - Ubar) * Rbar,
+          ridesBar = noCap ? Dbar : Math.min(Dbar, capBar);
+        const atAvg = ridesBar * (p - 2.5) - FIXED,
+          avg = mean(run.profit),
+          gap = atAvg - avg;
+        $("s3hero").innerHTML =
+          `<div class="tile"><div class="k">Profit at average inputs</div><div class="v">${money(atAvg)}</div><div class="small">One spreadsheet row with R = ${num(Rbar)}, D = ${num(Dbar)}, c = $2.50, U = 16</div></div>` +
+          `<div class="tile"><div class="k">Average of simulated profits</div><div class="v">${money(avg)}</div><div class="small">${num(N)} iterations</div></div>`;
+        $("s3box").innerHTML = noCap
+          ? `<p><b>Without the capacity limit the gap is ${money(Math.abs(gap))}</b>, just simulation noise. Profit is now rides × (price − cost) − fixed cost with independent inputs, and for that kind of formula the average inputs give the average output.</p><p>Turn the limit back on to see the gap return.</p>`
+          : `<p><b>The averages overstate profit by ${money(gap)} a month.</b> Rides = MIN(demand, capacity): in months when capacity falls short you lose rides, but in months with spare capacity you can't sell more than demand. The losses aren't offset, so the average month is worse than the month of averages.</p><p>The orange dots are the months where scooters, not customers, limit the business. Tick the box to remove the limit and watch the gap disappear.</p>`;
+        // Scatter of 1,500 months
+        const M = 1500,
+          L = 64,
+          R = 624,
+          T = 14,
+          B = 330;
+        let cmax = 0,
+          dmax = 0;
+        for (let i = 0; i < M; i++) {
+          cmax = Math.max(cmax, run.cap[i]);
+          dmax = Math.max(dmax, run.D[i]);
+        }
+        const hi = Math.max(cmax, dmax) * 1.02,
+          xt = ticks(0, hi, 6),
+          yt = ticks(0, hi, 5),
+          top = Math.max(xt[xt.length - 1], yt[yt.length - 1]);
+        const x = scale(0, top, L, R),
+          y = scale(0, top, B, T);
+        let g = yGrid(y, L, R, yt, (v) => num(v / 1000) + "k");
+        g += `<line x1="${x(0)}" y1="${y(0)}" x2="${x(top)}" y2="${y(top)}" stroke="var(--muted)" stroke-dasharray="4 4"/><text class="ax" x="${x(top * 0.97)}" y="${y(top * 0.97) + 14}" text-anchor="end">demand = capacity</text>`;
+        for (let i = 0; i < M; i++) {
+          const binds = run.cap[i] < run.D[i];
+          g += `<circle cx="${x(run.cap[i]).toFixed(1)}" cy="${y(run.D[i]).toFixed(1)}" r="2.6" fill="${binds && !noCap ? "var(--s2)" : "var(--s1)"}" fill-opacity=".55" data-i="${i}"/>`;
+        }
+        const cx = x(capBar),
+          cy = y(Dbar);
+        g += `<rect x="${cx - 6}" y="${cy - 6}" width="12" height="12" fill="var(--ink)" stroke="var(--panel)" stroke-width="2" transform="rotate(45 ${cx} ${cy})"/><text class="dl" x="${cx + 10}" y="${cy - 8}">Average inputs</text>`;
+        g += xAxis(x, B, xt, (v) => num(v / 1000) + "k", "Capacity (available scooters × rides per scooter)");
+        g += `<text class="axt" x="16" y="${(T + B) / 2}" transform="rotate(-90 16 ${(T + B) / 2})" text-anchor="middle">Demand (rides)</text>`;
+        $("s3sc").innerHTML = g;
+        S3.run = run;
+      }
+
+      // ---------- Station 4: convergence ----------
+      const S4 = { runs: [], seed: newSeed(), N: 10000 };
+      function s4Add(seed) {
+        const run = simulate(S4.N, seed),
+          pr = run.profit,
+          rm = new Float64Array(S4.N),
+          hw = new Float64Array(S4.N);
+        let s = 0,
+          s2 = 0;
+        for (let i = 0; i < S4.N; i++) {
+          s += pr[i];
+          s2 += pr[i] * pr[i];
+          const n = i + 1,
+            m = s / n;
+          rm[i] = m;
+          hw[i] = n > 1 ? 1.96 * Math.sqrt(Math.max(0, (s2 - n * m * m) / (n - 1)) / n) : NaN;
+        }
+        S4.runs.push({ seed, rm, hw });
+        if (S4.runs.length > 7) S4.runs.shift();
+        s4Draw();
+      }
+      function s4Draw() {
+        const L = 72,
+          R = 604,
+          T = 22,
+          B = 270,
+          svg = $("s4ln");
+        if (!S4.runs.length) {
+          svg.innerHTML = "";
+          return;
+        }
+        const cur = S4.runs[S4.runs.length - 1],
+          lx = scale(0, Math.log10(S4.N), L, R),
+          xOf = (n) => lx(Math.log10(n));
+        const fin = cur.rm[S4.N - 1];
+        let lo = Infinity,
+          hi = -Infinity;
+        for (const r of S4.runs)
+          for (let i = 9; i < S4.N; i++) {
+            lo = Math.min(lo, r.rm[i]);
+            hi = Math.max(hi, r.rm[i]);
+          }
+        const pad = (hi - lo) * 0.08;
+        lo -= pad;
+        hi += pad;
+        const yt = ticks(lo, hi, 5),
+          y = scale(lo, hi, B, T),
+          clampY = (v) => Math.min(B, Math.max(T, y(v)));
+        let g = yGrid(y, L, R, yt, kMoney);
+        // CI band for the current run, from n = 10
+        let up = "",
+          dn = "";
+        for (let n = 10; n <= S4.N; n = Math.ceil(n * 1.03)) {
+          up += (up ? "L" : "M") + xOf(n).toFixed(1) + "," + clampY(cur.rm[n - 1] + cur.hw[n - 1]).toFixed(1);
+          dn = "L" + xOf(n).toFixed(1) + "," + clampY(cur.rm[n - 1] - cur.hw[n - 1]).toFixed(1) + dn;
+        }
+        g += `<path d="${up + dn}Z" fill="var(--s1)" opacity=".16"/>`;
+        const path = (r) => {
+          let d = "";
+          for (let n = 1; n <= S4.N; n = n < 100 ? n + 1 : Math.ceil(n * 1.01))
+            d += (d ? "L" : "M") + xOf(n).toFixed(1) + "," + clampY(r.rm[n - 1]).toFixed(1);
+          return d;
+        };
+        S4.runs.slice(0, -1).forEach((r) => {
+          g += `<path d="${path(r)}" fill="none" stroke="var(--ghost)" stroke-width="1.5"/>`;
+        });
+        g += `<path d="${path(cur)}" fill="none" stroke="var(--s1)" stroke-width="2"/>`;
+        g += `<text class="dl" x="${R - 4}" y="${clampY(fin) - 10}" text-anchor="end">${money(fin)}</text>`;
+        const xt = [1, 10, 100, 1000, 10000];
+        g += xAxis(xOf, B, xt, (v) => num(v), "Iterations (log scale)");
+        g += `<line id="s4x" x1="0" x2="0" y1="${T}" y2="${B}" stroke="var(--muted)" opacity="0"/>`;
+        svg.innerHTML = g;
+        $("s4seed").textContent = `Seed of this run: ${cur.seed}. ${S4.runs.length > 1 ? "Gray lines are earlier runs." : ""}`;
+        $("s4tab").innerHTML =
+          `<thead><tr><th>Iterations</th><th>Running mean</th><th>95% interval ±</th></tr></thead><tbody>` +
+          [100, 1000, 10000].map((n) => `<tr><td>${num(n)}</td><td>${money(cur.rm[n - 1])}</td><td>${money(cur.hw[n - 1])}</td></tr>`).join("") +
+          "</tbody>";
+      }
+
+      // ---------- Station 5: comparing prices ----------
+      const PRICES = [];
+      for (let p = 6; p <= 11.0001; p += 0.5) PRICES.push(+p.toFixed(1));
+      const S5 = { tally: { crn: {}, ind: {} }, res: null };
+      function s5Run() {
+        const n = +$("s5n").value,
+          seed = newSeed();
+        const crn = PRICES.map((p) => {
+          const r = simulate(n, seed, { price: p });
+          let loss = 0;
+          for (const v of r.profit) if (v < 0) loss++;
+          return { p, m: mean(r.profit), loss: loss / n };
+        });
+        const ind = PRICES.map((p) => ({ p, m: mean(simulate(n, newSeed(), { price: p }).profit) }));
+        const best = (a) => a.reduce((b, r) => (r.m > b.m ? r : b));
+        const bc = best(crn).p,
+          bi = best(ind).p;
+        S5.tally.crn[bc] = (S5.tally.crn[bc] || 0) + 1;
+        S5.tally.ind[bi] = (S5.tally.ind[bi] || 0) + 1;
+        S5.res = { crn, ind, bc, bi, n };
+        s5Draw();
+      }
+      function s5Draw() {
+        const { crn, ind, bc, bi } = S5.res,
+          svg = $("s5ln"),
+          L = 72,
+          R = 600,
+          T = 14,
+          B = 270;
+        const all = [...crn, ...ind].map((r) => r.m),
+          mn = Math.min(...all),
+          mx = Math.max(...all),
+          pad = (mx - mn) * 0.08,
+          yt = ticks(mn - pad, mx + pad, 5),
+          x = scale(6, 11, L, R),
+          y = scale(mn - pad, mx + pad, B, T);
+        let g = yGrid(y, L, R, yt, kMoney);
+        const line = (a, col) =>
+          `<path d="${a.map((r, i) => (i ? "L" : "M") + x(r.p).toFixed(1) + "," + y(r.m).toFixed(1)).join("")}" fill="none" stroke="${col}" stroke-width="2"/>` +
+          a.map((r) => `<circle cx="${x(r.p)}" cy="${y(r.m)}" r="4" fill="${col}" stroke="var(--panel)" stroke-width="2"/>`).join("");
+        g += line(ind, "var(--s2)") + line(crn, "var(--s1)");
+        const mark = (a, b, col) => {
+          const r = a.find((v) => v.p === b);
+          return `<circle cx="${x(r.p)}" cy="${y(r.m)}" r="8" fill="none" stroke="${col}" stroke-width="2"><title>Best: $${b.toFixed(2)}</title></circle>`;
+        };
+        g += mark(crn, bc, "var(--s1)") + mark(ind, bi, "var(--s2)");
+        g += xAxis(
+          x,
+          B,
+          PRICES.filter((_, i) => i % 2 === 0),
+          (v) => "$" + v,
+          "Price per ride"
+        );
+        g += `<line id="s5x" x1="0" x2="0" y1="${T}" y2="${B}" stroke="var(--muted)" opacity="0"/>`;
+        svg.innerHTML = g;
+        const tl = (t) =>
+          Object.entries(t)
+            .sort((a, b) => b[1] - a[1])
+            .map(([p, c]) => `$${(+p).toFixed(2)} × ${c}`)
+            .join(", ") || "—";
+        $("s5tally").innerHTML =
+          `<tbody><tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--s1);margin-right:6px"></i>Same random numbers</td><td style="text-align:left;white-space:normal">${tl(S5.tally.crn)}</td></tr><tr><td><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--s2);margin-right:6px"></i>Fresh random numbers</td><td style="text-align:left;white-space:normal">${tl(S5.tally.ind)}</td></tr></tbody>`;
+        $("s5tab").innerHTML =
+          `<thead><tr><th>Price</th><th>Mean profit</th><th>P(loss)</th></tr></thead><tbody>` +
+          crn
+            .map(
+              (r) =>
+                `<tr${r.p === bc ? ' class="best"' : ""}><td>$${r.p.toFixed(2)}</td><td>${money(r.m)}</td><td>${(r.loss * 100).toFixed(1)}%</td></tr>`
+            )
+            .join("") +
+          `</tbody>`;
+      }
+
+      // ---------- Station 6: fitting ----------
+      const S6 = { n: 60, seed: 60310, data: [], fits: null, show: { normal: true, lognormal: true, gamma: true, expon: true } };
+      function s6Sample() {
+        // Observed rides per scooter: skewed to the right (a few scooters in busy areas do far more rides).
+        const rng = mulberry32(S6.seed),
+          sl = 0.32,
+          mu = Math.log(180) - (sl * sl) / 2;
+        S6.data = Array.from({ length: S6.n }, () => Math.round(Math.exp(mu + sl * zInv(rng()))));
+        S6.fits = FAMORDER.map((f) => {
+          const F = FAMILIES[f],
+            p = F.fit(S6.data);
+          let ll = 0;
+          for (const v of S6.data) ll += Math.log(Math.max(F.pdf(p, v), 1e-300));
+          return { f, p, ll, aic: 2 * F.k - 2 * ll };
+        }).sort((a, b) => a.aic - b.aic);
+        s6Draw();
+      }
+      const msd = (r) => {
+        const m = r.f === "gamma" ? r.p.k * r.p.th : r.f === "expon" ? r.p.m : r.f === "normal" ? r.p.m : Math.exp(r.p.mu + r.p.s ** 2 / 2);
+        const sd =
+          r.f === "gamma" ? Math.sqrt(r.p.k) * r.p.th : r.f === "expon" ? r.p.m : r.f === "normal" ? r.p.sd : m * Math.sqrt(Math.exp(r.p.s ** 2) - 1);
+        return `(${m.toFixed(1)}, ${sd.toFixed(1)})`;
+      };
+      function s6Draw() {
+        const svg = $("s6h"),
+          L = 56,
+          R = 624,
+          T = 14,
+          B = 250,
+          d = S6.data;
+        const hi = Math.max(400, Math.ceil(Math.max(...d) / 50) * 50),
+          bins = 20,
+          w = hi / bins,
+          cnt = new Array(bins).fill(0);
+        d.forEach((v) => {
+          cnt[Math.min(bins - 1, Math.floor(v / w))]++;
+        });
+        const dens = cnt.map((c) => c / (d.length * w));
+        let ymax = Math.max(...dens);
+        S6.fits.forEach((r) => {
+          if (!S6.show[r.f]) return;
+          for (let v = 1; v < hi; v += hi / 200) ymax = Math.max(ymax, FAMILIES[r.f].pdf(r.p, v));
+        });
+        const x = scale(0, hi, L, R),
+          y = scale(0, ymax * 1.08, B, T);
+        let g = `<line class="base" x1="${L}" x2="${R}" y1="${B}" y2="${B}"/>`;
+        cnt.forEach((c, i) => {
+          if (c)
+            g += `<rect x="${x(i * w) + 1}" y="${y(dens[i])}" width="${x(w) - x(0) - 2}" height="${B - y(dens[i])}" rx="2" fill="var(--ghost)" opacity=".7" data-tip="${num(i * w)}–${num((i + 1) * w)} rides: ${c} scooters"/>`;
+        });
+        S6.fits
+          .slice()
+          .reverse()
+          .forEach((r) => {
+            if (!S6.show[r.f]) return;
+            let p = "";
+            for (let i = 0; i <= 240; i++) {
+              const v = Math.max(0.5, (hi * i) / 240);
+              p += (i ? "L" : "M") + x(v).toFixed(1) + "," + y(FAMILIES[r.f].pdf(r.p, v)).toFixed(1);
+            }
+            g += `<path d="${p}" fill="none" stroke="${FAMCOLOR[r.f]}" stroke-width="2"/>`;
+          });
+        g += xAxis(x, B, ticks(0, hi, 8), (v) => num(v), "Rides per scooter in a month");
+        g += `<text class="ax" x="${R}" y="${T + 10}" text-anchor="end">${d.length} scooters observed</text>`;
+        svg.innerHTML = g;
+        $("s6leg").innerHTML =
+          `<span><i style="background:var(--ghost)"></i>Observed data</span>` +
+          FAMORDER.map(
+            (f) =>
+              `<label class="chk"><input type="checkbox" data-f="${f}"${S6.show[f] ? " checked" : ""}><i class="ln" style="border-color:${FAMCOLOR[f]}"></i>${FAMILIES[f].name}</label>`
+          ).join("");
+        const best = S6.fits[0].aic;
+        $("s6tab").innerHTML =
+          `<thead><tr><th>Rank</th><th>Fit (mean, sd)</th><th>Log-lik.</th><th>AIC</th><th>Δ AIC</th></tr></thead><tbody>` +
+          S6.fits
+            .map(
+              (r, i) =>
+                `<tr${i === 0 ? ' class="best"' : ""}><td><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${FAMCOLOR[r.f]};margin-right:6px"></i>${i + 1}. ${FAMILIES[r.f].name}</td><td>${msd(r)}</td><td>${r.ll.toFixed(1)}</td><td>${r.aic.toFixed(1)}</td><td>${(r.aic - best).toFixed(1)}</td></tr>`
+            )
+            .join("") +
+          "</tbody>";
+        $("s6use").textContent = `Use the best fit (${FAMILIES[S6.fits[0].f].name}) in the model`;
+      }
+      function useFit(fit) {
+        const before = mean(simulate(10000, 777).profit);
+        state.rides = fit ? { fam: fit.f, p: { ...fit.p } } : { fam: "normal", p: { m: 180, sd: 50 } };
+        const after = mean(simulate(10000, 777).profit);
+        $("rdist").textContent = fit ? FAMILIES[fit.f].label(fit.p) + " (fitted)" : "Normal(180, 50)";
+        $("fitnote").hidden = !fit;
+        $("s6eff").textContent = fit
+          ? `Done. Mean profit at $${state.price.toFixed(2)} went from ${money(before)} to ${money(after)} (10,000 iterations, same random numbers). Every station now uses the fitted distribution.`
+          : "";
+        refresh();
+      }
+
+      // ---------- Wiring ----------
+      let active = 1;
+      function refresh() {
+        if (active === 1) s1Draw();
+        if (active === 2) {
+          s2Row();
+          if (S2.run) {
+            S2.run = null;
+            s2Run(10000);
+          } else s2Hist(0);
+        }
+        if (active === 3) s3Draw();
+        if (active === 4) {
+          S4.runs = [];
+          s4Add(S4.seed);
+        }
+        if (active === 5) {
+          S5.tally = { crn: {}, ind: {} };
+          s5Run();
+        }
+        if (active === 6) s6Draw();
+      }
+      function showStation(s) {
+        active = s;
+        document.querySelectorAll(".station").forEach((el) => {
+          el.hidden = +el.dataset.st !== s;
+        });
+        document.querySelectorAll(".tab").forEach((el) => el.setAttribute("aria-selected", String(+el.dataset.s === s)));
+        try {
+          localStorage.setItem("mcl:station", s);
+        } catch (e) {}
+        if (s === 2 && !S2.run) {
+          s2Row();
+          s2Run(1000);
+          return;
+        }
+        if (s === 6 && !S6.fits) {
+          s6Sample();
+          return;
+        }
+        refresh();
+      }
+      $("tabs").addEventListener("click", (e) => {
+        const b = e.target.closest(".tab");
+        if (b) showStation(+b.dataset.s);
+      });
+      $("price").addEventListener("input", (e) => {
+        state.price = +e.target.value;
+        $("priceOut").textContent = "$" + state.price.toFixed(2);
+      });
+      $("price").addEventListener("change", refresh);
+      $("scoot").addEventListener("input", (e) => {
+        state.scooters = +e.target.value;
+        $("scootOut").textContent = state.scooters;
+      });
+      $("scoot").addEventListener("change", refresh);
+      $("unfit").addEventListener("click", () => useFit(null));
+
+      $("s1var").addEventListener("change", () => {
+        S1.draws = [];
+        s1Draw();
+      });
+      $("s1u").addEventListener("input", (e) => {
+        $("s1uOut").textContent = (+e.target.value).toFixed(3);
+        s1Draw();
+      });
+      $("s1one").addEventListener("click", () => {
+        const u = Math.min(0.999, Math.max(0.001, Math.random()));
+        $("s1u").value = u;
+        $("s1uOut").textContent = u.toFixed(3);
+        S1.draws.push(s1Spec().inv(u));
+        s1Draw();
+      });
+      $("s1many").addEventListener("click", () => {
+        const sp = s1Spec();
+        for (let i = 0; i < 500; i++) S1.draws.push(sp.inv(Math.random()));
+        s1Draw();
+      });
+      $("s1clear").addEventListener("click", () => {
+        S1.draws = [];
+        s1Draw();
+      });
+
+      $("s2f9").addEventListener("click", () => {
+        S2.u = null;
+        s2Row();
+      });
+      document.querySelectorAll(".s2run").forEach((b) => b.addEventListener("click", () => s2Run(+b.dataset.n)));
+
+      $("s3nocap").addEventListener("change", s3Draw);
+      $("s3sc").addEventListener("pointermove", (e) => {
+        const c = e.target.closest("circle[data-i]");
+        if (!c || !S3.run) return;
+        const i = +c.dataset.i,
+          r = S3.run;
+        $("s3read").textContent =
+          `Month ${i + 1}: demand ${num(r.D[i])}, capacity ${num(r.cap[i])} (${num(state.scooters - r.U[i])} scooters × ${num(r.R[i], 1)}), profit ${money(r.profit[i])}`;
+      });
+
+      $("s4new").addEventListener("click", () => {
+        S4.seed = newSeed();
+        s4Add(S4.seed);
+      });
+      $("s4same").addEventListener("click", () => s4Add(S4.seed));
+      $("s4clear").addEventListener("click", () => {
+        S4.runs = S4.runs.slice(-1);
+        s4Draw();
+      });
+      $("s4ln").addEventListener("pointermove", (e) => {
+        if (!S4.runs.length) return;
+        const svg = $("s4ln"),
+          pt = svgPoint(svg, e),
+          L = 72,
+          R = 604;
+        const n = Math.round(10 ** (((Math.min(R, Math.max(L, pt.x)) - L) / (R - L)) * Math.log10(S4.N))),
+          cur = S4.runs[S4.runs.length - 1];
+        const xl = $("s4x");
+        if (xl) {
+          const xx = L + (Math.log10(n) / Math.log10(S4.N)) * (R - L);
+          xl.setAttribute("x1", xx);
+          xl.setAttribute("x2", xx);
+          xl.setAttribute("opacity", 0.6);
+        }
+        $("s4read").textContent = `After ${num(n)} iterations: mean ${money(cur.rm[n - 1])}${n > 1 ? ` ± ${money(cur.hw[n - 1])}` : ""}`;
+      });
+      $("s4ln").addEventListener("pointerleave", () => {
+        const xl = $("s4x");
+        if (xl) xl.setAttribute("opacity", 0);
+      });
+
+      $("s5run").addEventListener("click", s5Run);
+      $("s5n").addEventListener("change", () => {
+        S5.tally = { crn: {}, ind: {} };
+        s5Run();
+      });
+      $("s5ln").addEventListener("pointermove", (e) => {
+        if (!S5.res) return;
+        const pt = svgPoint($("s5ln"), e),
+          x = scale(6, 11, 72, 600);
+        const p = Math.min(11, Math.max(6, Math.round((((pt.x - 72) / (600 - 72)) * 5 + 6) * 2) / 2)),
+          i = PRICES.indexOf(p);
+        const xl = $("s5x");
+        if (xl) {
+          xl.setAttribute("x1", x(p));
+          xl.setAttribute("x2", x(p));
+          xl.setAttribute("opacity", 0.6);
+        }
+        $("s5read").textContent = `$${p.toFixed(2)}: same random numbers ${money(S5.res.crn[i].m)}, fresh random numbers ${money(S5.res.ind[i].m)}`;
+      });
+      $("s5ln").addEventListener("pointerleave", () => {
+        const xl = $("s5x");
+        if (xl) xl.setAttribute("opacity", 0);
+      });
+
+      document.querySelectorAll(".s6n").forEach((b) =>
+        b.addEventListener("click", () => {
+          document.querySelectorAll(".s6n").forEach((x) => x.classList.toggle("on", x === b));
+          S6.n = +b.dataset.n;
+          s6Sample();
+        })
+      );
+      $("s6new").addEventListener("click", () => {
+        S6.seed = newSeed();
+        s6Sample();
+      });
+      $("s6leg").addEventListener("change", (e) => {
+        const f = e.target.dataset.f;
+        if (f) {
+          S6.show[f] = e.target.checked;
+          s6Draw();
+        }
+      });
+      $("s6use").addEventListener("click", () => useFit(S6.fits[0]));
+
+      // Shared hover tooltips for marks carrying data-tip
+      document.addEventListener("pointermove", (e) => {
+        const t = e.target.closest && e.target.closest("[data-tip]");
+        if (t) showTip(e, t.dataset.tip);
+        else hideTip();
+      });
+
+      let start = 1;
+      try {
+        start = +localStorage.getItem("mcl:station") || 1;
+      } catch (e) {}
+      showStation(start >= 1 && start <= 6 ? start : 1);
+    </script>
+  </body>
+</html>
