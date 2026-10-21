@@ -8,6 +8,9 @@ courses:
       - title: "MBA 60310: Decision Modeling and Analytics"
         level: "MBA"
         years: "2026"
+        links:
+          - title: "LP Geometry Lab"
+            url: "/lp-geometry-lab/"
 
   - institution: "University of Texas at Dallas"
     courses:

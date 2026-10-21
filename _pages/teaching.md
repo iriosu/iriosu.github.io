@@ -12,8 +12,9 @@ nav_order: 6
 ## {{ institution.institution }}
 
 {% for course in institution.courses %}
-**{{ course.title }}** ({{ course.level }}{% if course.role %}, {{ course.role }}{% endif %})  
+**{{ course.title }}** ({{ course.level }}{% if course.role %}, {{ course.role }}{% endif %}){% if course.links %} · Interactive tools: {% for link in course.links %}[{{ link.title }}]({{ link.url | relative_url }}){% unless forloop.last %}, {% endunless %}{% endfor %}{% endif %}  
 {% endfor %}
 
 ---
+
 {% endfor %}
