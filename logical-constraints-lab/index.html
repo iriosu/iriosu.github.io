@@ -94,6 +94,19 @@
         margin: 0;
         text-wrap: balance;
       }
+      .ready {
+        display: inline-block;
+        margin-top: 10px;
+        font-weight: 600;
+        color: var(--accent);
+        text-decoration: none;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        padding: 4px 12px;
+      }
+      .ready:hover {
+        background: var(--accent-soft);
+      }
       header p {
         margin: 4px 0 0;
         color: var(--muted);
@@ -527,6 +540,7 @@
           Write the constraints you think capture a requirement. The lab checks every combination of the yes/no decisions, tells you whether your
           constraints are right, too strict or too loose, and shows exactly which cases break. MBA 60310, Discrete Optimization.
         </p>
+        <a class="ready" href="../logical-constraints-practice/">Feeling ready? Try the multiple-choice practice →</a>
       </header>
 
       <section class="top">
@@ -1443,6 +1457,9 @@
               `<p class="verdict ok">Correct</p><p>Your constraints allow exactly the combinations the rule allows${ex.dontCare ? " (rows marked “either” don't matter)" : ""}.</p>`
             );
             fb.push(`<div class="why ok">${esc(ex.why)}</div>`);
+            fb.push(
+              `<p class="small">Got the idea? Test yourself with the <a href="../logical-constraints-practice/">multiple-choice practice</a>.</p>`
+            );
           } else {
             fb.push(
               `<p class="verdict ${L && S ? "bad" : L ? "bad" : "warn"}">${L && S ? "Too strict and too loose" : L ? "Too loose" : "Too strict"}</p>`
