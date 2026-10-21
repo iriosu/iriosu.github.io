@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive checker for modeling logical requirements with binary variables, for MBA 60310." />
+    <title>Logical Constraints Lab</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap"
+    />
+    <style>
+      /* Layout: exercise and editor left, verdict right; truth table (or X-range strip) and portfolio effect below. */
+      :root {
+        --bg: #f4f6f9;
+        --panel: #ffffff;
+        --ink: #172031;
+        --muted: #5a6577;
+        --line: #d8dee7;
+        --grid: #e9edf2;
+        --accent: #1f4fa3;
+        --accent-soft: #e3ebf8;
+        --good: #1b7a48;
+        --good-soft: #dcefe4;
+        --bad: #b3261e;
+        --bad-soft: #f8dedb;
+        --warn: #9a6a00;
+        --warn-soft: #f6ebcf;
+        --f-display: "IBM Plex Serif", Georgia, serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141b;
+          --panel: #161d27;
+          --ink: #e5eaf1;
+          --muted: #98a4b5;
+          --line: #2a3442;
+          --grid: #1e2732;
+          --accent: #8ab0ff;
+          --accent-soft: #1d2a44;
+          --good: #5fcf8f;
+          --good-soft: #17352a;
+          --bad: #ff8a80;
+          --bad-soft: #43201f;
+          --warn: #e6c25c;
+          --warn-soft: #3a3015;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141b;
+        --panel: #161d27;
+        --ink: #e5eaf1;
+        --muted: #98a4b5;
+        --line: #2a3442;
+        --grid: #1e2732;
+        --accent: #8ab0ff;
+        --accent-soft: #1d2a44;
+        --good: #5fcf8f;
+        --good-soft: #17352a;
+        --bad: #ff8a80;
+        --bad-soft: #43201f;
+        --warn: #e6c25c;
+        --warn-soft: #3a3015;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 20px 40px;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      header h1 {
+        font-family: var(--f-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+        text-wrap: balance;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        max-width: 78ch;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .panel h2 {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .top {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      .bottom {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .top,
+        .bottom {
+          grid-template-columns: 1fr;
+        }
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .toolbar select {
+        flex: 1 1 240px;
+        min-width: 0;
+      }
+      select,
+      textarea,
+      input[type="range"] {
+        font: inherit;
+        color: var(--ink);
+      }
+      select {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 4px 6px;
+      }
+      .rule {
+        font-family: var(--f-display);
+        font-size: 1.15rem;
+        line-height: 1.45;
+        margin: 0 0 6px;
+      }
+      .rule .num {
+        font-family: var(--f-body);
+        font-size: 0.78rem;
+        color: var(--muted);
+        display: block;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .context {
+        font-size: 0.86rem;
+        color: var(--muted);
+        margin: 0 0 12px;
+      }
+      .context b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      textarea {
+        width: 100%;
+        min-height: 6.2em;
+        resize: vertical;
+        font-family: var(--f-mono);
+        font-size: 0.95rem;
+        line-height: 1.55;
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+        align-items: center;
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--panel);
+        font-weight: 600;
+      }
+      button.primary:hover {
+        color: var(--panel);
+        filter: brightness(1.08);
+      }
+      button.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .syntax {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin: 6px 0 0;
+      }
+      .syntax code,
+      .mono {
+        font-family: var(--f-mono);
+      }
+      .attempts {
+        margin-top: 14px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        font-family: var(--f-mono);
+        font-size: 0.8rem;
+        padding: 2px 8px;
+        white-space: pre-line;
+        text-align: left;
+      }
+      .small {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .hint {
+        margin-top: 12px;
+        font-size: 0.88rem;
+        padding: 8px 10px;
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+        border-radius: 0 6px 6px 0;
+      }
+      .verdict {
+        font-family: var(--f-display);
+        font-size: 1.35rem;
+        font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .verdict.ok {
+        color: var(--good);
+      }
+      .verdict.bad {
+        color: var(--bad);
+      }
+      .verdict.warn {
+        color: var(--warn);
+      }
+      .verdict.info {
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 1.1rem;
+      }
+      .fb {
+        display: grid;
+        gap: 10px;
+        font-size: 0.92rem;
+      }
+      .fb p {
+        margin: 0;
+      }
+      .fb ul {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 6px;
+      }
+      .why {
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: var(--warn-soft);
+      }
+      .why.ok {
+        background: var(--good-soft);
+      }
+      .err {
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: var(--bad-soft);
+      }
+      .counts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .pill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+      }
+      .pill.ok {
+        color: var(--good);
+      }
+      .pill.bad {
+        color: var(--bad);
+      }
+      .pill.warn {
+        color: var(--warn);
+      }
+      .pill.mute {
+        color: var(--muted);
+      }
+      .tablewrap {
+        overflow-x: auto;
+        max-height: 560px;
+        overflow-y: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.85rem;
+        font-variant-numeric: tabular-nums;
+      }
+      th,
+      td {
+        padding: 5px 8px;
+        text-align: center;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        background: var(--panel);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      td {
+        font-family: var(--f-mono);
+      }
+      td.txt,
+      th.txt {
+        text-align: left;
+        font-family: var(--f-body);
+      }
+      td.zero {
+        color: var(--muted);
+      }
+      tr.loose td {
+        background: var(--bad-soft);
+      }
+      tr.strict td {
+        background: var(--warn-soft);
+      }
+      td.st-loose {
+        color: var(--bad);
+        font-weight: 600;
+      }
+      td.st-strict {
+        color: var(--warn);
+        font-weight: 600;
+      }
+      td.st-ok {
+        color: var(--good);
+      }
+      .tt-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .seg {
+        display: inline-flex;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .seg button {
+        border: 0;
+        border-radius: 0;
+      }
+      .data th,
+      .data td {
+        text-align: right;
+      }
+      .data th:first-child,
+      .data td:first-child {
+        text-align: left;
+      }
+      .tag {
+        font-family: var(--f-body);
+        font-size: 0.7rem;
+        padding: 0 6px;
+        border-radius: 4px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        margin-left: 3px;
+      }
+      .picks {
+        display: grid;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+      .pick {
+        display: grid;
+        grid-template-columns: 7.5em 1fr;
+        gap: 4px 10px;
+        align-items: baseline;
+        padding: 8px 0;
+        border-top: 1px solid var(--line);
+      }
+      .pick:first-child {
+        border-top: 0;
+      }
+      .pick .lbl {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .pick .proj {
+        font-family: var(--f-mono);
+      }
+      .pick .num {
+        color: var(--muted);
+        font-size: 0.82rem;
+        grid-column: 2;
+      }
+      svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .axis {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 12px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 14px;
+        height: 10px;
+        border-radius: 2px;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      .readout {
+        font-family: var(--f-mono);
+        font-size: 0.82rem;
+        color: var(--muted);
+        min-height: 1.4em;
+        margin-top: 6px;
+      }
+      .mrow {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        margin-top: 12px;
+        font-size: 0.88rem;
+      }
+      .mrow output {
+        font-family: var(--f-mono);
+        min-width: 6ch;
+        text-align: right;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+      .notes {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Logical Constraints Lab</h1>
+        <p>
+          Write the constraints you think capture a requirement. The lab checks every combination of the yes/no decisions, tells you whether your
+          constraints are right, too strict or too loose, and shows exactly which cases break. MBA 60310, Discrete Optimization.
+        </p>
+      </header>
+
+      <section class="top">
+        <div class="panel">
+          <div class="toolbar">
+            <label for="ex" class="small">Requirement</label>
+            <select id="ex"></select>
+            <button id="prev" type="button" aria-label="Previous requirement">‹</button>
+            <button id="next" type="button" aria-label="Next requirement">›</button>
+          </div>
+          <p class="rule" id="rule"></p>
+          <p class="context" id="context"></p>
+          <label for="editor" class="small">Your constraints (one per line)</label>
+          <textarea id="editor" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+          <p class="syntax" id="syntax"></p>
+          <div class="actions">
+            <button id="check" class="primary" type="button">Check</button>
+            <button id="hintbtn" type="button">Hint</button>
+            <button id="answer" type="button">Show an answer</button>
+            <button id="clear" type="button">Clear</button>
+          </div>
+          <div class="hint" id="hint" hidden></div>
+          <div class="attempts" id="attempts">
+            <h2>Test a common attempt</h2>
+            <div class="chips" id="chips"></div>
+          </div>
+        </div>
+
+        <div class="panel" aria-live="polite">
+          <h2>Verdict</h2>
+          <div class="fb" id="feedback"></div>
+        </div>
+      </section>
+
+      <section class="bottom">
+        <div class="panel" id="tt-panel">
+          <div class="tt-tools">
+            <h2 style="margin: 0">Every combination, checked</h2>
+            <div class="seg" id="filter">
+              <button type="button" data-f="all">All rows</button>
+              <button type="button" data-f="diff">Disagreements</button>
+              <button type="button" data-f="yours">Allowed by yours</button>
+            </div>
+          </div>
+          <div class="counts" id="counts"></div>
+          <div class="tablewrap" style="margin-top: 10px"><table id="tt"></table></div>
+        </div>
+
+        <div class="panel" id="strip-panel" hidden>
+          <h2>Every value of X, checked</h2>
+          <div class="counts" id="scounts"></div>
+          <svg
+            id="strip"
+            viewBox="0 0 640 162"
+            role="img"
+            aria-label="For Y = 0 and Y = 1, which values of X the rule and your constraints allow"
+          ></svg>
+          <div class="legend">
+            <span><i style="background: var(--good)"></i>Allowed by both</span>
+            <span><i style="background: var(--grid); outline: 1px solid var(--line)"></i>Forbidden by both</span>
+            <span><i style="background: var(--bad)"></i>Too loose: you allow, rule forbids</span>
+            <span><i style="background: var(--warn)"></i>Too strict: rule allows, you forbid</span>
+          </div>
+          <div class="readout" id="readout">Hover over the strip to check a point.</div>
+          <div class="mrow" id="mrow" hidden>
+            <label for="mslider" class="small">Value of M</label>
+            <input id="mslider" type="range" min="0" max="1000" step="10" value="500" />
+            <output id="mout">500</output>
+          </div>
+        </div>
+
+        <div class="panel" id="side-panel">
+          <h2 id="side-title">Effect on the portfolio</h2>
+          <div id="side"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // ---------- Data: Capital Investment case (amounts in $1000s) ----------
+      const PROJECTS = [
+        { n: "A", profit: 1598, cap: 4058, he: 1, na: 0, eu: 1 },
+        { n: "B", profit: 1235, cap: 12182, he: 0, na: 1, eu: 0 },
+        { n: "C", profit: 1125, cap: 4405, he: 1, na: 1, eu: 0 },
+        { n: "D", profit: 611, cap: 3323, he: 1, na: 0, eu: 0 },
+        { n: "E", profit: 417, cap: 2203, he: 0, na: 1, eu: 0 },
+        { n: "F", profit: 1448, cap: 3847, he: 1, na: 0, eu: 1 },
+        { n: "G", profit: 1056, cap: 5379, he: 0, na: 1, eu: 0 },
+        { n: "H", profit: 765, cap: 2698, he: 0, na: 1, eu: 0 },
+      ];
+      const BUDGET = 20000,
+        BONUS = 500,
+        XMAX = 500;
+      const PNAMES = PROJECTS.map((p) => p.n);
+      const NONLIN = "Two decisions multiplied together is not linear, so Solver's linear engine (Simplex LP) can't use it.";
+
+      // ---------- Exercises ----------
+      // kind 'bin': rule(a) -> true (allowed), false (forbidden) or null (either is fine).
+      // kind 'mix': X is a whole number from 0 to 500 and Y is binary; rule(x, y).
+      const EX = [
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B", "C"],
+          title: "Select at least 2 of A, B and C.",
+          rule: (a) => a.A + a.B + a.C >= 2,
+          answer: "A + B + C >= 2",
+          why: "Each binary counts 1 when its project is selected, so the sum counts how many of the three you picked.",
+          hint: "Add up the three binaries. What does the sum count?",
+          mistakes: [
+            { c: "A + B + C = 2", why: "“At least 2” also allows all three. An equality forces exactly two." },
+            { c: "A + B + C > 1", why: "With 0/1 variables, “> 1” and “≥ 2” mean the same thing, but you have to write the ≥ version for Solver." },
+            { c: "A + B >= 1\nB + C >= 1", why: "Covering pairs isn't the same as counting: selecting only B satisfies both lines." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B", "C"],
+          title: "Select no more than 1 of A, B and C.",
+          rule: (a) => a.A + a.B + a.C <= 1,
+          answer: "A + B + C <= 1",
+          why: "The sum counts selected projects, and capping it at 1 allows none or exactly one.",
+          hint: "Same counting idea as “at least 2”, with the inequality the other way.",
+          mistakes: [
+            { c: "A + B + C = 1", why: "“No more than 1” also allows selecting none of them. The equality forces exactly one." },
+            { c: "A + B <= 1", why: "This only keeps A and B apart. C can still be selected together with A or B." },
+            { c: "A + B + C <= 2", why: "This allows two of the three." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B"],
+          title: "If you select A, you must also select B.",
+          rule: (a) => !a.A || a.B,
+          answer: "A <= B",
+          why: "If A = 1 the constraint reads 1 ≤ B, so B must be 1. If A = 0 it reads 0 ≤ B, which is always true, so B is free.",
+          hint: "Check the four combinations of A and B. Only one of them breaks the rule: which? Find a ≤ that rules out just that one.",
+          mistakes: [
+            { c: "B <= A", why: "This is the reverse implication: it says that if you select B you must select A." },
+            { c: "A = B", why: "Too strong. It also forbids selecting B on its own, which the rule allows." },
+            { c: "A + B >= 1", why: "This says “select A or B (or both)”. It still allows A without B, and it forbids selecting neither." },
+            { c: "A + B = 2", why: "This forces both projects into every portfolio." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B"],
+          title: "If you don't select A, you must select B.",
+          rule: (a) => a.A || a.B,
+          answer: "1 - A <= B",
+          why: "1 − A is 1 exactly when A is not selected, so it plays the role of “not A”. Then “if not A then B” is (1 − A) ≤ B, the same as A + B ≥ 1.",
+          hint: "Write a binary that equals 1 when A is NOT selected, then use the “if … then” pattern.",
+          mistakes: [
+            { c: "A + B = 1", why: "Too strict: it forbids selecting both A and B, which the rule allows." },
+            { c: "B <= 1 - A", why: "This says “if B then not A”: the two can never go together. That's a different rule." },
+            { c: "A <= B", why: "That's “if A then B”. The requirement is about what happens when A is NOT selected." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B"],
+          title: "Select A or B, but not both.",
+          rule: (a) => a.A + a.B === 1,
+          answer: "A + B = 1",
+          why: "Exactly one of the two binaries is 1, so the sum must be exactly 1.",
+          hint: "How many of the two should be selected? Turn that into a sum.",
+          mistakes: [
+            { c: "A + B >= 1", why: "This allows selecting both." },
+            { c: "A + B <= 1", why: "This allows selecting neither." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B", "C"],
+          title: "If you select A or C, you must select B.",
+          rule: (a) => !(a.A || a.C) || a.B,
+          answer: "A <= B\nC <= B",
+          why: "One “if … then” constraint for each trigger. The single constraint (A + C)/2 ≤ B is equivalent: if either A or C is 1, the left side is positive, so B must be 1.",
+          hint: "Split it into two rules: “if A then B” and “if C then B”.",
+          mistakes: [
+            { c: "A + C <= B", why: "Too strict: with B = 1 it still forbids selecting A and C together (2 ≤ 1 fails). Dividing by 2 fixes it." },
+            { c: "A + C - 1 <= B", why: "This only forces B when both A and C are selected. That's the AND version, not the OR version." },
+            { c: "C <= B", why: "This handles C but forgets A." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B", "C"],
+          title: "If you select both A and C, you must select B.",
+          rule: (a) => !(a.A && a.C) || a.B,
+          answer: "A + C - 1 <= B",
+          why: "A + C − 1 is 1 only when both are selected; otherwise it is 0 or −1 and B is free.",
+          hint: "Build an expression from A and C that equals 1 when both are selected and is at most 0 otherwise.",
+          mistakes: [
+            { c: "(A + C)/2 <= B", why: "That's the OR version from the cheat sheet: it forces B even when only one of A or C is selected." },
+            { c: "A + C <= B", why: "Too strict: when A = C = 1 it needs B ≥ 2, which is impossible, so A and C could never be selected together." },
+            { c: "A*C <= B", why: "The idea is right, but the product isn't linear. A + C − 1 ≤ B does the same job with a linear constraint." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B", "C"],
+          title: "If you select B, you must also select A or C (or both).",
+          rule: (a) => !a.B || a.A || a.C,
+          answer: "B <= A + C",
+          why: "If B = 1 the right side must be at least 1, so at least one of A or C is selected. If B = 0 the constraint is always true.",
+          hint: "Put B on the left. What has to be at least 1 on the right?",
+          mistakes: [
+            { c: "B <= A\nB <= C", why: "Too strict: this needs both A and C whenever B is selected." },
+            { c: "2*B <= A + C", why: "Too strict: this also needs both A and C whenever B is selected." },
+            { c: "B <= A", why: "This only accepts A as the partner, never C alone." },
+          ],
+        },
+        {
+          group: "Cheat-sheet patterns",
+          kind: "bin",
+          vars: ["A", "B", "C"],
+          title: "You can select A only if you also select B and C.",
+          rule: (a) => !a.A || (a.B && a.C),
+          answer: "A <= B\nA <= C",
+          why: "“A only if B and C” is “if A then B” plus “if A then C”. The single constraint 2A ≤ B + C is equivalent.",
+          hint: "Split it into two “if A then …” constraints.",
+          mistakes: [
+            { c: "A <= B + C", why: "Too loose: this only needs one of B or C." },
+            { c: "A + B + C >= 3", why: "This forces all three projects into every portfolio." },
+            { c: "A <= B*C", why: "The idea is right, but the product isn't linear. Use two constraints instead." },
+          ],
+        },
+
+        {
+          group: "Capital Investment case",
+          kind: "bin",
+          vars: ["B", "C", "E", "G", "H"],
+          q: "Question 4",
+          title: "Select at least 4 projects from North America.",
+          rule: (a) => a.B + a.C + a.E + a.G + a.H >= 4,
+          answer: "B + C + E + G + H >= 4",
+          why: "Add the binaries of the North American projects (B, C, E, G, H). The sum counts how many of them you picked.",
+          hint: "Which projects are in North America? Count them with a sum.",
+          mistakes: [
+            { c: "B + C + E + G + H = 4", why: "“At least 4” also allows all five. The equality forces exactly four." },
+            { c: "A + B + C + D + E + F + G + H >= 4", why: "This counts every project, so any four projects from anywhere satisfy it." },
+            { c: "B + C + E + G + H <= 4", why: "The inequality points the wrong way: this caps North American projects at four." },
+            { c: "B + C + E + G + H > 3", why: null },
+          ],
+        },
+        {
+          group: "Capital Investment case",
+          kind: "bin",
+          vars: ["A", "C", "D", "F"],
+          q: "Question 5",
+          title: "Select no more than 2 high-end projects.",
+          rule: (a) => a.A + a.C + a.D + a.F <= 2,
+          answer: "A + C + D + F <= 2",
+          why: "The high-end projects are A, C, D and F. Their sum counts how many you picked.",
+          hint: "Which projects are high-end? Count them and cap the count.",
+          mistakes: [
+            { c: "A + C + D + F = 2", why: "“No more than 2” also allows zero or one high-end project." },
+            { c: "A + C + D + F >= 2", why: "The inequality points the wrong way: this demands at least two high-end projects." },
+            { c: "A + C + D + F < 3", why: null },
+          ],
+        },
+        {
+          group: "Capital Investment case",
+          kind: "bin",
+          vars: ["A", "B"],
+          q: "Question 6",
+          title: "If you select project A, you should also select project B.",
+          rule: (a) => !a.A || a.B,
+          answer: "A <= B",
+          why: "If A = 1 the constraint forces B = 1. If A = 0 it reads 0 ≤ B, so B is free.",
+          hint: "Of the four combinations of A and B, only one breaks the rule.",
+          mistakes: [
+            { c: "B <= A", why: "This is the reverse: it says that if you select B you must select A." },
+            { c: "A = B", why: "Too strong. It also forbids B on its own, which the rule allows." },
+            { c: "A + B >= 1", why: "This says “select A or B”. It still allows A without B." },
+          ],
+        },
+        {
+          group: "Capital Investment case",
+          kind: "bin",
+          vars: ["B", "C"],
+          q: "Question 7",
+          title: "Projects B and C are complements: select both of them or neither.",
+          rule: (a) => a.B === a.C,
+          answer: "B = C",
+          why: "“Both or neither” means the two binaries always take the same value. Writing B ≤ C and C ≤ B (both directions) is equivalent.",
+          hint: "This is “if B then C” and “if C then B” at the same time.",
+          mistakes: [
+            { c: "B <= C", why: "Only one direction: it allows selecting C without B." },
+            { c: "B + C = 2", why: "This forces both into every portfolio; “neither” is no longer possible." },
+            { c: "B + C = 1", why: "This is the opposite rule: exactly one of the two." },
+          ],
+        },
+        {
+          group: "Capital Investment case",
+          kind: "bin",
+          vars: ["A", "F", "B"],
+          q: "Question 8",
+          title: "If you select any project from Europe, you should also select project B.",
+          rule: (a) => !(a.A || a.F) || a.B,
+          answer: "A <= B\nF <= B",
+          why: "The European projects are A and F, so write one “if … then B” for each. The single constraint A + F ≤ 2B is equivalent.",
+          hint: "Which projects are in Europe? Each one on its own should force B.",
+          mistakes: [
+            { c: "A + F <= B", why: "Too strict: even with B selected it forbids picking both European projects (2 ≤ 1 fails)." },
+            {
+              c: "A + F - 1 <= B",
+              why: "This only forces B when both A and F are selected. Selecting just one European project should already force B.",
+            },
+            { c: "F <= B", why: "This handles F but forgets A, which is also in Europe." },
+          ],
+        },
+        {
+          group: "Capital Investment case",
+          kind: "bin",
+          vars: ["A", "C", "D", "F", "Z"],
+          q: "Question 9",
+          bonus: true,
+          title: "If you pick all the high-end projects, you earn an extra $500 profit.",
+          extra:
+            'Use a new binary <b>Z</b> (1 = we earn the bonus). The objective already includes <span class="mono">+ 500·Z</span>; write the constraints that link Z to the projects.',
+          rule: (a) => {
+            const all = a.A && a.C && a.D && a.F;
+            if (a.Z) return !!all;
+            return all ? null : true;
+          },
+          answer: "Z <= A\nZ <= C\nZ <= D\nZ <= F",
+          why: "Z can only be 1 when A, C, D and F are all selected. Because we maximize and the bonus is positive, Solver sets Z = 1 whenever it can, so nothing has to force Z up. The single constraint 4Z ≤ A + C + D + F is equivalent.",
+          hint: "The bonus is something Solver wants. Your job is to stop Z = 1 unless every high-end project is selected.",
+          dontCare:
+            "Rows where all four are selected but Z = 0 are marked “either”: a maximizing Solver never stops there, so it doesn't matter whether you allow them.",
+          mistakes: [
+            { c: "Z <= A + C + D + F", why: "Too loose: Z = 1 as soon as any one high-end project is selected." },
+            {
+              c: "Z >= A + C + D + F - 3",
+              why: "This forces Z = 1 when all four are selected, but never stops Z = 1 otherwise, so a maximizing Solver claims the bonus for free.",
+            },
+            { c: "Z = A*C*D*F", why: "Logically right, but the product isn't linear. Use one “Z ≤ project” constraint per high-end project." },
+          ],
+        },
+
+        {
+          group: "Yes/no decisions that control a quantity (big M)",
+          kind: "mix",
+          title: "If we don't set up the line (Y = 0), we can't produce anything.",
+          extra: "Equivalently: if we produce (X &gt; 0), we must set up the line and pay its fixed cost.",
+          rule: (x, y) => y === 1 || x === 0,
+          answer: "X <= 500*Y",
+          why: "When Y = 0 the right side is 0, so X = 0. When Y = 1 it is 500, the most X can ever be, so the constraint never gets in the way. Any M ≥ 500 is logically correct, but the smallest valid M is best for Solver.",
+          hint: "Try X ≤ M·Y and drag the M slider. How large must M be so that Y = 1 never limits production?",
+          mistakes: [
+            { c: "X <= Y", why: "M = 1 is far too small: with the line set up you could still produce only 1 unit." },
+            { c: "X <= 100*Y", why: "M = 100 is too small: it cuts off production between 101 and 500 units even with the line set up." },
+            { c: "X >= 500*Y", why: "Wrong direction: this forces full production whenever the line is set up, and allows production without it." },
+            { c: "X*(1 - Y) = 0", why: NONLIN },
+          ],
+        },
+        {
+          group: "Yes/no decisions that control a quantity (big M)",
+          kind: "mix",
+          title: "If we set up the line (Y = 1), we must produce at least 100 units. If we don't, we produce nothing.",
+          rule: (x, y) => (y ? x >= 100 : x === 0),
+          answer: "X >= 100*Y\nX <= 500*Y",
+          why: "Two jobs, two constraints. X ≥ 100Y sets the minimum lot when Y = 1 (and reads X ≥ 0 when Y = 0). X ≤ 500Y shuts production off when Y = 0.",
+          hint: "One constraint for the minimum when Y = 1, another to force X = 0 when Y = 0.",
+          mistakes: [
+            { c: "X >= 100", why: "Too strict: the minimum applies even when the line isn't set up, so producing nothing becomes impossible." },
+            { c: "X >= 100*Y", why: "Half of it: the minimum is right, but nothing stops production when Y = 0." },
+            { c: "X >= 100*Y\nX <= 100*Y", why: "Too strict: this pins production at exactly 100 whenever the line is set up." },
+          ],
+        },
+        {
+          group: "Yes/no decisions that control a quantity (big M)",
+          kind: "mix",
+          title: "If we use the small machine (Y = 1), we can produce at most 150 units.",
+          extra: "With the large machine (Y = 0) we can produce up to 500.",
+          rule: (x, y) => (y ? x <= 150 : true),
+          answer: "X <= 150 + 350*(1 - Y)",
+          why: "When Y = 1 the right side is 150. When Y = 0 it is 150 + 350 = 500, which never binds. The “(1 − Y)” switches the extra room on only when Y = 0.",
+          hint: "Start from X ≤ 150 and add a term that relaxes it by enough when Y = 0.",
+          mistakes: [
+            { c: "X <= 150*Y", why: "Too strict: with the large machine (Y = 0) it forces X = 0." },
+            { c: "X <= 150", why: "Too strict: the limit applies even with the large machine." },
+            { c: "X <= 150 + 100*(1 - Y)", why: "The relaxation is too small: with the large machine production stops at 250 instead of 500." },
+          ],
+        },
+        {
+          group: "Yes/no decisions that control a quantity (big M)",
+          kind: "mix",
+          title: "If we produce more than 200 units, we must hire a supervisor (Y = 1).",
+          extra: "Hiring a supervisor when production is lower is allowed, just not required.",
+          rule: (x, y) => (x > 200 ? y === 1 : true),
+          answer: "X - 200 <= 300*Y",
+          why: "X − 200 is positive exactly when X > 200. When Y = 0 the constraint reads X ≤ 200; when Y = 1 it reads X ≤ 500, which never binds. Because X is a whole number, “more than 200” is the same as “at least 201”, so no ε is needed.",
+          hint: "This is “if (something) then Y = 1”. Write it the other way around: if Y = 0, then X can't exceed 200.",
+          mistakes: [
+            { c: "X <= 200*Y", why: "Too strict: without a supervisor nothing can be produced, and with one production still stops at 200." },
+            { c: "X - 200 <= Y", why: "M = 1 is too small: with a supervisor you could still produce only 201 units." },
+            { c: "X >= 200*Y", why: "Wrong direction: this says “if we hire, produce at least 200”, and never forces the hire." },
+          ],
+        },
+        {
+          group: "Yes/no decisions that control a quantity (big M)",
+          kind: "mix",
+          title: "Either produce a small batch (X ≤ 100, Y = 0) or a large one (X ≥ 300, Y = 1).",
+          extra: "Anything between 101 and 299 units is not allowed.",
+          rule: (x, y) => (y ? x >= 300 : x <= 100),
+          answer: "X <= 100 + 400*Y\nX >= 300*Y",
+          why: "Y switches which constraint is active. When Y = 0: X ≤ 100 and X ≥ 0. When Y = 1: X ≤ 500 (never binds) and X ≥ 300.",
+          hint: "Write the two conditions separately and attach a big-M term to each, so each one only bites for its own value of Y.",
+          mistakes: [
+            {
+              c: "X <= 100\nX >= 300",
+              why: "Both at once is impossible: no value of X satisfies them, so the model is infeasible. Y has to switch between them.",
+            },
+            { c: "X <= 100 + 400*Y", why: "Half of it: when Y = 1 nothing enforces X ≥ 300." },
+            { c: "X <= 100 + 400*Y\nX >= 300", why: "The X ≥ 300 part is missing its Y, so it applies even to the small batch." },
+          ],
+        },
+
+        {
+          group: "Sandbox",
+          kind: "bin",
+          vars: [],
+          sandbox: true,
+          title: "Free play: write any constraints over projects A to H.",
+          extra: "There is no target rule here. See which portfolios survive your constraints and what Solver would pick.",
+          rule: () => null,
+          answer: "",
+          hint: "Try combining a counting constraint with an “if … then” constraint.",
+          mistakes: [],
+        },
+      ];
+
+      // ---------- Parser: linear expressions over named variables ----------
+      const FUNCS = ["IF", "MAX", "MIN", "AND", "OR", "NOT", "SUM", "SUMPRODUCT", "ABS", "THEN", "ELSE", "XOR"];
+      class ParseError extends Error {}
+      const fail = (m) => {
+        throw new ParseError(m);
+      };
+
+      function tokenize(s) {
+        s = s.replace(/≤/g, "<=").replace(/≥/g, ">=").replace(/≠/g, "<>").replace(/[−–—]/g, "-").replace(/[×·]/g, "*");
+        const toks = [];
+        let i = 0;
+        while (i < s.length) {
+          const rest = s.slice(i);
+          let m;
+          if (/^\s/.test(rest)) {
+            i++;
+            continue;
+          }
+          if ((m = /^(\d+\.?\d*|\.\d+)/.exec(rest))) {
+            toks.push({ t: "num", v: parseFloat(m[0]) });
+            i += m[0].length;
+            continue;
+          }
+          if ((m = /^[A-Za-z_][A-Za-z0-9_]*/.exec(rest))) {
+            toks.push({ t: "id", v: m[0] });
+            i += m[0].length;
+            continue;
+          }
+          if ((m = /^(<=|>=|=<|=>|==|<>|!=|<|>|=)/.exec(rest))) {
+            const v = { "=<": "<=", "=>": ">=", "==": "=", "!=": "<>" }[m[0]] || m[0];
+            toks.push({ t: "cmp", v });
+            i += m[0].length;
+            continue;
+          }
+          if ("+-*/(),".includes(rest[0])) {
+            toks.push({ t: rest[0] });
+            i++;
+            continue;
+          }
+          fail(`I don't recognize the symbol “${rest[0]}”.`);
+        }
+        return toks;
+      }
+
+      const lin = (c = 0, k = {}) => ({ c, k });
+      const isConst = (e) => Object.values(e.k).every((v) => Math.abs(v) < 1e-12);
+      const scale = (e, s) => lin(e.c * s, Object.fromEntries(Object.entries(e.k).map(([n, v]) => [n, v * s])));
+      function add(a, b, s = 1) {
+        const k = { ...a.k };
+        for (const [n, v] of Object.entries(b.k)) k[n] = (k[n] || 0) + s * v;
+        return lin(a.c + s * b.c, k);
+      }
+
+      function parseLine(text, ctx) {
+        const toks = tokenize(text);
+        let p = 0;
+        const peek = () => toks[p],
+          next = () => toks[p++];
+        function primary() {
+          const t = next();
+          if (!t) fail("The line ends too early. Is something missing after an operator?");
+          if (t.t === "num") return lin(t.v);
+          if (t.t === "(") {
+            const e = expr();
+            if (!peek() || peek().t !== ")") fail("A parenthesis is never closed.");
+            next();
+            return e;
+          }
+          if (t.t === "id") {
+            const up = t.v.toUpperCase();
+            if (FUNCS.includes(up))
+              fail(
+                `${up}(…) is an Excel formula, not a linear constraint. Express the logic with binary variables instead: that's what makes Solver able to optimize over it.`
+              );
+            const r = ctx.resolve(t.v);
+            if (r && r.param) return lin(r.value);
+            if (r) return lin(0, { [r.name]: 1 });
+            if (/^[A-Za-z]+$/.test(t.v) && [...t.v].every((ch) => ctx.resolve(ch) && !ctx.resolve(ch).param))
+              fail(`“${t.v}” isn't a variable. If you meant ${[...t.v].join(" × ")}, ${NONLIN.charAt(0).toLowerCase() + NONLIN.slice(1)}`);
+            fail(`“${t.v}” isn't a variable here. Available: ${ctx.names.join(", ")}.`);
+          }
+          if (t.t === "cmp") fail("A comparison sign appears where a number or variable should be.");
+          fail(`Unexpected “${t.t}”.`);
+        }
+        function unary() {
+          const t = peek();
+          if (t && t.t === "-") {
+            next();
+            return scale(unary(), -1);
+          }
+          if (t && t.t === "+") {
+            next();
+            return unary();
+          }
+          return primary();
+        }
+        function mul(a, b) {
+          if (!isConst(a) && !isConst(b)) {
+            const names = [...Object.keys(a.k), ...Object.keys(b.k)].filter((n, i, arr) => arr.indexOf(n) === i);
+            fail(`${names.join(" × ")}: ${NONLIN}`);
+          }
+          return isConst(a) ? scale(b, a.c) : scale(a, b.c);
+        }
+        function term() {
+          let e = unary();
+          for (;;) {
+            const t = peek();
+            if (t && t.t === "*") {
+              next();
+              e = mul(e, unary());
+            } else if (t && t.t === "/") {
+              next();
+              const d = unary();
+              if (!isConst(d)) fail(`Dividing by a decision isn't linear. ${NONLIN}`);
+              if (Math.abs(d.c) < 1e-12) fail("Division by zero.");
+              e = scale(e, 1 / d.c);
+            } else if (t && (t.t === "num" || t.t === "id" || t.t === "("))
+              e = mul(e, unary()); // implicit: 500Y, 2(A + B)
+            else return e;
+          }
+        }
+        function expr() {
+          let e = term();
+          for (;;) {
+            const t = peek();
+            if (t && t.t === "+") {
+              next();
+              e = add(e, term());
+            } else if (t && t.t === "-") {
+              next();
+              e = add(e, term(), -1);
+            } else return e;
+          }
+        }
+        const sides = [expr()],
+          ops = [];
+        while (peek()) {
+          const t = next();
+          if (t.t !== "cmp")
+            fail(t.t === "," ? "Put each constraint on its own line instead of separating with commas." : `Unexpected “${t.v || t.t}”.`);
+          if (t.v === "<" || t.v === ">")
+            fail(
+              `Solver doesn't accept strict inequalities (“${t.v}”). With whole-number or 0/1 expressions, “> 3” is the same as “≥ 4”, so rewrite it with ≥ or ≤.`
+            );
+          if (t.v === "<>") fail("Solver doesn't accept “not equal”. Think about which values are allowed and write those with ≤, ≥ or =.");
+          ops.push(t.v);
+          sides.push(expr());
+        }
+        if (!ops.length) fail("This line has no ≤, ≥ or =. Every constraint needs one.");
+        const rows = ops.map((op, i) => ({ e: add(sides[i], sides[i + 1], -1), op }));
+        for (const r of rows)
+          if (isConst(r.e)) {
+            const ok = test(r, {});
+            fail(
+              `This line has no decision variables in it, so it is always ${ok ? "true and does nothing" : "false and makes the model infeasible"}.`
+            );
+          }
+        return rows;
+      }
+
+      function test(row, a) {
+        let v = row.e.c;
+        for (const [n, k] of Object.entries(row.e.k)) v += k * (a[n] || 0);
+        return row.op === "<=" ? v <= 1e-9 : row.op === ">=" ? v >= -1e-9 : Math.abs(v) <= 1e-9;
+      }
+
+      // Parse a whole editor. Returns { cons: [{text, rows}], errors: [{line, text, msg}], used: Set }
+      function parseAll(src, ctx) {
+        const cons = [],
+          errors = [],
+          used = new Set();
+        src.split("\n").forEach((raw, i) => {
+          const text = raw.replace(/(\/\/|#).*$/, "").trim();
+          if (!text) return;
+          try {
+            const rows = parseLine(text, ctx);
+            rows.forEach((r) =>
+              Object.keys(r.e.k).forEach((n) => {
+                if (Math.abs(r.e.k[n]) > 1e-12) used.add(n);
+              })
+            );
+            cons.push({ text, rows });
+          } catch (e) {
+            if (!(e instanceof ParseError)) throw e;
+            errors.push({ line: i + 1, text, msg: e.message });
+          }
+        });
+        return { cons, errors, used };
+      }
+      const satisfiesAll = (cons, a) => cons.every((c) => c.rows.every((r) => test(r, a)));
+      const failing = (cons, a) => cons.map((c, i) => (c.rows.every((r) => test(r, a)) ? -1 : i)).filter((i) => i >= 0);
+
+      // ---------- State ----------
+      let cur = 0,
+        filter = null,
+        mVal = 500,
+        lastCheck = null;
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+      const pretty = (s) => esc(s).replace(/&lt;=/g, "≤").replace(/&gt;=/g, "≥").replace(/\*/g, "·");
+      const store = {
+        get(k) {
+          try {
+            return localStorage.getItem("lcl:" + k);
+          } catch (e) {
+            return null;
+          }
+        },
+        set(k, v) {
+          try {
+            localStorage.setItem("lcl:" + k, v);
+          } catch (e) {}
+        },
+      };
+
+      function ctxFor(ex) {
+        if (ex.kind === "mix") {
+          const names = ["X", "Y", "M"];
+          return {
+            names: ["X", "Y", "M (a constant you choose with the slider)"],
+            resolve: (n) => {
+              const u = n.toUpperCase();
+              if (u === "M") return { param: true, value: mVal };
+              return names.includes(u) ? { name: u } : null;
+            },
+          };
+        }
+        const names = ex.bonus ? [...PNAMES, "Z"] : PNAMES;
+        return {
+          names,
+          resolve: (n) => {
+            const u = n.toUpperCase();
+            return names.includes(u) ? { name: u } : null;
+          },
+        };
+      }
+
+      // ---------- Binary analysis ----------
+      function combos(vars) {
+        const out = [];
+        for (let m = 0; m < 1 << vars.length; m++) {
+          const a = {};
+          vars.forEach((v, i) => {
+            a[v] = (m >> (vars.length - 1 - i)) & 1;
+          });
+          out.push(a);
+        }
+        return out;
+      }
+      const ORDER = [...PNAMES, "Z"];
+      const orderVars = (s) => ORDER.filter((v) => s.has(v));
+
+      function signature(cons, vars) {
+        return combos(vars)
+          .map((a) => (satisfiesAll(cons, a) ? 1 : 0))
+          .join("");
+      }
+
+      function analyzeBin(ex, parsed) {
+        const vars = orderVars(new Set([...ex.vars, ...parsed.used]));
+        const rows = combos(vars).map((a) => {
+          const r = ex.rule(a),
+            fails = failing(parsed.cons, a),
+            s = fails.length === 0;
+          const st = r === null ? "dc" : r && s ? "ok" : !r && !s ? "ok" : s ? "loose" : "strict";
+          return { a, r, s, fails, st };
+        });
+        return { vars, rows, loose: rows.filter((x) => x.st === "loose"), strict: rows.filter((x) => x.st === "strict") };
+      }
+
+      function matchMistake(ex, parsed) {
+        const ctx = ctxFor(ex);
+        for (const m of ex.mistakes) {
+          if (!m.why) continue;
+          const mp = parseAll(m.c, ctx);
+          if (mp.errors.length) continue;
+          if (ex.kind === "bin") {
+            const vars = orderVars(new Set([...ex.vars, ...parsed.used, ...mp.used]));
+            if (signature(mp.cons, vars) === signature(parsed.cons, vars)) return m;
+          } else if (stripSig(mp.cons) === stripSig(parsed.cons)) return m;
+        }
+        return null;
+      }
+
+      const descA = (a) =>
+        Object.entries(a)
+          .map(([k, v]) => `${k} = ${v}`)
+          .join(", ");
+      function plainA(a, ex) {
+        const sel = Object.keys(a).filter((k) => a[k] && k !== "Z"),
+          skip = Object.keys(a).filter((k) => !a[k] && k !== "Z");
+        let s = sel.length ? "select " + sel.join(", ") : "select none of them";
+        if (sel.length && skip.length) s += ", skip " + skip.join(", ");
+        if ("Z" in a) s += a.Z ? ", and claim the bonus" : ", no bonus";
+        return s;
+      }
+
+      // ---------- Mixed (X, Y) analysis ----------
+      function stripRows(ex, cons) {
+        const out = [];
+        for (const y of [0, 1])
+          for (let x = 0; x <= XMAX; x++) {
+            const a = { X: x, Y: y },
+              s = satisfiesAll(cons, a),
+              r = ex.rule(x, y);
+            out.push({ x, y, r, s, st: r && s ? "ok" : !r && !s ? "out" : s ? "loose" : "strict", fails: s ? [] : failing(cons, a) });
+          }
+        return out;
+      }
+      const stripSig = (cons) => {
+        let s = "";
+        for (const y of [0, 1]) for (let x = 0; x <= XMAX; x++) s += satisfiesAll(cons, { X: x, Y: y }) ? 1 : 0;
+        return s;
+      };
+      function segments(rows, y, st) {
+        const segs = [];
+        let start = null;
+        for (let x = 0; x <= XMAX + 1; x++) {
+          const r = x <= XMAX ? rows[y * (XMAX + 1) + x] : null,
+            hit = r && r.st === st;
+          if (hit && start === null) start = x;
+          if (!hit && start !== null) {
+            segs.push([start, x - 1]);
+            start = null;
+          }
+        }
+        return segs;
+      }
+      const segText = ([a, b]) => (a === b ? `X = ${a}` : `X from ${a} to ${b}`);
+
+      // ---------- Brute-force solve of the Capital Investment model ----------
+      function solvePortfolio(cons, withZ) {
+        let best = null;
+        for (let m = 0; m < 256; m++)
+          for (const z of withZ ? [0, 1] : [0]) {
+            const a = { Z: z };
+            let cap = 0,
+              profit = 0;
+            PROJECTS.forEach((p, i) => {
+              a[p.n] = (m >> (7 - i)) & 1;
+              cap += a[p.n] * p.cap;
+              profit += a[p.n] * p.profit;
+            });
+            if (cap > BUDGET) continue;
+            if (!satisfiesAll(cons, a)) continue;
+            const obj = profit + (withZ ? BONUS * z : 0);
+            if (!best || obj > best.obj + 1e-9) best = { a, obj, cap, profit };
+          }
+        return best;
+      }
+      const money = (v) => "$" + v.toLocaleString("en-US");
+      const projList = (a) => {
+        const s = PNAMES.filter((n) => a[n]);
+        return s.length ? s.join(", ") : "none";
+      };
+
+      // ---------- Rendering ----------
+      function buildSelect() {
+        const sel = $("ex");
+        let html = "",
+          g = null,
+          n = 0;
+        EX.forEach((ex, i) => {
+          if (ex.group !== g) {
+            if (g) html += "</optgroup>";
+            g = ex.group;
+            html += `<optgroup label="${esc(g)}">`;
+          }
+          n++;
+          html += `<option value="${i}">${ex.q ? ex.q + ": " : n + ". "}${esc(ex.title)}</option>`;
+        });
+        sel.innerHTML = html + "</optgroup>";
+      }
+
+      function loadExercise(i) {
+        cur = i;
+        filter = null;
+        lastCheck = null;
+        const ex = EX[i];
+        $("ex").value = i;
+        $("rule").innerHTML = `<span class="num">${esc(ex.group)}${ex.q ? " · " + ex.q : ""}</span>${esc(ex.title)}`;
+        let ctx;
+        if (ex.kind === "mix")
+          ctx =
+            `<b>X</b> = units produced, a whole number from 0 to 500 (those bounds are already in the model). <b>Y</b> is binary. ` +
+            (ex.extra || "");
+        else if (ex.group === "Capital Investment case" || ex.sandbox)
+          ctx =
+            `Each project A to H is a binary decision: 1 = invest, 0 = skip. Budget $20 million. North America: <b>B, C, E, G, H</b>. Europe: <b>A, F</b>. High-end: <b>A, C, D, F</b>. ` +
+            (ex.extra || "");
+        else ctx = `A, B and C are binary decisions: 1 = select the project, 0 = skip it. ` + (ex.extra || "");
+        $("context").innerHTML = ctx;
+        $("syntax").innerHTML =
+          ex.kind === "mix"
+            ? "Use <code>+ - * / ( )</code> and <code>&lt;=</code>, <code>&gt;=</code>, <code>=</code>. Write <code>500*Y</code> or <code>500Y</code>. Use <code>M</code> to try a big-M value with a slider. Press Ctrl+Enter to check."
+            : `Use <code>+ - * / ( )</code> and <code>&lt;=</code>, <code>&gt;=</code>, <code>=</code>. Variables: <code>${ctxFor(ex).names.join(" ")}</code>. Press Ctrl+Enter to check.`;
+        $("editor").value = store.get("ex" + i) || "";
+        $("editor").placeholder = ex.kind === "mix" ? "e.g.  X <= M*Y" : ex.sandbox ? "e.g.  A + B + C >= 2\n      D <= E" : "e.g.  A + B <= 1";
+        $("hint").hidden = true;
+        $("answer").hidden = $("hintbtn").hidden = !!ex.sandbox && !ex.hint;
+        $("answer").hidden = !!ex.sandbox;
+        $("chips").innerHTML = ex.mistakes.map((m, k) => `<button type="button" class="chip" data-k="${k}">${pretty(m.c)}</button>`).join("");
+        $("attempts").hidden = !ex.mistakes.length;
+        $("tt-panel").hidden = ex.kind === "mix";
+        $("strip-panel").hidden = ex.kind !== "mix";
+        $("side-title").textContent = ex.kind === "mix" ? "Reading big-M constraints" : "Effect on the portfolio";
+        $("prev").disabled = i === 0;
+        $("next").disabled = i === EX.length - 1;
+        if ($("editor").value.trim()) check();
+        else idle();
+      }
+
+      function idle() {
+        const ex = EX[cur];
+        $("feedback").innerHTML =
+          `<p class="verdict info">Waiting for your constraints</p><p>Write one constraint per line on the left and press <b>Check</b>. You can also test one of the common attempts to see why it doesn't work.</p>`;
+        if (ex.kind === "mix") {
+          $("scounts").innerHTML = "";
+          drawStrip(ex, null);
+          renderMixSide(ex);
+          $("mrow").hidden = true;
+        } else {
+          renderTable(ex, null);
+          renderPortfolio(ex, null, null);
+        }
+      }
+
+      function check() {
+        const ex = EX[cur],
+          src = $("editor").value;
+        store.set("ex" + cur, src);
+        const parsed = parseAll(src, ctxFor(ex));
+        $("mrow").hidden = !(ex.kind === "mix" && /\bm\b/i.test(src.replace(/(\/\/|#).*$/gm, "")));
+        const fb = [];
+        if (parsed.errors.length) {
+          const m = ex.mistakes.find((m) => m.c.split("\n").some((l) => parsed.errors.some((e) => e.text === l.trim())) && m.why);
+          fb.push(`<p class="verdict bad">Solver can't use this yet</p>`);
+          fb.push(
+            ...parsed.errors.map((e) => `<div class="err"><b>Line ${e.line}</b> <span class="mono">${pretty(e.text)}</span><br>${esc(e.msg)}</div>`)
+          );
+          if (m) fb.push(`<div class="why">${esc(m.why)}</div>`);
+          $("feedback").innerHTML = fb.join("");
+          if (ex.kind === "mix") {
+            $("scounts").innerHTML = "";
+            drawStrip(ex, null);
+            renderMixSide(ex);
+          } else {
+            renderTable(ex, null);
+            renderPortfolio(ex, null, null);
+          }
+          return;
+        }
+        if (!parsed.cons.length) {
+          idle();
+          return;
+        }
+        if (ex.kind === "mix") return checkMix(ex, parsed);
+
+        const res = analyzeBin(ex, parsed);
+        lastCheck = { parsed, res };
+        const nYours = res.rows.filter((r) => r.s).length;
+        if (ex.sandbox) {
+          fb.push(`<p class="verdict info">Your constraints allow ${nYours} of ${res.rows.length} combinations</p>`);
+          fb.push(
+            `<p>The table lists every combination of the projects your constraints mention. The panel on the right shows the portfolio Solver would choose with your constraints and the ${money(BUDGET)}K budget.</p>`
+          );
+        } else {
+          const L = res.loose.length,
+            S = res.strict.length;
+          if (!L && !S) {
+            fb.push(
+              `<p class="verdict ok">Correct</p><p>Your constraints allow exactly the combinations the rule allows${ex.dontCare ? " (rows marked “either” don't matter)" : ""}.</p>`
+            );
+            fb.push(`<div class="why ok">${esc(ex.why)}</div>`);
+          } else {
+            fb.push(
+              `<p class="verdict ${L && S ? "bad" : L ? "bad" : "warn"}">${L && S ? "Too strict and too loose" : L ? "Too loose" : "Too strict"}</p>`
+            );
+            const items = [];
+            const ex1 = (r) => `<span class="mono">${descA(r.a)}</span> (${plainA(r.a, ex)})`;
+            if (L) items.push(`Your constraints allow ${L} combination${L > 1 ? "s" : ""} the rule forbids, for example ${ex1(res.loose[0])}.`);
+            if (S) {
+              const r = res.strict[0],
+                c = parsed.cons[r.fails[0]];
+              items.push(
+                `Your constraints rule out ${S} combination${S > 1 ? "s" : ""} the rule allows, for example ${ex1(r)}. Your line <span class="mono">${pretty(c.text)}</span> is what blocks it.`
+              );
+            }
+            if (!nYours) items.push("Nothing at all satisfies your constraints, so Solver would report that it could not find a feasible solution.");
+            fb.push(`<ul>${items.map((t) => `<li>${t}</li>`).join("")}</ul>`);
+            const m = matchMistake(ex, parsed);
+            if (m) fb.push(`<div class="why">${esc(m.why)}</div>`);
+            fb.push(`<p class="small">Highlighted rows in the table below are where you and the rule disagree.</p>`);
+          }
+        }
+        $("feedback").innerHTML = fb.join("");
+        renderTable(ex, res);
+        renderPortfolio(ex, parsed, res);
+      }
+
+      function renderTable(ex, res) {
+        const segBtns = [...$("filter").querySelectorAll("button")];
+        if (!res) {
+          $("counts").innerHTML = "";
+          $("tt").innerHTML = '<tbody><tr><td class="txt small">Check your constraints to fill in the table.</td></tr></tbody>';
+          segBtns.forEach((b) => (b.hidden = true));
+          return;
+        }
+        const hasRule = !ex.sandbox;
+        if (!filter) filter = res.rows.length <= 32 ? "all" : hasRule ? "diff" : "yours";
+        segBtns.forEach((b) => {
+          b.hidden = b.dataset.f === "diff" && !hasRule;
+          b.classList.toggle("on", b.dataset.f === filter);
+        });
+        const nRule = res.rows.filter((r) => r.r).length,
+          nY = res.rows.filter((r) => r.s).length;
+        $("counts").innerHTML =
+          (hasRule
+            ? `<span class="pill mute">Rule allows ${nRule}${res.rows.some((r) => r.r === null) ? " (+ " + res.rows.filter((r) => r.r === null).length + " either)" : ""} of ${res.rows.length}</span>`
+            : "") +
+          `<span class="pill mute">Yours allow ${nY}</span>` +
+          (hasRule
+            ? (res.loose.length ? `<span class="pill bad">${res.loose.length} too loose</span>` : "") +
+              (res.strict.length ? `<span class="pill warn">${res.strict.length} too strict</span>` : "") +
+              (!res.loose.length && !res.strict.length ? '<span class="pill ok">No disagreements</span>' : "")
+            : "");
+        const rows = res.rows.filter((r) => filter === "all" || (filter === "diff" ? r.st === "loose" || r.st === "strict" : r.s));
+        const head = `<thead><tr>${res.vars.map((v) => `<th>${v}</th>`).join("")}${hasRule ? '<th class="txt">Rule</th>' : ""}<th class="txt">Your constraints</th>${hasRule ? '<th class="txt"></th>' : ""}</tr></thead>`;
+        const body = rows
+          .map((r) => {
+            const cls = r.st === "loose" ? "loose" : r.st === "strict" ? "strict" : "";
+            const yours = r.s ? "allowed" : "blocked by " + r.fails.map((i) => "#" + (i + 1)).join(", ");
+            const rule = r.r === null ? "either" : r.r ? "allowed" : "forbidden";
+            const st =
+              r.st === "loose"
+                ? '<td class="txt st-loose">too loose</td>'
+                : r.st === "strict"
+                  ? '<td class="txt st-strict">too strict</td>'
+                  : '<td class="txt st-ok">✓</td>';
+            return `<tr class="${cls}">${res.vars.map((v) => `<td class="${r.a[v] ? "" : "zero"}">${r.a[v]}</td>`).join("")}${hasRule ? `<td class="txt">${rule}</td>` : ""}<td class="txt">${yours}</td>${hasRule ? st : ""}</tr>`;
+          })
+          .join("");
+        const consKey =
+          lastCheck && lastCheck.parsed.cons.length > 1
+            ? `<caption class="small" style="caption-side:bottom;text-align:left;padding-top:8px">${lastCheck.parsed.cons.map((c, i) => `#${i + 1}: <span class="mono">${pretty(c.text)}</span>`).join(" · ")}</caption>`
+            : "";
+        $("tt").innerHTML =
+          head +
+          `<tbody>${body || `<tr><td class="txt small" colspan="${res.vars.length + 3}">No rows to show with this filter.</td></tr>`}</tbody>` +
+          consKey;
+      }
+
+      function renderPortfolio(ex, parsed, res) {
+        const side = $("side");
+        const dataTable = `<div class="tablewrap" style="max-height:none"><table class="data"><thead><tr><th>Project</th><th>Profit</th><th>Capital</th></tr></thead><tbody>${PROJECTS.map((p) => `<tr><td>${p.n}${p.na ? '<span class="tag">NA</span>' : ""}${p.eu ? '<span class="tag">EU</span>' : ""}${p.he ? '<span class="tag">High-end</span>' : ""}</td><td>${money(p.profit)}</td><td>${money(p.cap)}</td></tr>`).join("")}</tbody></table></div><p class="small">Amounts in $1000s. Budget ${money(BUDGET)}.</p>`;
+        if (!parsed) {
+          side.innerHTML =
+            `<p class="small" style="margin-top:0">After you check, this panel solves the Capital Investment model with your constraints (maximize profit within budget) and compares Solver's choice with the correct model.</p>` +
+            dataTable;
+          return;
+        }
+        const withZ = !!ex.bonus;
+        const base = solvePortfolio([], false);
+        const correct = ex.sandbox ? null : solvePortfolio(parseAll(ex.answer, ctxFor(ex)).cons, withZ);
+        const yours = solvePortfolio(parsed.cons, withZ);
+        const line = (lbl, s) =>
+          s
+            ? `<div class="pick"><span class="lbl">${lbl}</span><span class="proj">${projList(s.a)}${withZ && s.a.Z ? " + bonus" : ""}</span><span class="num">Profit ${money(s.obj)}K · capital ${money(s.cap)}K</span></div>`
+            : `<div class="pick"><span class="lbl">${lbl}</span><span>No feasible portfolio</span></div>`;
+        let html =
+          '<div class="picks">' +
+          line("No extra rule", base) +
+          (correct ? line("Correct model", correct) : "") +
+          line("Your model", yours) +
+          "</div>";
+        let msg = "";
+        if (!ex.sandbox) {
+          const wrong = res.loose.length || res.strict.length;
+          const same = yours && correct && PNAMES.every((n) => yours.a[n] === correct.a[n]) && (!withZ || yours.a.Z === correct.a.Z);
+          if (!yours) msg = "Solver would report that no feasible solution exists.";
+          else if (same && !wrong) msg = "Same portfolio as the correct model.";
+          else if (same)
+            msg =
+              "With this data your model happens to pick the same portfolio, but the constraint is still wrong. With other profits or another budget it would give a wrong answer, so check the logic, not just the result.";
+          else if (ex.rule(Object.fromEntries(ex.vars.map((v) => [v, yours.a[v]]))) === false)
+            msg = withZ
+              ? `Your model collects the ${money(BONUS)}K bonus without selecting all the high-end projects, so its profit of ${money(yours.obj)}K isn't real.`
+              : "Your model's portfolio breaks the rule, so Solver would recommend something the company can't do.";
+          else msg = `Your model is too restrictive: it misses a portfolio worth ${money(correct.obj - yours.obj)}K more.`;
+        }
+        if (msg) html += `<p class="note" style="font-size:.9rem;margin:10px 0 14px">${msg}</p>`;
+        side.innerHTML = html + dataTable;
+      }
+
+      // ---------- Mixed rendering ----------
+      function checkMix(ex, parsed) {
+        const rows = stripRows(ex, parsed.cons);
+        const L = rows.filter((r) => r.st === "loose").length,
+          S = rows.filter((r) => r.st === "strict").length;
+        const fb = [];
+        if (!L && !S) {
+          fb.push(`<p class="verdict ok">Correct</p><p>For both values of Y, your constraints allow exactly the values of X the rule allows.</p>`);
+          const usesM = !$("mrow").hidden;
+          fb.push(`<div class="why ok">${esc(ex.why)}${usesM ? ` Right now M = ${mVal}; drag the slider to see where it stops working.` : ""}</div>`);
+        } else {
+          fb.push(`<p class="verdict ${L ? "bad" : "warn"}">${L && S ? "Too strict and too loose" : L ? "Too loose" : "Too strict"}</p>`);
+          const items = [];
+          for (const y of [0, 1]) {
+            const ls = segments(rows, y, "loose"),
+              ss = segments(rows, y, "strict");
+            if (ls.length) items.push(`With <b>Y = ${y}</b>, you allow ${ls.map(segText).join(" and ")}, which the rule forbids.`);
+            if (ss.length) items.push(`With <b>Y = ${y}</b>, you rule out ${ss.map(segText).join(" and ")}, which the rule allows.`);
+          }
+          if (!rows.some((r) => r.s)) items.push("No value of X and Y satisfies your constraints, so the model would be infeasible.");
+          fb.push(`<ul>${items.map((t) => `<li>${t}</li>`).join("")}</ul>`);
+          const m = matchMistake(ex, parsed);
+          if (m) fb.push(`<div class="why">${esc(m.why)}</div>`);
+        }
+        $("feedback").innerHTML = fb.join("");
+        $("scounts").innerHTML =
+          (L ? `<span class="pill bad">${L} points too loose</span>` : "") +
+          (S ? `<span class="pill warn">${S} points too strict</span>` : "") +
+          (!L && !S ? '<span class="pill ok">No disagreements</span>' : "");
+        lastCheck = { parsed, rows };
+        drawStrip(ex, rows);
+        renderMixSide(ex);
+      }
+
+      const SX = (x) => 70 + x * (550 / XMAX);
+      function drawStrip(ex, rows) {
+        const svg = $("strip");
+        let g = "";
+        const color = { ok: "var(--good)", out: "var(--grid)", loose: "var(--bad)", strict: "var(--warn)" };
+        [0, 1].forEach((y, k) => {
+          const top = 18 + k * 50;
+          g += `<text class="axis" x="58" y="${top + 21}" text-anchor="end">Y = ${y}</text>`;
+          if (!rows) {
+            // Show the rule alone before the first check.
+            for (let x = 0; x <= XMAX; x++) {
+              const r = ex.rule(x, y);
+              g += `<rect x="${SX(x - 0.5)}" y="${top}" width="${550 / XMAX + 0.3}" height="30" fill="${r ? "var(--good)" : "var(--grid)"}" fill-opacity="${r ? 0.35 : 1}"/>`;
+            }
+          } else {
+            for (const st of ["ok", "out", "loose", "strict"])
+              for (const [a, b] of segments(rows, y, st))
+                g += `<rect x="${SX(a - 0.5)}" y="${top}" width="${Math.max(SX(b + 0.5) - SX(a - 0.5), 1.5)}" height="30" fill="${color[st]}"${st === "ok" ? ' fill-opacity=".75"' : ""}/>`;
+          }
+          g += `<rect x="${SX(-0.5)}" y="${top}" width="${SX(XMAX + 0.5) - SX(-0.5)}" height="30" fill="none" stroke="var(--line)"/>`;
+        });
+        for (let x = 0; x <= XMAX; x += 50)
+          g += `<line x1="${SX(x)}" x2="${SX(x)}" y1="118" y2="123" stroke="var(--muted)"/><text class="axis" x="${SX(x)}" y="137" text-anchor="middle">${x}</text>`;
+        g += `<text class="axis" x="${SX(XMAX / 2)}" y="157" text-anchor="middle">X (units produced)</text>`;
+        g += `<rect id="hov" x="0" y="14" width="2" height="106" fill="var(--ink)" opacity="0"/>`;
+        svg.innerHTML = g;
+        $("readout").textContent = rows
+          ? "Hover over the strip to check a point."
+          : "Before you check, the strip shows only what the rule allows (green).";
+      }
+
+      function stripHover(evt) {
+        const ex = EX[cur];
+        if (ex.kind !== "mix") return;
+        const svg = $("strip"),
+          pt = svg.createSVGPoint();
+        pt.x = evt.clientX;
+        pt.y = evt.clientY;
+        const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+        const x = Math.round((p.x - 70) / (550 / XMAX));
+        const y = p.y < 68 ? 0 : 1;
+        const hov = $("hov");
+        if (x < 0 || x > XMAX || p.y < 10 || p.y > 125) {
+          if (hov) hov.setAttribute("opacity", 0);
+          return;
+        }
+        if (hov) {
+          hov.setAttribute("x", SX(x) - 1);
+          hov.setAttribute("opacity", 0.6);
+        }
+        const r = ex.rule(x, y);
+        let s = `X = ${x}, Y = ${y}: rule ${r ? "allows" : "forbids"}`;
+        if (lastCheck && lastCheck.rows) {
+          const row = lastCheck.rows[y * (XMAX + 1) + x];
+          s += row.s ? "; yours allow" : `; yours block it (${row.fails.map((i) => pretty(lastCheck.parsed.cons[i].text)).join("; ")})`;
+        }
+        $("readout").innerHTML = s;
+      }
+
+      function renderMixSide(ex) {
+        $("side").innerHTML = `<ol class="notes">
+    <li><b>M is a switch, not a number to guess.</b> Pick the term so the constraint does its job for one value of Y and is harmless (never binds) for the other.</li>
+    <li><b>Harmless means large enough.</b> The smallest M that never binds is the largest value the expression can take, here 500 for X. A smaller M cuts off real options (too strict).</li>
+    <li><b>Why not M = 1,000,000?</b> It is logically fine, but huge values make Solver numerically fragile and slow. Use the smallest valid M.</li>
+    <li><b>“If Y = 0 …”</b> works the same with (1 − Y) in place of Y.</li>
+    <li><b>Strict inequalities</b> like X &gt; 200 become X ≥ 201 when X is a whole number; otherwise add a small ε.</li>
+  </ol>`;
+      }
+
+      // ---------- Events ----------
+      buildSelect();
+      $("ex").addEventListener("change", (e) => loadExercise(+e.target.value));
+      $("prev").addEventListener("click", () => cur > 0 && loadExercise(cur - 1));
+      $("next").addEventListener("click", () => cur < EX.length - 1 && loadExercise(cur + 1));
+      $("check").addEventListener("click", check);
+      $("editor").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          check();
+        }
+      });
+      $("editor").addEventListener("input", () => store.set("ex" + cur, $("editor").value));
+      $("clear").addEventListener("click", () => {
+        $("editor").value = "";
+        store.set("ex" + cur, "");
+        idle();
+        $("editor").focus();
+      });
+      $("hintbtn").addEventListener("click", () => {
+        const h = $("hint");
+        h.textContent = EX[cur].hint;
+        h.hidden = !h.hidden;
+      });
+      $("answer").addEventListener("click", () => {
+        $("editor").value = EX[cur].answer;
+        check();
+      });
+      $("chips").addEventListener("click", (e) => {
+        const b = e.target.closest(".chip");
+        if (!b) return;
+        $("editor").value = EX[cur].mistakes[+b.dataset.k].c;
+        check();
+      });
+      $("filter").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b || !lastCheck || !lastCheck.res) return;
+        filter = b.dataset.f;
+        renderTable(EX[cur], lastCheck.res);
+      });
+      $("strip").addEventListener("pointermove", stripHover);
+      $("strip").addEventListener("pointerleave", () => {
+        const h = $("hov");
+        if (h) h.setAttribute("opacity", 0);
+      });
+      $("mslider").addEventListener("input", (e) => {
+        mVal = +e.target.value;
+        $("mout").textContent = mVal;
+        check();
+      });
+      loadExercise(0);
+    </script>
+  </body>
+</html>
