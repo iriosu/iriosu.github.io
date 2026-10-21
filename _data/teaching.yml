@@ -13,6 +13,8 @@ courses:
             url: "/lp-geometry-lab/"
           - title: "Logical Constraints Lab"
             url: "/logical-constraints-lab/"
+          - title: "Logical Constraints Practice"
+            url: "/logical-constraints-practice/"
 
   - institution: "University of Texas at Dallas"
     courses:
