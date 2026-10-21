@@ -1,0 +1,1735 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive practice formulating linear optimization models and deriving Pareto frontiers, for MBA 60310." />
+    <title>LP Formulation Lab</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap"
+    />
+    <style>
+      /* Layout: tabs; formulation tabs put the steps on the left and the assembled model, Solver setup and solution on the right. */
+      :root {
+        --bg: #f4f6f9;
+        --panel: #ffffff;
+        --ink: #172031;
+        --muted: #5a6577;
+        --line: #d8dee7;
+        --grid: #e9edf2;
+        --accent: #1f4fa3;
+        --accent-soft: #e3ebf8;
+        --s1: #2a78d6;
+        --s2: #eb6834;
+        --s3: #1baf7a;
+        --s4: #eda100;
+        --ghost: #b4bcc8;
+        --good: #1b7a48;
+        --good-soft: #dcefe4;
+        --bad: #b3261e;
+        --bad-soft: #f8dedb;
+        --warn: #9a6a00;
+        --warn-soft: #f6ebcf;
+        --c-dec: #fff200;
+        --c-obj: #00b050;
+        --f-display: "IBM Plex Serif", Georgia, serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141b;
+          --panel: #161d27;
+          --ink: #e5eaf1;
+          --muted: #98a4b5;
+          --line: #2a3442;
+          --grid: #1e2732;
+          --accent: #8ab0ff;
+          --accent-soft: #1d2a44;
+          --s1: #3987e5;
+          --s2: #d95926;
+          --s3: #199e70;
+          --s4: #c98500;
+          --ghost: #4c5767;
+          --good: #5fcf8f;
+          --good-soft: #17352a;
+          --bad: #ff8a80;
+          --bad-soft: #43201f;
+          --warn: #e6c25c;
+          --warn-soft: #3a3015;
+          --c-dec: #b8a800;
+          --c-obj: #1f8a4c;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141b;
+        --panel: #161d27;
+        --ink: #e5eaf1;
+        --muted: #98a4b5;
+        --line: #2a3442;
+        --grid: #1e2732;
+        --accent: #8ab0ff;
+        --accent-soft: #1d2a44;
+        --s1: #3987e5;
+        --s2: #d95926;
+        --s3: #199e70;
+        --s4: #c98500;
+        --ghost: #4c5767;
+        --good: #5fcf8f;
+        --good-soft: #17352a;
+        --bad: #ff8a80;
+        --bad-soft: #43201f;
+        --warn: #e6c25c;
+        --warn-soft: #3a3015;
+        --c-dec: #b8a800;
+        --c-obj: #1f8a4c;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 20px 40px;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      header h1 {
+        font-family: var(--f-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        max-width: 82ch;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      h2.lbl {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tab {
+        font: inherit;
+        font-size: 0.9rem;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .tab b {
+        color: var(--muted);
+        margin-right: 6px;
+      }
+      .tab[aria-selected="true"] {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .tab[aria-selected="true"] b {
+        color: var(--accent);
+      }
+      .two {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .two {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .title {
+        font-family: var(--f-display);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+      .lead {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .lead b {
+        color: var(--ink);
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--panel);
+        font-weight: 600;
+      }
+      button.primary:hover:not(:disabled) {
+        color: var(--panel);
+        filter: brightness(1.08);
+      }
+      button.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .small {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .mono {
+        font-family: var(--f-mono);
+      }
+      .side {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+        align-content: start;
+      }
+      .box {
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+        border-radius: 0 6px 6px 0;
+        padding: 8px 12px;
+        font-size: 0.88rem;
+      }
+      .box p {
+        margin: 0 0 6px;
+      }
+      .box p:last-child {
+        margin: 0;
+      }
+      .data {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .data th,
+      .data td {
+        padding: 4px 8px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+        white-space: nowrap;
+      }
+      .data th:first-child,
+      .data td:first-child {
+        text-align: left;
+      }
+      .data thead th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        font-weight: 600;
+        white-space: normal;
+        vertical-align: bottom;
+      }
+      .data td {
+        font-family: var(--f-mono);
+      }
+      .data td:first-child {
+        font-family: var(--f-body);
+      }
+      .data td.dec {
+        background: var(--c-dec);
+        color: #172031;
+      }
+      .data tr.tot td {
+        font-weight: 600;
+        border-top: 2px solid var(--line);
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
+
+      /* Steps */
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+      }
+      .step.locked {
+        opacity: 0.5;
+      }
+      .step h3 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+      .step h3 .n {
+        display: inline-grid;
+        place-items: center;
+        width: 1.6em;
+        height: 1.6em;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 0.8rem;
+        margin-right: 8px;
+      }
+      .step .q {
+        margin: 0 0 8px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .req {
+        margin: 12px 0 6px;
+        font-size: 0.92rem;
+      }
+      .req:first-of-type {
+        margin-top: 4px;
+      }
+      .req b {
+        font-weight: 600;
+      }
+      .opts {
+        display: grid;
+        gap: 6px;
+      }
+      .opt {
+        text-align: left;
+        display: grid;
+        grid-template-columns: 1.2em minmax(0, 1fr);
+        gap: 8px;
+        align-items: baseline;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
+      .opt .dot {
+        width: 0.9em;
+        height: 0.9em;
+        border-radius: 50%;
+        border: 2px solid var(--muted);
+        display: inline-block;
+        transform: translateY(1px);
+      }
+      .opt.sel {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+      .opt.sel .dot {
+        border-color: var(--accent);
+        background: var(--accent);
+      }
+      .opt.sel.ok {
+        border-color: var(--good);
+        background: var(--good-soft);
+      }
+      .opt.sel.ok .dot {
+        border-color: var(--good);
+        background: var(--good);
+      }
+      .opt.sel.no {
+        border-color: var(--bad);
+        background: var(--bad-soft);
+      }
+      .opt.sel.no .dot {
+        border-color: var(--bad);
+        background: var(--bad);
+      }
+      .opt.sel.meh {
+        border-color: var(--warn);
+        background: var(--warn-soft);
+      }
+      .opt.sel.meh .dot {
+        border-color: var(--warn);
+        background: var(--warn);
+      }
+      .math {
+        font-family: var(--f-display);
+        font-style: italic;
+      }
+      .math sub {
+        font-size: 0.72em;
+      }
+      .fbk {
+        font-size: 0.86rem;
+        margin: 6px 0 0;
+        padding: 6px 10px;
+        border-radius: 6px;
+      }
+      .fbk.ok {
+        background: var(--good-soft);
+      }
+      .fbk.no {
+        background: var(--bad-soft);
+      }
+      .fbk.meh {
+        background: var(--warn-soft);
+      }
+      .model {
+        font-family: var(--f-display);
+        font-size: 1rem;
+        line-height: 1.75;
+        display: grid;
+        gap: 2px;
+      }
+      .model .row {
+        display: grid;
+        grid-template-columns: 6.5em minmax(0, 1fr);
+        gap: 8px;
+      }
+      .model .k {
+        font-family: var(--f-body);
+        font-size: 0.78rem;
+        color: var(--muted);
+        padding-top: 4px;
+      }
+      .model .flag {
+        color: var(--bad);
+        font-family: var(--f-body);
+        font-size: 0.78rem;
+        margin-left: 6px;
+        font-style: normal;
+      }
+      .model .missing {
+        color: var(--muted);
+        font-family: var(--f-body);
+        font-size: 0.85rem;
+        font-style: normal;
+      }
+      .solver {
+        font-size: 0.86rem;
+        display: grid;
+        gap: 4px;
+      }
+      .solver .k {
+        color: var(--muted);
+      }
+      .result {
+        font-family: var(--f-display);
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .result.ok {
+        color: var(--good);
+      }
+      .result.no {
+        color: var(--bad);
+      }
+      .result.meh {
+        color: var(--warn);
+      }
+      .issues {
+        margin: 6px 0 0;
+        padding-left: 1.1em;
+        font-size: 0.88rem;
+        display: grid;
+        gap: 4px;
+      }
+      .tiles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .tile {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .tile .k {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .tile .v {
+        font-family: var(--f-mono);
+        font-size: 1.1rem;
+      }
+
+      /* Pareto */
+      svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .ax {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 11.5px;
+      }
+      .axt {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 12px;
+      }
+      .gl {
+        stroke: var(--grid);
+      }
+      .base {
+        stroke: var(--line);
+      }
+      .dl {
+        font-family: var(--f-body);
+        font-size: 12px;
+        font-weight: 500;
+        fill: var(--ink);
+        paint-order: stroke;
+        stroke: var(--panel);
+        stroke-width: 4px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .legend i {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        vertical-align: -1px;
+        margin-right: 6px;
+      }
+      .legend i.ln {
+        height: 0;
+        border-top: 2px solid;
+        border-radius: 0;
+        width: 16px;
+        vertical-align: 3px;
+      }
+      .legend i.dt {
+        border-radius: 50%;
+      }
+      .ctl {
+        display: grid;
+        grid-template-columns: 9em minmax(0, 1fr) 5.5em;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+      }
+      .ctl output {
+        font-family: var(--f-mono);
+        text-align: right;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+      .seg {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .readout {
+        font-family: var(--f-mono);
+        font-size: 0.82rem;
+        color: var(--muted);
+        min-height: 1.4em;
+        margin-top: 4px;
+      }
+      .chk {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.9rem;
+      }
+      .bar {
+        display: flex;
+        height: 22px;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        margin-top: 4px;
+      }
+      .bar span {
+        display: block;
+        height: 100%;
+        border-right: 2px solid var(--panel);
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>LP Formulation Lab</h1>
+        <p>
+          Turn a business problem into a linear optimization model: choose the decision variables, write the objective, translate each requirement
+          into a constraint, and let Solver do the rest. Then trade off two objectives on a Pareto frontier. MBA 60310, Optimization module.
+        </p>
+      </header>
+
+      <nav class="tabs" role="tablist" id="tabs">
+        <button class="tab" role="tab" data-t="1"><b>1</b>Warm-up: restaurant order</button>
+        <button class="tab" role="tab" data-t="2"><b>2</b>Case: Riverbend Weekly</button>
+        <button class="tab" role="tab" data-t="3"><b>3</b>Two objectives: Pareto frontier</button>
+      </nav>
+
+      <section class="panel two" data-tab="1" id="case-rest"></section>
+      <section class="panel two" data-tab="2" id="case-river" hidden></section>
+
+      <section class="panel two" data-tab="3" hidden>
+        <div>
+          <p class="title">Joy versus cost: the Pareto frontier</p>
+          <p class="lead">
+            The restaurant order now has two goals: more joy and less money spent. No single order is best at both. An order is
+            <b>Pareto-optimal</b> if nothing else gives more joy for the same or less money. Every possible order is a point in the shaded region; the
+            frontier is its upper edge.
+          </p>
+          <svg id="pf" viewBox="0 0 640 400" role="img" aria-label="Orders plotted by cost and joy, with the Pareto frontier"></svg>
+          <div class="legend" id="pfleg"></div>
+          <div class="readout" id="pfread">Click anywhere in the shaded region to test an order.</div>
+        </div>
+        <div class="side">
+          <div class="seg" id="pfmethod">
+            <button type="button" data-m="eps">Budget sweep (ε-constraint)</button>
+            <button type="button" data-m="ws">Weighted sum</button>
+          </div>
+          <div id="pf-eps">
+            <div class="ctl">
+              <label for="pfB">Budget (max cost)</label><input id="pfB" type="range" min="0" max="136" step="0.5" value="40" /><output
+                id="pfBo"
+              ></output>
+            </div>
+            <div class="seg">
+              <button id="pfsweep" class="primary" type="button">Run the data table (budget $0 to $136)</button
+              ><button id="pfclear" type="button">Clear points</button>
+            </div>
+            <p class="small" style="margin: 8px 0 0">
+              Each run solves: maximize joy subject to cost ≤ budget. Recording the optimum for every budget traces the whole frontier.
+            </p>
+          </div>
+          <div id="pf-ws" hidden>
+            <div class="ctl">
+              <label for="pfW">Weight on cost (λ)</label><input id="pfW" type="range" min="0" max="1.4" step="0.01" value="0.9" /><output
+                id="pfWo"
+              ></output>
+            </div>
+            <p class="small" style="margin: 0">
+              Solves: maximize joy − λ × cost (no budget). λ is how many units of joy one dollar is worth to you. The dashed line is the objective at
+              the optimum.
+            </p>
+          </div>
+          <div>
+            <h2 class="lbl">The order at the highlighted point</h2>
+            <div class="tiles" id="pftiles"></div>
+            <div class="bar" id="pfbar"></div>
+            <div class="tablewrap" style="margin-top: 8px"><table class="data" id="pftab"></table></div>
+          </div>
+          <label class="chk"><input type="checkbox" id="pfint" /> Whole dishes only (each dish 0 or 1)</label>
+          <div class="box" id="pfbox"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // ---------- LP solver: two-phase simplex with Bland's rule (maximize c·x, rows a·x {<=,>=,=} b, x >= 0) ----------
+      function simplex(c, rows) {
+        const n = c.length,
+          R = rows.map((r) =>
+            r.b < 0 ? { a: r.a.map((v) => -v), op: r.op === "<=" ? ">=" : r.op === ">=" ? "<=" : "=", b: -r.b } : { a: r.a.slice(), op: r.op, b: r.b }
+          );
+        const m = R.length,
+          nS = R.filter((r) => r.op !== "=").length,
+          nA = R.filter((r) => r.op !== "<=").length,
+          N = n + nS + nA;
+        const T = [],
+          basis = [],
+          isArt = new Array(N).fill(false);
+        let si = n,
+          ai = n + nS;
+        for (const r of R) {
+          const row = new Float64Array(N + 1);
+          r.a.forEach((v, j) => {
+            row[j] = v;
+          });
+          row[N] = r.b;
+          if (r.op === "<=") {
+            row[si] = 1;
+            basis.push(si++);
+          } else {
+            if (r.op === ">=") row[si++] = -1;
+            row[ai] = 1;
+            isArt[ai] = true;
+            basis.push(ai++);
+          }
+          T.push(row);
+        }
+        const pivot = (i, j) => {
+          const p = T[i][j];
+          for (let k = 0; k <= N; k++) T[i][k] /= p;
+          for (let r = 0; r < m; r++)
+            if (r !== i && T[r][j] !== 0) {
+              const f = T[r][j];
+              for (let k = 0; k <= N; k++) T[r][k] -= f * T[i][k];
+            }
+          basis[i] = j;
+        };
+        const run = (cost, allowed) => {
+          for (let it = 0; it < 20000; it++) {
+            let enter = -1;
+            for (let j = 0; j < N; j++) {
+              if (!allowed(j)) continue;
+              let rc = cost[j];
+              for (let i = 0; i < m; i++) rc -= cost[basis[i]] * T[i][j];
+              if (rc > 1e-9) {
+                enter = j;
+                break;
+              }
+            }
+            if (enter < 0) return "optimal";
+            let leave = -1,
+              best = Infinity;
+            for (let i = 0; i < m; i++)
+              if (T[i][enter] > 1e-9) {
+                const ratio = T[i][N] / T[i][enter];
+                if (ratio < best - 1e-10 || (Math.abs(ratio - best) <= 1e-10 && basis[i] < basis[leave])) {
+                  best = ratio;
+                  leave = i;
+                }
+              }
+            if (leave < 0) return "unbounded";
+            pivot(leave, enter);
+          }
+          return "iterations";
+        };
+        if (nA) {
+          const c1 = Array.from({ length: N }, (_, j) => (isArt[j] ? -1 : 0));
+          run(c1, () => true);
+          let w = 0;
+          for (let i = 0; i < m; i++) w += c1[basis[i]] * T[i][N];
+          if (w < -1e-6) return { status: "infeasible" };
+          for (let i = 0; i < m; i++)
+            if (isArt[basis[i]]) {
+              for (let j = 0; j < N; j++)
+                if (!isArt[j] && Math.abs(T[i][j]) > 1e-9) {
+                  pivot(i, j);
+                  break;
+                }
+            }
+        }
+        const c2 = Array.from({ length: N }, (_, j) => (j < n ? c[j] : 0));
+        const st = run(c2, (j) => !isArt[j]);
+        if (st !== "optimal") return { status: st };
+        const x = new Array(n).fill(0);
+        for (let i = 0; i < m; i++) if (basis[i] < n) x[basis[i]] = T[i][N];
+        return { status: "optimal", x, obj: x.reduce((s, v, j) => s + v * c[j], 0) };
+      }
+      // Free variables: x = x⁺ − x⁻
+      function solveModel(sense, c, rows, free) {
+        const n = c.length,
+          cc = sense === "min" ? c.map((v) => -v) : c.slice();
+        if (!free) {
+          const r = simplex(cc, rows);
+          if (r.x) r.obj = sense === "min" ? -r.obj : r.obj;
+          return r;
+        }
+        const r = simplex(
+          [...cc, ...cc.map((v) => -v)],
+          rows.map((w) => ({ a: [...w.a, ...w.a.map((v) => -v)], op: w.op, b: w.b }))
+        );
+        if (r.x) {
+          r.x = r.x.slice(0, n).map((v, j) => v - r.x[n + j]);
+          r.obj = r.x.reduce((s, v, j) => s + v * c[j], 0);
+        }
+        return r;
+      }
+
+      // ---------- Helpers ----------
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+      const num = (v, d = 0) => v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+      const zeros = (n) => new Array(n).fill(0);
+      const vec = (n, entries) => {
+        const a = zeros(n);
+        for (const [k, v] of entries) a[k] = (a[k] || 0) + v;
+        return a;
+      };
+
+      // ---------- Case 1: restaurant order ----------
+      const DISHES = [
+        ["Pasta", 10.99, 7],
+        ["Shrimp", 14.99, 10],
+        ["Seafood", 14.99, 14],
+        ["Steak", 15.99, 18],
+        ["Veal", 18.99, 20],
+        ["Lamb", 12.99, 16],
+        ["Salmon", 13.99, 12],
+        ["Pizza", 6.99, 5],
+        ["Trout", 13.59, 11],
+        ["Roast beef", 11.99, 13],
+      ];
+      const ND = DISHES.length,
+        PR = DISHES.map((d) => d[1]),
+        VA = DISHES.map((d) => d[2]),
+        BUDGET = 40;
+      const S = (body, idx = "i") => `<span class="math">∑<sub>${idx}</sub> ${body}</span>`;
+      const REST = {
+        id: "rest",
+        title: "Warm-up: what to order",
+        lead: "At the restaurant from class, with <b>$40</b> to spend and <b>at most one unit of each dish</b>, order to maximize joy. Portions can be split (half a dish is fine), which keeps the model linear. Build the model one step at a time.",
+        dataHtml: () =>
+          `<div class="tablewrap"><table class="data"><thead><tr><th>Dish i</th><th>Price p<sub>i</sub></th><th>Joy v<sub>i</sub></th></tr></thead><tbody>${DISHES.map((d) => `<tr><td>${d[0]}</td><td>$${d[1].toFixed(2)}</td><td>${d[2]}</td></tr>`).join("")}</tbody></table></div>`,
+        n: ND,
+        decision: {
+          q: "What should the decision variables be?",
+          opts: [
+            {
+              t: '<span class="math">x<sub>i</sub></span> = how much of dish <span class="math">i</span> we order (between 0 and 1), one per dish',
+              ok: true,
+              why: "Right. Ten yellow cells, one per dish. Everything else (cost, joy) can be computed from them.",
+            },
+            {
+              t: '<span class="math">x</span> = the total amount of money we spend',
+              why: "Spending is a result of what we order, and knowing the total doesn't tell the waiter which dishes to bring.",
+            },
+            {
+              t: '<span class="math">x<sub>i</sub></span> = the price of dish <span class="math">i</span>',
+              why: "Prices are on the menu: they are parameters (gray cells), not something we choose.",
+            },
+            {
+              t: '<span class="math">x</span> = the number of dishes we order',
+              why: "A count can't tell which dishes, and different dishes give different joy and cost.",
+            },
+          ],
+        },
+        objective: {
+          q: "What is the objective?",
+          opts: [
+            {
+              t: `max ${S("v<sub>i</sub> x<sub>i</sub>")}`,
+              sense: "max",
+              c: VA,
+              ok: true,
+              why: "Total joy is each dish's joy times how much of it we order. In Excel: SUMPRODUCT(joy, order).",
+            },
+            {
+              t: `max ${S("(v<sub>i</sub> / p<sub>i</sub>) x<sub>i</sub>")}`,
+              sense: "max",
+              c: VA.map((v, i) => v / PR[i]),
+              why: "Joy per dollar is a useful idea for intuition, but adding up ratios doesn't measure the total joy of the meal.",
+            },
+            {
+              t: `min ${S("p<sub>i</sub> x<sub>i</sub>")}`,
+              sense: "min",
+              c: PR,
+              why: "Minimizing the bill is easy: order nothing. The goal here is joy; the money is a constraint.",
+            },
+            {
+              t: `max ${S("v<sub>i</sub>")}`,
+              err: "There is no decision variable in it: the sum of all joys is a constant, so nothing you order changes it.",
+            },
+          ],
+        },
+        groups: [
+          {
+            req: "We can spend at most <b>$40</b>.",
+            opts: [
+              {
+                t: `${S("p<sub>i</sub> x<sub>i</sub>")} ≤ 40`,
+                rows: () => [{ a: PR.slice(), op: "<=", b: BUDGET }],
+                ok: true,
+                why: "Cost of the order (SUMPRODUCT of prices and order) at most the budget.",
+              },
+              {
+                t: `${S("x<sub>i</sub>")} ≤ 40`,
+                rows: () => [{ a: zeros(ND).fill(1), op: "<=", b: BUDGET }],
+                why: "This counts dishes, not dollars: it allows ordering everything on the menu.",
+              },
+              {
+                t: `${S("p<sub>i</sub> x<sub>i</sub>")} = 40`,
+                rows: () => [{ a: PR.slice(), op: "=", b: BUDGET }],
+                meh: true,
+                why: "Here the best order spends the whole budget anyway, so the answer is the same, but the requirement says “at most”, not “exactly”.",
+              },
+            ],
+          },
+          {
+            req: "At most <b>one unit of each dish</b>.",
+            opts: [
+              {
+                t: '<span class="math">x<sub>i</sub> ≤ 1</span> for every dish <span class="math">i</span>',
+                rows: () => DISHES.map((_, i) => ({ a: vec(ND, [[i, 1]]), op: "<=", b: 1 })),
+                ok: true,
+                why: "One constraint per dish (in Solver: the whole order range ≤ 1).",
+              },
+              {
+                t: `${S("x<sub>i</sub>")} ≤ 1`,
+                rows: () => [{ a: zeros(ND).fill(1), op: "<=", b: 1 }],
+                why: "That limits the whole meal to one dish in total, not one of each.",
+              },
+              { t: "No constraint needed", rows: () => [], why: "Without it, Solver orders more than one unit of the best value dish." },
+            ],
+          },
+          {
+            req: "Order amounts can't be negative.",
+            opts: [
+              {
+                t: '<span class="math">x<sub>i</sub> ≥ 0</span> (Solver: “Make unconstrained variables non-negative”)',
+                rows: () => [],
+                ok: true,
+                why: "Always ask yourself whether a decision can be negative. Here it can't.",
+              },
+              {
+                t: "No sign restriction",
+                rows: () => [],
+                free: true,
+                why: "A negative order would be like selling a dish back to the restaurant at its menu price. Solver will happily do that to fund more of the best dishes.",
+              },
+            ],
+          },
+        ],
+        varName: (i) => DISHES[i][0],
+        solverHtml: () =>
+          `<div><span class="k">Set objective:</span> total joy cell (SUMPRODUCT of joy and order), <b>Max</b></div><div><span class="k">By changing:</span> the 10 order cells (yellow)</div>`,
+        trueObj: (x) => x.reduce((s, v, i) => s + v * VA[i], 0),
+        objLabel: "Joy",
+        objFmt: (v) => num(v, 2),
+        checks: (x) => {
+          const out = [],
+            cost = x.reduce((s, v, i) => s + v * PR[i], 0);
+          if (cost > BUDGET + 1e-6) out.push(`The order costs $${num(cost, 2)}, over the $40 budget.`);
+          x.forEach((v, i) => {
+            if (v > 1 + 1e-6) out.push(`It orders ${num(v, 2)} units of ${DISHES[i][0]}, more than one.`);
+            if (v < -1e-6) out.push(`It orders ${num(v, 2)} units of ${DISHES[i][0]}: a negative amount.`);
+          });
+          return out;
+        },
+        solutionHtml: (x) => {
+          const cost = x.reduce((s, v, i) => s + v * PR[i], 0);
+          return `<div class="tablewrap"><table class="data"><thead><tr><th>Dish</th><th>Order</th><th>Cost</th><th>Joy</th></tr></thead><tbody>${DISHES.map((d, i) => (Math.abs(x[i]) > 1e-6 ? `<tr><td>${d[0]}</td><td class="dec">${num(x[i], 3)}</td><td>$${num(x[i] * d[1], 2)}</td><td>${num(x[i] * d[2], 2)}</td></tr>` : "")).join("")}<tr class="tot"><td>Total</td><td></td><td>$${num(cost, 2)}</td><td>${num(
+            x.reduce((s, v, i) => s + v * VA[i], 0),
+            2
+          )}</td></tr></tbody></table></div>`;
+        },
+      };
+
+      // ---------- Case 2: Riverbend Weekly ----------
+      const CO = ["Advisers of Sunnymede", "Bold Coaches", "Cool Tickets", "D-Mobile Wireless", "Figaro"],
+        COS = ["A", "B", "C", "D", "F"];
+      const SEC = ["News", "Travel", "Sports"],
+        SECS = ["N", "T", "S"],
+        CAPS = [20000, 12000, 18000];
+      const CTR = [
+        [0.04, 0.01, 0.02],
+        [0.03, 0.05, 0.02],
+        [0.03, 0.01, 0.04],
+        [0.02, 0.01, 0.03],
+        [0.01, 0.04, 0.02],
+      ];
+      const NV = 15,
+        K = (i, j) => i * 3 + j,
+        RPC = 0.1;
+      const tot = (i) => [0, 1, 2].map((j) => [K(i, j), 1]);
+      const xs = (i, j) => `<span class="math">x<sub>${COS[i]}${SECS[j]}</sub></span>`;
+      const sumj = (i) => `<span class="math">∑<sub>j</sub> x<sub>${COS[i]}j</sub></span>`;
+      const RIVER = {
+        id: "river",
+        title: "Case: ad placement at Riverbend Weekly",
+        lead: "Riverbend Weekly earns <b>$0.10 per click</b>. Its site has 20,000 daily page views in News, 12,000 in Travel and 18,000 in Sports, and each page view shows one ad. Decide how to place the five advertisers' ads to maximize revenue while honoring every contract.",
+        dataHtml: () =>
+          `<div class="tablewrap"><table class="data"><thead><tr><th>Click-through rate</th>${SEC.map((s) => `<th>${s}</th>`).join("")}</tr></thead><tbody>${CO.map((c, i) => `<tr><td>${c} (${COS[i]})</td>${CTR[i].map((v) => `<td>${(v * 100).toFixed(0)}%</td>`).join("")}</tr>`).join("")}<tr class="tot"><td>Page views available</td>${CAPS.map((v) => `<td>${num(v)}</td>`).join("")}</tr></tbody></table></div>`,
+        n: NV,
+        decision: {
+          q: "What should the decision variables be?",
+          opts: [
+            {
+              t: '<span class="math">x<sub>ij</sub></span> = daily page views showing company <span class="math">i</span>\'s ad in section <span class="math">j</span> (5 × 3 = 15 variables)',
+              ok: true,
+              why: "Right. Click-through rates and contract terms depend on both the company and the section, so the decision has to say both.",
+            },
+            {
+              t: '<span class="math">x<sub>i</sub></span> = total daily page views for company <span class="math">i</span> (5 variables)',
+              why: "Too coarse: click-through rates differ by section, and several contracts set minimums for a specific section.",
+            },
+            {
+              t: '<span class="math">x<sub>j</sub></span> = page views in section <span class="math">j</span> (3 variables)',
+              why: "Those are given (20,000, 12,000, 18,000): data, not decisions.",
+            },
+            {
+              t: '<span class="math">y<sub>ij</sub></span> = 1 if company <span class="math">i</span> advertises in section <span class="math">j</span>, 0 otherwise',
+              why: "A yes/no can't say how many page views each company gets, and revenue depends on that number.",
+            },
+          ],
+        },
+        objective: {
+          q: "What is the objective?",
+          opts: [
+            {
+              t: `max 0.10 × ${S("CTR<sub>ij</sub> x<sub>ij</sub>", "i,j")}`,
+              sense: "max",
+              c: CTR.flat().map((v) => RPC * v),
+              ok: true,
+              why: "Expected clicks are CTR × page views; each click pays $0.10. In Excel: 0.10 × SUMPRODUCT(CTR table, decision table).",
+            },
+            {
+              t: `max ${S("x<sub>ij</sub>", "i,j")}`,
+              sense: "max",
+              c: zeros(NV).fill(1),
+              why: "This maximizes page views shown, but Riverbend is paid per click, not per view. Every page view gets used anyway, so it can't tell good placements from bad ones.",
+            },
+            { t: `max 0.10 × ${S("CTR<sub>ij</sub>", "i,j")}`, err: "There is no decision in it: the sum of the click-through rates is a constant." },
+            {
+              t: `min 0.10 × ${S("CTR<sub>ij</sub> x<sub>ij</sub>", "i,j")}`,
+              sense: "min",
+              c: CTR.flat().map((v) => RPC * v),
+              why: "That minimizes revenue.",
+            },
+          ],
+        },
+        groups: [
+          {
+            req: "Each page view shows one ad: <b>20,000</b> in News, <b>12,000</b> in Travel, <b>18,000</b> in Sports.",
+            opts: [
+              {
+                t: `<span class="math">∑<sub>i</sub> x<sub>ij</sub> ≤</span> views in section <span class="math">j</span>, for each section`,
+                rows: () =>
+                  CAPS.map((cap, j) => ({
+                    a: vec(
+                      NV,
+                      COS.map((_, i) => [K(i, j), 1])
+                    ),
+                    op: "<=",
+                    b: cap,
+                  })),
+                ok: true,
+                why: "Three constraints: the ads placed in a section can't exceed its page views.",
+              },
+              {
+                t: `<span class="math">x<sub>ij</sub> ≤</span> views in section <span class="math">j</span>, for each company and section`,
+                rows: () => CO.flatMap((_, i) => CAPS.map((cap, j) => ({ a: vec(NV, [[K(i, j), 1]]), op: "<=", b: cap }))),
+                why: "Too loose: each company could use all of News, so News would be sold five times over.",
+              },
+              {
+                t: `<span class="math">∑<sub>i</sub> x<sub>ij</sub> =</span> views in section <span class="math">j</span>, for each section`,
+                rows: () =>
+                  CAPS.map((cap, j) => ({
+                    a: vec(
+                      NV,
+                      COS.map((_, i) => [K(i, j), 1])
+                    ),
+                    op: "=",
+                    b: cap,
+                  })),
+                meh: true,
+                why: "It gives the same answer here, since every page view earns something and gets used. But the case only says you can't exceed the views; “≤” is the faithful translation.",
+              },
+            ],
+          },
+          {
+            req: "<b>Advisers</b>: at least 12,000 page views in total, at least 8,000 of them in News.",
+            opts: [
+              {
+                t: `${sumj(0)} ≥ 12,000 and ${xs(0, 0)} ≥ 8,000`,
+                rows: () => [
+                  { a: vec(NV, tot(0)), op: ">=", b: 12000 },
+                  { a: vec(NV, [[K(0, 0), 1]]), op: ">=", b: 8000 },
+                ],
+                ok: true,
+                why: "One constraint on the total, one on the News part.",
+              },
+              { t: `${sumj(0)} ≥ 12,000`, rows: () => [{ a: vec(NV, tot(0)), op: ">=", b: 12000 }], why: "This forgets the News minimum." },
+              {
+                t: `${xs(0, 0)} ≥ 8,000 and ${xs(0, 1)} + ${xs(0, 2)} ≥ 12,000`,
+                rows: () => [
+                  { a: vec(NV, [[K(0, 0), 1]]), op: ">=", b: 8000 },
+                  {
+                    a: vec(NV, [
+                      [K(0, 1), 1],
+                      [K(0, 2), 1],
+                    ]),
+                    op: ">=",
+                    b: 12000,
+                  },
+                ],
+                why: "Too strict: the 8,000 in News count toward the 12,000, so this asks for 20,000 in total.",
+              },
+            ],
+          },
+          {
+            req: "<b>Bold Coaches</b>: at least 9,000 page views in total, at least 5,000 of them in Travel.",
+            opts: [
+              {
+                t: `${xs(1, 1)} ≥ 9,000`,
+                rows: () => [{ a: vec(NV, [[K(1, 1), 1]]), op: ">=", b: 9000 }],
+                why: "Too strict: only 5,000 of the 9,000 have to be in Travel.",
+              },
+              {
+                t: `${sumj(1)} ≥ 9,000 and ${xs(1, 1)} ≥ 5,000`,
+                rows: () => [
+                  { a: vec(NV, tot(1)), op: ">=", b: 9000 },
+                  { a: vec(NV, [[K(1, 1), 1]]), op: ">=", b: 5000 },
+                ],
+                ok: true,
+                why: "Same pattern as Advisers: total and section minimum.",
+              },
+              {
+                t: `${sumj(1)} ≥ 14,000`,
+                rows: () => [{ a: vec(NV, tot(1)), op: ">=", b: 14000 }],
+                why: "Adding the two numbers double counts, and the Travel minimum is lost.",
+              },
+            ],
+          },
+          {
+            req: "<b>Cool Tickets</b>: at least 10,000 page views in total, at least 20% of them in News.",
+            opts: [
+              {
+                t: `${sumj(2)} ≥ 10,000 and ${xs(2, 0)} ≥ 2,000`,
+                rows: () => [
+                  { a: vec(NV, tot(2)), op: ">=", b: 10000 },
+                  { a: vec(NV, [[K(2, 0), 1]]), op: ">=", b: 2000 },
+                ],
+                why: "20% of 10,000 is right only if Cool Tickets gets exactly 10,000 views. If it gets more, 2,000 is less than 20% of its total.",
+              },
+              {
+                t: `${sumj(2)} ≥ 10,000 and ${xs(2, 0)} / ${sumj(2)} ≥ 0.2`,
+                err: "A ratio of decisions is not linear, so Solver's Simplex LP rejects it. Multiply both sides by the total: x<sub>CN</sub> ≥ 0.2 × ∑<sub>j</sub> x<sub>Cj</sub>.",
+                rows: () => [],
+              },
+              {
+                t: `${sumj(2)} ≥ 10,000 and ${xs(2, 0)} ≥ 0.2 × ${sumj(2)}`,
+                rows: () => [
+                  { a: vec(NV, tot(2)), op: ">=", b: 10000 },
+                  {
+                    a: vec(NV, [
+                      [K(2, 0), 0.8],
+                      [K(2, 1), -0.2],
+                      [K(2, 2), -0.2],
+                    ]),
+                    op: ">=",
+                    b: 0,
+                  },
+                ],
+                ok: true,
+                why: "The percentage applies to the total actually delivered, which is a decision. Written this way it stays linear. (Excel: x<sub>CN</sub> − 0.2 × SUM(row) ≥ 0.)",
+              },
+              {
+                t: `${sumj(2)} ≥ 10,000 and ${xs(2, 0)} ≥ 0.2 × 20,000`,
+                rows: () => [
+                  { a: vec(NV, tot(2)), op: ">=", b: 10000 },
+                  { a: vec(NV, [[K(2, 0), 1]]), op: ">=", b: 4000 },
+                ],
+                why: "That is 20% of the News section, not 20% of Cool Tickets' views.",
+              },
+            ],
+          },
+          {
+            req: "<b>D-Mobile</b>: at least 10,000 page views in total, at least 5,000 in News, and an average click-through rate of at least 2.5%.",
+            opts: [
+              {
+                t: `${sumj(3)} ≥ 10,000, ${xs(3, 0)} ≥ 5,000 and <span class="math">∑<sub>j</sub> CTR<sub>Dj</sub> x<sub>Dj</sub> ≥ 0.025 × ∑<sub>j</sub> x<sub>Dj</sub></span>`,
+                rows: () => [
+                  { a: vec(NV, tot(3)), op: ">=", b: 10000 },
+                  { a: vec(NV, [[K(3, 0), 1]]), op: ">=", b: 5000 },
+                  {
+                    a: vec(
+                      NV,
+                      [0, 1, 2].map((j) => [K(3, j), CTR[3][j] - 0.025])
+                    ),
+                    op: ">=",
+                    b: 0,
+                  },
+                ],
+                ok: true,
+                why: "Average CTR = clicks ÷ views. Multiplying through by views keeps it linear: clicks ≥ 2.5% of views.",
+              },
+              {
+                t: `${sumj(3)} ≥ 10,000, ${xs(3, 0)} ≥ 5,000 and <span class="math">∑<sub>j</sub> CTR<sub>Dj</sub> x<sub>Dj</sub> ≥ 250</span>`,
+                rows: () => [
+                  { a: vec(NV, tot(3)), op: ">=", b: 10000 },
+                  { a: vec(NV, [[K(3, 0), 1]]), op: ">=", b: 5000 },
+                  {
+                    a: vec(
+                      NV,
+                      [0, 1, 2].map((j) => [K(3, j), CTR[3][j]])
+                    ),
+                    op: ">=",
+                    b: 250,
+                  },
+                ],
+                why: "250 clicks is 2.5% of 10,000 views. If D-Mobile gets more than 10,000 views, its average can fall below 2.5%.",
+              },
+              {
+                t: `${sumj(3)} ≥ 10,000, ${xs(3, 0)} ≥ 5,000 and <span class="math">(∑<sub>j</sub> CTR<sub>Dj</sub> x<sub>Dj</sub>) / ∑<sub>j</sub> x<sub>Dj</sub> ≥ 0.025</span>`,
+                err: "Correct idea, but a ratio of decisions is not linear. Multiply both sides by ∑<sub>j</sub> x<sub>Dj</sub>.",
+                rows: () => [],
+              },
+              {
+                t: `${sumj(3)} ≥ 10,000 and ${xs(3, 0)} ≥ 5,000`,
+                rows: () => [
+                  { a: vec(NV, tot(3)), op: ">=", b: 10000 },
+                  { a: vec(NV, [[K(3, 0), 1]]), op: ">=", b: 5000 },
+                ],
+                why: "This leaves out the average click-through rate guarantee.",
+              },
+            ],
+          },
+          {
+            req: "<b>Figaro</b>: at least 8,000 page views in total, at least 5,000 of them in Travel.",
+            opts: [
+              { t: `${sumj(4)} ≥ 8,000`, rows: () => [{ a: vec(NV, tot(4)), op: ">=", b: 8000 }], why: "This forgets the Travel minimum." },
+              {
+                t: `${xs(4, 1)} ≥ 8,000`,
+                rows: () => [{ a: vec(NV, [[K(4, 1), 1]]), op: ">=", b: 8000 }],
+                why: "Too strict: only 5,000 of the 8,000 have to be in Travel.",
+              },
+              {
+                t: `${sumj(4)} ≥ 8,000 and ${xs(4, 1)} ≥ 5,000`,
+                rows: () => [
+                  { a: vec(NV, tot(4)), op: ">=", b: 8000 },
+                  { a: vec(NV, [[K(4, 1), 1]]), op: ">=", b: 5000 },
+                ],
+                ok: true,
+                why: "Total and section minimum.",
+              },
+            ],
+          },
+          {
+            req: "Page views can't be negative.",
+            opts: [
+              {
+                t: '<span class="math">x<sub>ij</sub> ≥ 0</span> (Solver: “Make unconstrained variables non-negative”)',
+                rows: () => [],
+                ok: true,
+                why: "Easy to forget, and essential.",
+              },
+              {
+                t: "No sign restriction",
+                rows: () => [],
+                free: true,
+                why: "Negative page views would free up space in a section to sell to the best advertiser.",
+              },
+            ],
+          },
+        ],
+        varName: (k) => `${COS[Math.floor(k / 3)]}${SECS[k % 3]}`,
+        solverHtml: () =>
+          `<div><span class="k">Set objective:</span> revenue cell = 0.10 × SUMPRODUCT(CTR, views), <b>Max</b></div><div><span class="k">By changing:</span> the 5 × 3 table of page views (yellow)</div>`,
+        trueObj: (x) => RPC * x.reduce((s, v, k) => s + v * CTR[Math.floor(k / 3)][k % 3], 0),
+        objLabel: "Revenue",
+        objFmt: (v) => "$" + num(v, 2),
+        checks: (x) => {
+          const out = [],
+            g = (i, j) => x[K(i, j)],
+            T = (i) => g(i, 0) + g(i, 1) + g(i, 2),
+            e = 0.5;
+          CAPS.forEach((c, j) => {
+            const s = COS.reduce((t, _, i) => t + g(i, j), 0);
+            if (s > c + e) out.push(`${SEC[j]} gets ${num(s)} ads but has only ${num(c)} page views.`);
+          });
+          if (T(0) < 12000 - e) out.push(`Advisers gets ${num(T(0))} page views, short of 12,000.`);
+          if (g(0, 0) < 8000 - e) out.push(`Advisers gets ${num(g(0, 0))} in News, short of 8,000.`);
+          if (T(1) < 9000 - e) out.push(`Bold Coaches gets ${num(T(1))} page views, short of 9,000.`);
+          if (g(1, 1) < 5000 - e) out.push(`Bold Coaches gets ${num(g(1, 1))} in Travel, short of 5,000.`);
+          if (T(2) < 10000 - e) out.push(`Cool Tickets gets ${num(T(2))} page views, short of 10,000.`);
+          if (g(2, 0) < 0.2 * T(2) - e)
+            out.push(`Cool Tickets gets ${num(g(2, 0))} of its ${num(T(2))} views in News (${num((100 * g(2, 0)) / T(2), 1)}%), below 20%.`);
+          if (T(3) < 10000 - e) out.push(`D-Mobile gets ${num(T(3))} page views, short of 10,000.`);
+          if (g(3, 0) < 5000 - e) out.push(`D-Mobile gets ${num(g(3, 0))} in News, short of 5,000.`);
+          const dc = [0, 1, 2].reduce((s, j) => s + CTR[3][j] * g(3, j), 0);
+          if (T(3) > 0 && dc < 0.025 * T(3) - 0.05) out.push(`D-Mobile's average click-through rate is ${num((100 * dc) / T(3), 2)}%, below 2.5%.`);
+          if (T(4) < 8000 - e) out.push(`Figaro gets ${num(T(4))} page views, short of 8,000.`);
+          if (g(4, 1) < 5000 - e) out.push(`Figaro gets ${num(g(4, 1))} in Travel, short of 5,000.`);
+          x.forEach((v, k) => {
+            if (v < -e) out.push(`${RIVER.varName(k)} is ${num(v)}: negative page views.`);
+          });
+          return out;
+        },
+        solutionHtml: (x) =>
+          `<div class="tablewrap"><table class="data"><thead><tr><th>Page views</th>${SEC.map((s) => `<th>${s}</th>`).join("")}<th>Total</th></tr></thead><tbody>${CO.map((c, i) => `<tr><td>${c.split(" ")[0]}</td>${[0, 1, 2].map((j) => `<td class="dec">${num(x[K(i, j)])}</td>`).join("")}<td>${num(x[K(i, 0)] + x[K(i, 1)] + x[K(i, 2)])}</td></tr>`).join("")}<tr class="tot"><td>Used / max</td>${[0, 1, 2].map((j) => `<td>${num(COS.reduce((s, _, i) => s + x[K(i, j)], 0) / 1000, 1)}k / ${CAPS[j] / 1000}k</td>`).join("")}<td></td></tr></tbody></table></div>`,
+      };
+
+      // ---------- Formulation UI ----------
+      const ST = {};
+      function buildCase(cs) {
+        ST[cs.id] = { dec: null, obj: null, g: cs.groups.map(() => null), solved: null };
+        const root = $("case-" + cs.id);
+        root.innerHTML = `<div>
+      <p class="title">${cs.title}</p><p class="lead">${cs.lead}</p>
+      <details style="margin-bottom:12px"><summary class="small" style="cursor:pointer">Show the data</summary><div style="margin-top:8px">${cs.dataHtml()}</div></details>
+      <div class="step" id="${cs.id}-s1"></div><div class="step" id="${cs.id}-s2"></div><div class="step" id="${cs.id}-s3"></div>
+    </div>
+    <div class="side">
+      <div><h2 class="lbl">Your model</h2><div class="model" id="${cs.id}-model"></div></div>
+      <div><h2 class="lbl">In Excel Solver</h2><div class="solver" id="${cs.id}-solver"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="primary" type="button" id="${cs.id}-solve">Solve my model</button><button type="button" id="${cs.id}-reset">Start over</button><button type="button" id="${cs.id}-answer">Show a correct model</button></div>
+      <div id="${cs.id}-out"></div>
+    </div>`;
+        root.addEventListener("click", (e) => {
+          const b = e.target.closest("button[data-step]");
+          if (b) {
+            const s = ST[cs.id],
+              k = +b.dataset.k;
+            if (b.dataset.step === "dec") s.dec = k;
+            else if (b.dataset.step === "obj") s.obj = k;
+            else s.g[+b.dataset.step] = k;
+            s.solved = null;
+            renderCase(cs);
+          }
+        });
+        $(cs.id + "-solve").addEventListener("click", () => {
+          ST[cs.id].solved = true;
+          renderCase(cs);
+        });
+        $(cs.id + "-reset").addEventListener("click", () => {
+          const s = ST[cs.id];
+          s.dec = s.obj = null;
+          s.g = cs.groups.map(() => null);
+          s.solved = null;
+          renderCase(cs);
+        });
+        $(cs.id + "-answer").addEventListener("click", () => {
+          const s = ST[cs.id];
+          s.dec = cs.decision.opts.findIndex((o) => o.ok);
+          s.obj = cs.objective.opts.findIndex((o) => o.ok);
+          s.g = cs.groups.map((g) => g.opts.findIndex((o) => o.ok));
+          s.solved = true;
+          renderCase(cs);
+        });
+        renderCase(cs);
+      }
+      const optCls = (o) => (o.ok ? "ok" : o.meh ? "meh" : "no");
+      function optList(stepKey, opts, sel) {
+        return (
+          `<div class="opts">${opts.map((o, k) => `<button type="button" class="opt${sel === k ? " sel " + optCls(o) : ""}" data-step="${stepKey}" data-k="${k}" aria-pressed="${sel === k}"><span class="dot"></span><span>${o.t}</span></button>`).join("")}</div>` +
+          (sel != null
+            ? `<p class="fbk ${optCls(opts[sel])}">${opts[sel].ok ? "✓ " : ""}${opts[sel].err ? "<b>Solver can't use this.</b> " + opts[sel].err : opts[sel].why}</p>`
+            : "")
+        );
+      }
+      function renderCase(cs) {
+        const s = ST[cs.id],
+          decOk = s.dec != null && cs.decision.opts[s.dec].ok;
+        $(cs.id + "-s1").innerHTML =
+          `<h3><span class="n">1</span>Decisions</h3><p class="q">${cs.decision.q}</p>` + optList("dec", cs.decision.opts, s.dec);
+        const s2 = $(cs.id + "-s2"),
+          s3 = $(cs.id + "-s3");
+        s2.classList.toggle("locked", !decOk);
+        s3.classList.toggle("locked", !decOk);
+        s2.innerHTML =
+          `<h3><span class="n">2</span>Objective</h3><p class="q">${decOk ? cs.objective.q : "Pick the right decision variables first."}</p>` +
+          (decOk ? optList("obj", cs.objective.opts, s.obj) : "");
+        s3.innerHTML =
+          `<h3><span class="n">3</span>Constraints</h3><p class="q">${decOk ? "Translate each requirement. Pick one option per requirement." : "Pick the right decision variables first."}</p>` +
+          (decOk ? cs.groups.map((g, gi) => `<p class="req">${g.req}</p>` + optList(gi, g.opts, s.g[gi])).join("") : "");
+        // Assembled model
+        const m = [];
+        m.push(
+          `<div class="row"><span class="k">Decisions</span><span>${s.dec != null ? cs.decision.opts[s.dec].t + (decOk ? "" : '<span class="flag">✗</span>') : '<span class="missing">not chosen yet</span>'}</span></div>`
+        );
+        const o = s.obj != null ? cs.objective.opts[s.obj] : null;
+        m.push(`<div class="row"><span class="k">Objective</span><span>${o ? o.t : '<span class="missing">not chosen yet</span>'}</span></div>`);
+        m.push(
+          `<div class="row"><span class="k">Subject to</span><span>${cs.groups.map((g, gi) => (s.g[gi] != null ? `<div>${g.opts[s.g[gi]].t}</div>` : "")).join("") || '<span class="missing">no constraints yet</span>'}</span></div>`
+        );
+        $(cs.id + "-model").innerHTML = m.join("");
+        const nCons = cs.groups.reduce((t, g, gi) => t + (s.g[gi] != null ? g.opts[s.g[gi]].rows().length : 0), 0);
+        $(cs.id + "-solver").innerHTML =
+          cs.solverHtml() +
+          `<div><span class="k">Subject to:</span> ${nCons} constraint${nCons === 1 ? "" : "s"} from your choices</div><div><span class="k">Non-negative:</span> ${s.g[cs.groups.length - 1] == null ? "—" : cs.groups[cs.groups.length - 1].opts[s.g[cs.groups.length - 1]].free ? "unchecked" : "checked"} · <span class="k">Method:</span> Simplex LP</div>`;
+        $(cs.id + "-solve").disabled = !(decOk && s.obj != null && s.g.every((v) => v != null));
+        $(cs.id + "-out").innerHTML = s.solved
+          ? solveCase(cs)
+          : `<p class="small">${decOk && s.obj != null && s.g.every((v) => v != null) ? "Ready: click Solve my model." : "Finish all three steps to solve. You can solve a model with mistakes in it, to see what goes wrong."}</p>`;
+      }
+      const REF = {};
+      function refSolve(cs) {
+        if (!REF[cs.id]) {
+          const ob = cs.objective.opts.find((o) => o.ok);
+          REF[cs.id] = solveModel(
+            ob.sense,
+            ob.c,
+            cs.groups.flatMap((g) => g.opts.find((o) => o.ok).rows()),
+            false
+          );
+        }
+        return REF[cs.id];
+      }
+      function solveCase(cs) {
+        const s = ST[cs.id],
+          o = cs.objective.opts[s.obj],
+          picks = s.g.map((k, gi) => cs.groups[gi].opts[k]);
+        const errs = [o, ...picks].filter((p) => p.err);
+        if (errs.length)
+          return `<p class="result no">Solver can't run this model</p><ul class="issues">${errs.map((p) => `<li>${p.t}: ${p.err}</li>`).join("")}</ul>`;
+        const res = solveModel(
+            o.sense,
+            o.c,
+            picks.flatMap((p) => p.rows()),
+            picks.some((p) => p.free)
+          ),
+          ref = refSolve(cs);
+        const refTile = `<div class="tile"><div class="k">Correct model</div><div class="v">${cs.objFmt(ref.obj)}</div></div>`;
+        if (res.status === "infeasible")
+          return `<p class="result no">Solver could not find a feasible solution</p><p style="font-size:.9rem;margin:0">The constraints contradict each other: no plan satisfies all of them at once.</p>`;
+        if (res.status === "unbounded")
+          return `<p class="result no">The objective cell values do not converge</p><p style="font-size:.9rem;margin:0">That's Solver's message for an unbounded model: your constraints let the objective grow forever. Look for a missing limit, often non-negativity.</p>`;
+        if (res.status !== "optimal") return `<p class="result no">Solver stopped without a solution</p>`;
+        const allOk = picks.every((p) => p.ok || p.meh) && o.ok,
+          issues = cs.checks(res.x),
+          val = cs.trueObj(res.x);
+        const head =
+          allOk && !issues.length && Math.abs(val - ref.obj) < 1e-4 * Math.max(1, Math.abs(ref.obj))
+            ? `<p class="result ok">Optimal, and your model is right</p>`
+            : issues.length
+              ? `<p class="result no">Optimal for your model, but it breaks the real requirements</p>`
+              : `<p class="result meh">Optimal for your model, but not the best real plan</p>`;
+        let body = `<div class="tiles"><div class="tile"><div class="k">${cs.objLabel} of your plan</div><div class="v">${cs.objFmt(val)}</div></div>${refTile}</div>`;
+        if (issues.length)
+          body += `<ul class="issues">${issues
+            .slice(0, 6)
+            .map((t) => `<li>${t}</li>`)
+            .join("")}${issues.length > 6 ? `<li>…and ${issues.length - 6} more.</li>` : ""}</ul>`;
+        else if (!allOk && Math.abs(val - ref.obj) <= 1e-4 * Math.max(1, Math.abs(ref.obj)))
+          return (
+            `<p class="result meh">Right answer, wrong model</p>` +
+            body +
+            `<p style="font-size:.9rem;margin:6px 0 0">Your model leaves out or misstates a requirement (marked in red), but its optimal plan happens to satisfy it anyway, so the revenue matches. That's luck with this data: change the numbers and the same model could break the contract. Fix the red choice before trusting it.</p><h2 class="lbl" style="margin-top:12px">Your plan</h2>` +
+            cs.solutionHtml(res.x)
+          );
+        else if (!allOk || Math.abs(val - ref.obj) > 1e-4 * Math.max(1, Math.abs(ref.obj)))
+          body += `<p style="font-size:.9rem;margin:6px 0 0">The plan is allowed, but the correct model finds one worth ${cs.objFmt(ref.obj - val)} more.</p>`;
+        else if (picks.some((p) => p.meh))
+          body += `<p style="font-size:.9rem;margin:6px 0 0">Same optimum as the correct model, though one constraint (in amber) is stronger than the case requires.</p>`;
+        return head + body + `<h2 class="lbl" style="margin-top:12px">Your plan</h2>` + cs.solutionHtml(res.x);
+      }
+
+      // ---------- Pareto frontier ----------
+      const PF = { method: "eps", B: 40, W: 0.9, pts: [], integer: false, probe: null };
+      const TOTAL_P = PR.reduce((a, b) => a + b, 0),
+        TOTAL_V = VA.reduce((a, b) => a + b, 0);
+      const ORDER_HI = DISHES.map((_, i) => i).sort((a, b) => VA[b] / PR[b] - VA[a] / PR[a]);
+      // Fractional order: best joy for a budget (greedy by joy per dollar is optimal for this LP).
+      function bestForBudget(B) {
+        const x = zeros(ND);
+        let left = B;
+        for (const i of ORDER_HI) {
+          const q = Math.min(1, Math.max(0, left / PR[i]));
+          x[i] = q;
+          left -= q * PR[i];
+          if (left <= 1e-9) break;
+        }
+        return x;
+      }
+      function worstForCost(Cst) {
+        const x = zeros(ND);
+        let left = Cst;
+        for (const i of ORDER_HI.slice().reverse()) {
+          const q = Math.min(1, Math.max(0, left / PR[i]));
+          x[i] = q;
+          left -= q * PR[i];
+          if (left <= 1e-9) break;
+        }
+        return x;
+      }
+      const costOf = (x) => x.reduce((s, v, i) => s + v * PR[i], 0),
+        joyOf = (x) => x.reduce((s, v, i) => s + v * VA[i], 0);
+      const COMBOS = [];
+      for (let m = 0; m < 1 << ND; m++) {
+        const x = DISHES.map((_, i) => (m >> i) & 1);
+        COMBOS.push({ m, x, c: costOf(x), v: joyOf(x) });
+      }
+      const INT_FRONT = (() => {
+        const s = COMBOS.slice().sort((a, b) => a.c - b.c || b.v - a.v),
+          f = [];
+        let best = -1;
+        for (const p of s)
+          if (p.v > best + 1e-9) {
+            f.push(p);
+            best = p.v;
+          }
+        return f;
+      })();
+      // Supported points: on the upper convex hull of the integer frontier.
+      const SUPPORTED = (() => {
+        const h = [];
+        for (const p of INT_FRONT) {
+          while (h.length >= 2) {
+            const a = h[h.length - 2],
+              b = h[h.length - 1];
+            if ((b.v - a.v) * (p.c - a.c) <= (p.v - a.v) * (b.c - a.c) + 1e-9) h.pop();
+            else break;
+          }
+          h.push(p);
+        }
+        return new Set(h.map((p) => p.m));
+      })();
+      function wsSolve(W) {
+        if (PF.integer) {
+          let best = null;
+          for (const p of COMBOS) {
+            const z = p.v - W * p.c;
+            if (!best || z > best.z + 1e-9) best = { ...p, z };
+          }
+          return best.x;
+        }
+        return DISHES.map((_, i) => (VA[i] - W * PR[i] > 1e-9 ? 1 : 0));
+      }
+      function intBestForBudget(B) {
+        let best = null;
+        for (const p of COMBOS) if (p.c <= B + 1e-9 && (!best || p.v > best.v + 1e-9)) best = p;
+        return best.x;
+      }
+      const L0 = 64,
+        R0 = 620,
+        T0 = 14,
+        B0 = 350,
+        px = (v) => L0 + (v / 140) * (R0 - L0),
+        py = (v) => B0 - (v / 140) * (B0 - T0);
+      function pfDraw() {
+        let g = "";
+        for (let t = 0; t <= 140; t += 20)
+          g += `<line class="gl" x1="${L0}" x2="${R0}" y1="${py(t)}" y2="${py(t)}"/><text class="ax" x="${L0 - 8}" y="${py(t) + 4}" text-anchor="end">${t}</text><text class="ax" x="${px(t)}" y="${B0 + 16}" text-anchor="middle">$${t}</text>`;
+        g += `<line class="base" x1="${L0}" x2="${R0}" y1="${B0}" y2="${B0}"/><text class="axt" x="${(L0 + R0) / 2}" y="${B0 + 36}" text-anchor="middle">Cost of the order (minimize →  left)</text>`;
+        g += `<text class="axt" x="16" y="${(T0 + B0) / 2}" transform="rotate(-90 16 ${(T0 + B0) / 2})" text-anchor="middle">Joy (maximize ↑ up)</text>`;
+        let fr = "";
+        if (!PF.integer) {
+          const up = [],
+            dn = [];
+          for (let c = 0; c <= TOTAL_P + 1e-9; c += TOTAL_P / 200) {
+            up.push([c, joyOf(bestForBudget(c))]);
+            dn.push([c, joyOf(worstForCost(c))]);
+          }
+          g += `<path d="M${up.map((p) => px(p[0]) + "," + py(p[1])).join("L")}L${dn
+            .reverse()
+            .map((p) => px(p[0]) + "," + py(p[1]))
+            .join("L")}Z" fill="var(--s1)" fill-opacity=".1" stroke="none" id="region"/>`;
+          fr = `<path d="M${up.map((p) => px(p[0]).toFixed(1) + "," + py(p[1]).toFixed(1)).join("L")}" fill="none" stroke="var(--s1)" stroke-width="2.5"/>`;
+        } else {
+          for (const p of COMBOS)
+            if (!INT_FRONT.includes(p))
+              g += `<circle cx="${px(p.c).toFixed(1)}" cy="${py(p.v).toFixed(1)}" r="2.2" fill="var(--ghost)" fill-opacity=".6"/>`;
+          fr = `<path d="M${INT_FRONT.map((p) => px(p.c).toFixed(1) + "," + py(p.v).toFixed(1)).join("L")}" fill="none" stroke="var(--s1)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+          for (const p of INT_FRONT)
+            fr += `<circle cx="${px(p.c)}" cy="${py(p.v)}" r="4.5" fill="${SUPPORTED.has(p.m) ? "var(--s1)" : "var(--panel)"}" stroke="var(--s1)" stroke-width="2" data-tip="${
+              p.x
+                .map((v, i) => (v ? DISHES[i][0] : ""))
+                .filter(Boolean)
+                .join(", ") || "nothing"
+            }: $${num(p.c, 2)}, joy ${p.v}${SUPPORTED.has(p.m) ? "" : " (no weighted sum finds this one)"}"/>`;
+        }
+        g += fr;
+        for (const p of PF.pts) g += `<circle cx="${px(p[0])}" cy="${py(p[1])}" r="3.5" fill="var(--s3)" stroke="var(--panel)" stroke-width="1"/>`;
+        // Current method's point
+        const x = PF.method === "eps" ? (PF.integer ? intBestForBudget(PF.B) : bestForBudget(PF.B)) : wsSolve(PF.W),
+          c = costOf(x),
+          v = joyOf(x);
+        if (PF.method === "eps")
+          g += `<line x1="${px(PF.B)}" x2="${px(PF.B)}" y1="${T0}" y2="${B0}" stroke="var(--s2)" stroke-dasharray="5 4"/><text class="dl" x="${PF.B > 100 ? px(PF.B) - 6 : px(PF.B) + 6}" y="${T0 + 12}" text-anchor="${PF.B > 100 ? "end" : "start"}">budget $${num(PF.B, 2)}</text>`;
+        else {
+          const z = v - PF.W * c,
+            y1 = z,
+            y2 = z + PF.W * 140;
+          g += `<line x1="${px(0)}" y1="${py(y1)}" x2="${px(140)}" y2="${py(y2)}" stroke="var(--s2)" stroke-dasharray="5 4"/>`;
+        }
+        g += `<circle cx="${px(c)}" cy="${py(v)}" r="7" fill="var(--s2)" stroke="var(--panel)" stroke-width="2.5"/>`;
+        if (PF.probe) {
+          const [pc, pv, dc, dv] = PF.probe;
+          g += `<line x1="${px(pc)}" y1="${py(pv)}" x2="${px(pc)}" y2="${py(dv)}" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#ar)"/><line x1="${px(pc)}" y1="${py(pv)}" x2="${px(dc)}" y2="${py(pv)}" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#ar)"/><circle cx="${px(pc)}" cy="${py(pv)}" r="5" fill="var(--ink)" stroke="var(--panel)" stroke-width="2"/>`;
+        }
+        $("pf").innerHTML =
+          `<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--ink)"/></marker></defs><rect x="${L0}" y="${T0}" width="${R0 - L0}" height="${B0 - T0}" fill="transparent" id="pfhit"/>` +
+          g;
+        // Side panel
+        $("pftiles").innerHTML =
+          `<div class="tile"><div class="k">Cost</div><div class="v">$${num(c, 2)}</div></div><div class="tile"><div class="k">Joy</div><div class="v">${num(v, 2)}</div></div>`;
+        const col = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+        $("pfbar").innerHTML = x
+          .map((q, i) =>
+            q > 1e-6
+              ? `<span style="width:${((q * PR[i]) / Math.max(c, 1e-9)) * 100}%;background:${col[ORDER_HI.indexOf(i) % 4]}" title="${DISHES[i][0]}"></span>`
+              : ""
+          )
+          .join("");
+        $("pftab").innerHTML = `<thead><tr><th>Dish</th><th>Order</th><th>Joy per $</th></tr></thead><tbody>${
+          ORDER_HI.filter((i) => x[i] > 1e-6)
+            .map((i) => `<tr><td>${DISHES[i][0]}</td><td class="dec">${num(x[i], 2)}</td><td>${(VA[i] / PR[i]).toFixed(3)}</td></tr>`)
+            .join("") || '<tr><td colspan="3">Nothing ordered</td></tr>'
+        }</tbody>`;
+        $("pfleg").innerHTML = PF.integer
+          ? `<span><i class="dt" style="background:var(--ghost)"></i>Every possible order (1,024)</span><span><i class="dt" style="background:var(--s1)"></i>Pareto-optimal, found by some weighted sum</span><span><i class="dt" style="background:var(--panel);border:2px solid var(--s1)"></i>Pareto-optimal, no weighted sum finds it</span><span><i class="dt" style="background:var(--s2)"></i>Current solution</span>`
+          : `<span><i style="background:var(--s1);opacity:.25"></i>All possible orders</span><span><i class="ln" style="border-color:var(--s1)"></i>Pareto frontier</span><span><i class="dt" style="background:var(--s2)"></i>Current solution</span><span><i class="dt" style="background:var(--s3)"></i>Data table points</span>`;
+        $("pfbox").innerHTML =
+          PF.method === "eps"
+            ? PF.integer
+              ? "<p>With whole dishes the frontier is a staircase of separate orders. The budget sweep still finds every one of them, including the hollow ones.</p>"
+              : "<p><b>ε-constraint.</b> Keep one objective, turn the other into a constraint, and sweep its limit. In Excel: build the max-joy model with the budget in a cell, and run Solver for each budget (or use a Solver table). Every budget gives one frontier point.</p><p>Along the frontier the slope is the joy per extra dollar, the budget's shadow price. It drops each time the next dish on the list is less joyful per dollar.</p>"
+            : PF.integer
+              ? "<p><b>Weighted sums miss points.</b> With whole dishes, the hollow frontier points sit below the line connecting their neighbors, so no λ ever selects them. The budget sweep does.</p>"
+              : "<p><b>Weighted sum.</b> Combine the objectives into one, joy − λ × cost, and vary λ. Each λ orders every dish whose joy per dollar beats λ, so it only ever lands on the frontier's corners. Between corners, ties: the line lies along a whole segment.</p>";
+        $("pfBo").textContent = "$" + num(PF.B, 1);
+        $("pfWo").textContent = PF.W.toFixed(2);
+        $("pf-eps").hidden = PF.method !== "eps";
+        $("pf-ws").hidden = PF.method !== "ws";
+        document.querySelectorAll("#pfmethod button").forEach((b) => b.classList.toggle("on", b.dataset.m === PF.method));
+      }
+      $("pfmethod").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-m]");
+        if (b) {
+          PF.method = b.dataset.m;
+          pfDraw();
+        }
+      });
+      $("pfB").addEventListener("input", (e) => {
+        PF.B = +e.target.value;
+        pfDraw();
+      });
+      $("pfW").addEventListener("input", (e) => {
+        PF.W = +e.target.value;
+        pfDraw();
+      });
+      $("pfint").addEventListener("change", (e) => {
+        PF.integer = e.target.checked;
+        PF.pts = [];
+        PF.probe = null;
+        pfDraw();
+      });
+      $("pfclear").addEventListener("click", () => {
+        PF.pts = [];
+        pfDraw();
+      });
+      let sweepTok = 0;
+      $("pfsweep").addEventListener("click", () => {
+        PF.pts = [];
+        const tok = ++sweepTok;
+        let B = 0;
+        const step = () => {
+          if (tok !== sweepTok) return;
+          const x = PF.integer ? intBestForBudget(B) : bestForBudget(B);
+          PF.pts.push([costOf(x), joyOf(x)]);
+          PF.B = B;
+          $("pfB").value = B;
+          pfDraw();
+          B += 4;
+          if (B <= 136) setTimeout(step, 40);
+        };
+        step();
+      });
+      $("pf").addEventListener("click", (e) => {
+        if (PF.integer) return;
+        const s = $("pf"),
+          p = s.createSVGPoint();
+        p.x = e.clientX;
+        p.y = e.clientY;
+        const q = p.matrixTransform(s.getScreenCTM().inverse());
+        const c = ((q.x - L0) / (R0 - L0)) * 140,
+          v = ((B0 - q.y) / (B0 - T0)) * 140;
+        if (c < 0 || c > TOTAL_P) return;
+        const hi = joyOf(bestForBudget(c)),
+          lo = joyOf(worstForCost(c));
+        if (v > hi + 0.5 || v < lo - 0.5) {
+          $("pfread").textContent = `No order costs $${num(c, 2)} and gives ${num(v, 1)} joy: that point is outside the region.`;
+          PF.probe = null;
+          pfDraw();
+          return;
+        }
+        // Cheapest order reaching the same joy: invert the frontier by bisection.
+        let a = 0,
+          b = TOTAL_P;
+        for (let i = 0; i < 50; i++) {
+          const m = (a + b) / 2;
+          if (joyOf(bestForBudget(m)) >= v) b = m;
+          else a = m;
+        }
+        PF.probe = [c, v, b, hi];
+        $("pfread").textContent =
+          hi - v < 0.3
+            ? `$${num(c, 2)}, joy ${num(v, 1)}: on the frontier, Pareto-optimal.`
+            : `$${num(c, 2)}, joy ${num(v, 1)} is dominated: the same money buys joy ${num(hi, 1)}, or the same joy costs only $${num(b, 2)}.`;
+        pfDraw();
+      });
+
+      // Tooltips for data-tip marks
+      const tip = document.createElement("div");
+      tip.style.cssText =
+        "position:fixed;pointer-events:none;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:10;display:none;max-width:280px";
+      document.body.appendChild(tip);
+      document.addEventListener("pointermove", (e) => {
+        const t = e.target.closest && e.target.closest("[data-tip]");
+        if (!t) {
+          tip.style.display = "none";
+          return;
+        }
+        tip.textContent = t.dataset.tip;
+        tip.style.display = "block";
+        const w = tip.offsetWidth;
+        tip.style.left = Math.min(e.clientX + 12, innerWidth - w - 8) + "px";
+        tip.style.top = e.clientY - 40 + "px";
+      });
+
+      // ---------- Tabs ----------
+      function showTab(t) {
+        document.querySelectorAll("[data-tab]").forEach((el) => {
+          el.hidden = +el.dataset.tab !== t;
+        });
+        document.querySelectorAll(".tab").forEach((el) => el.setAttribute("aria-selected", String(+el.dataset.t === t)));
+        try {
+          localStorage.setItem("lpf:tab", t);
+        } catch (e) {}
+        if (t === 3) pfDraw();
+      }
+      $("tabs").addEventListener("click", (e) => {
+        const b = e.target.closest(".tab");
+        if (b) showTab(+b.dataset.t);
+      });
+      buildCase(REST);
+      buildCase(RIVER);
+      let t0 = 1;
+      try {
+        t0 = +localStorage.getItem("lpf:tab") || 1;
+      } catch (e) {}
+      showTab(t0 >= 1 && t0 <= 3 ? t0 : 1);
+    </script>
+  </body>
+</html>

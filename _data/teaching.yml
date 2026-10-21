@@ -11,6 +11,8 @@ courses:
         links:
           - title: "Starbucks Modeling Lab"
             url: "/modeling-lab/"
+          - title: "LP Formulation Lab"
+            url: "/lp-formulation-lab/"
           - title: "LP Geometry Lab"
             url: "/lp-geometry-lab/"
           - title: "Logical Constraints Lab"
