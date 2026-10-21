@@ -11,6 +11,8 @@ courses:
         links:
           - title: "LP Geometry Lab"
             url: "/lp-geometry-lab/"
+          - title: "Logical Constraints Lab"
+            url: "/logical-constraints-lab/"
 
   - institution: "University of Texas at Dallas"
     courses:
