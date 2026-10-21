@@ -9,6 +9,8 @@ courses:
         level: "MBA"
         years: "2026"
         links:
+          - title: "Starbucks Modeling Lab"
+            url: "/modeling-lab/"
           - title: "LP Geometry Lab"
             url: "/lp-geometry-lab/"
           - title: "Logical Constraints Lab"
