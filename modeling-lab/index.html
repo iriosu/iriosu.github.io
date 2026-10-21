@@ -1,0 +1,1575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Interactive modeling practice on the Starbucks procurement case, for MBA 60310." />
+    <title>Starbucks Modeling Lab</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap"
+    />
+    <style>
+      /* Layout: three tabs. Each tab has a main work area (left) and a guide/output column (right). */
+      :root {
+        --bg: #f4f6f9;
+        --panel: #ffffff;
+        --ink: #172031;
+        --muted: #5a6577;
+        --line: #d8dee7;
+        --grid: #e9edf2;
+        --accent: #1f4fa3;
+        --accent-soft: #e3ebf8;
+        --s1: #2a78d6;
+        --s2: #eb6834;
+        --s3: #1baf7a;
+        --good: #1b7a48;
+        --good-soft: #dcefe4;
+        --bad: #b3261e;
+        --bad-soft: #f8dedb;
+        --warn: #9a6a00;
+        --warn-soft: #f6ebcf;
+        /* Cell colors from the class spreadsheets: parameters gray, decisions yellow, objective green, logic unfilled. */
+        --c-param: #d0d0d0;
+        --c-dec: #fff200;
+        --c-obj: #00b050;
+        --c-calc: #ffffff;
+        --c-con: #eb6834;
+        --c-ink: #172031;
+        --f-display: "IBM Plex Serif", Georgia, serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141b;
+          --panel: #161d27;
+          --ink: #e5eaf1;
+          --muted: #98a4b5;
+          --line: #2a3442;
+          --grid: #1e2732;
+          --accent: #8ab0ff;
+          --accent-soft: #1d2a44;
+          --s1: #3987e5;
+          --s2: #d95926;
+          --s3: #199e70;
+          --good: #5fcf8f;
+          --good-soft: #17352a;
+          --bad: #ff8a80;
+          --bad-soft: #43201f;
+          --warn: #e6c25c;
+          --warn-soft: #3a3015;
+          --c-param: #5b6270;
+          --c-dec: #b8a800;
+          --c-obj: #1f8a4c;
+          --c-calc: #161d27;
+          --c-con: #d95926;
+          --c-ink: #f2f4f7;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141b;
+        --panel: #161d27;
+        --ink: #e5eaf1;
+        --muted: #98a4b5;
+        --line: #2a3442;
+        --grid: #1e2732;
+        --accent: #8ab0ff;
+        --accent-soft: #1d2a44;
+        --s1: #3987e5;
+        --s2: #d95926;
+        --s3: #199e70;
+        --good: #5fcf8f;
+        --good-soft: #17352a;
+        --bad: #ff8a80;
+        --bad-soft: #43201f;
+        --warn: #e6c25c;
+        --warn-soft: #3a3015;
+        --c-param: #5b6270;
+        --c-dec: #b8a800;
+        --c-obj: #1f8a4c;
+        --c-calc: #161d27;
+        --c-con: #d95926;
+        --c-ink: #f2f4f7;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 20px 40px;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      header h1 {
+        font-family: var(--f-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        max-width: 82ch;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      h2.lbl,
+      .panel h2 {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tab {
+        font: inherit;
+        font-size: 0.9rem;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .tab b {
+        color: var(--muted);
+        margin-right: 6px;
+      }
+      .tab[aria-selected="true"] {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .tab[aria-selected="true"] b {
+        color: var(--accent);
+      }
+      .two {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .two {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .title {
+        font-family: var(--f-display);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+      .lead {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--panel);
+        font-weight: 600;
+      }
+      button.primary:hover {
+        color: var(--panel);
+        filter: brightness(1.08);
+      }
+      button.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      select {
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 3px 6px;
+        max-width: 100%;
+      }
+      .small {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .mono {
+        font-family: var(--f-mono);
+      }
+      .box {
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+        border-radius: 0 6px 6px 0;
+        padding: 8px 12px;
+        font-size: 0.88rem;
+      }
+      .box p {
+        margin: 0 0 6px;
+      }
+      .box p:last-child {
+        margin: 0;
+      }
+      .side {
+        display: grid;
+        gap: 14px;
+        align-content: start;
+      }
+      .side p {
+        margin: 0;
+      }
+      .swatch {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid var(--line);
+        vertical-align: -2px;
+        margin-right: 6px;
+      }
+      .sw-param {
+        background: var(--c-param);
+      }
+      .sw-dec {
+        background: var(--c-dec);
+      }
+      .sw-obj {
+        background: var(--c-obj);
+      }
+      .sw-calc {
+        background: var(--c-calc);
+      }
+      .sw-con {
+        background: transparent;
+        border: 2px solid var(--c-con);
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      /* Tab 1: classify */
+      .items {
+        display: grid;
+        gap: 8px;
+      }
+      .item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+      .item .what {
+        font-weight: 500;
+      }
+      .item .what .v {
+        font-family: var(--f-mono);
+        color: var(--muted);
+        font-weight: 400;
+        margin-left: 6px;
+      }
+      .cats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .cats button {
+        font-size: 0.8rem;
+        padding: 2px 9px;
+      }
+      .item.ok {
+        border-color: var(--good);
+      }
+      .item.no {
+        border-color: var(--bad);
+      }
+      .item .fb {
+        font-size: 0.86rem;
+        padding: 6px 10px;
+        border-radius: 6px;
+      }
+      .item.ok .fb {
+        background: var(--good-soft);
+      }
+      .item.no .fb {
+        background: var(--bad-soft);
+      }
+      .cats button.pick-param {
+        background: var(--c-param);
+        color: var(--c-ink);
+        border-color: var(--c-param);
+      }
+      .cats button.pick-dec {
+        background: var(--c-dec);
+        color: #172031;
+        border-color: var(--c-dec);
+      }
+      .cats button.pick-obj {
+        background: var(--c-obj);
+        color: #fff;
+        border-color: var(--c-obj);
+      }
+      .cats button.pick-calc {
+        background: var(--panel);
+        border: 2px solid var(--ink);
+      }
+      .cats button.pick-con {
+        border: 2px solid var(--c-con);
+        color: var(--c-con);
+      }
+      .score {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .pill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+        color: var(--muted);
+      }
+      .pill.ok {
+        color: var(--good);
+      }
+      .pill.bad {
+        color: var(--bad);
+      }
+      .pill.warn {
+        color: var(--warn);
+      }
+
+      /* Tab 2 & 3: sheet */
+      .sheet {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.86rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .sheet th,
+      .sheet td {
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: middle;
+      }
+      .sheet thead th {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .sheet td.val {
+        font-family: var(--f-mono);
+        text-align: right;
+        white-space: nowrap;
+      }
+      .sheet tr.grp td {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        font-weight: 600;
+        padding-top: 12px;
+        border-bottom: 0;
+      }
+      .sheet td.cell-param {
+        background: var(--c-param);
+        color: var(--c-ink);
+      }
+      .sheet td.cell-dec {
+        background: var(--c-dec);
+        color: #172031;
+      }
+      .sheet td.cell-obj {
+        background: var(--c-obj);
+        color: #fff;
+        font-weight: 600;
+      }
+      .sheet select {
+        font-family: var(--f-mono);
+        font-size: 0.8rem;
+        width: 100%;
+      }
+      .sheet .st {
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .st.ok {
+        color: var(--good);
+      }
+      .st.no {
+        color: var(--bad);
+      }
+      .st.warn {
+        color: var(--warn);
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
+      .result {
+        font-family: var(--f-display);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .result.ok {
+        color: var(--good);
+      }
+      .result.no {
+        color: var(--bad);
+      }
+      .result.info {
+        color: var(--muted);
+        font-size: 1.05rem;
+        font-weight: 500;
+      }
+      .fbl {
+        margin: 0;
+        padding-left: 1.1em;
+        display: grid;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+      .target {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .tile {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .tile .k {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .tile .v {
+        font-family: var(--f-mono);
+        font-size: 1.15rem;
+      }
+
+      /* Tab 3 */
+      .ctl {
+        display: grid;
+        grid-template-columns: 9.5em minmax(0, 1fr) 6em;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+      }
+      .ctl output {
+        font-family: var(--f-mono);
+        text-align: right;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+      .ext {
+        display: grid;
+        gap: 8px;
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+        margin-top: 6px;
+        font-size: 0.9rem;
+      }
+      .chk {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .charttabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .ax {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 11.5px;
+      }
+      .axt {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 12px;
+      }
+      .gl {
+        stroke: var(--grid);
+      }
+      .base {
+        stroke: var(--line);
+      }
+      .dl {
+        font-family: var(--f-body);
+        font-size: 12px;
+        font-weight: 500;
+        fill: var(--ink);
+        paint-order: stroke;
+        stroke: var(--panel);
+        stroke-width: 4px;
+      }
+      .hm {
+        font-family: var(--f-mono);
+        font-size: 10.5px;
+      }
+      .readout {
+        font-family: var(--f-mono);
+        font-size: 0.82rem;
+        color: var(--muted);
+        min-height: 1.4em;
+        margin-top: 4px;
+      }
+      .howto {
+        font-size: 0.86rem;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Starbucks Modeling Lab</h1>
+        <p>
+          Build the Starbucks procurement and roasting model step by step: name its pieces, write its formulas, then use it to answer what-if
+          questions with data tables. Same numbers and cell colors as the class spreadsheet. MBA 60310, Modeling module.
+        </p>
+      </header>
+
+      <nav class="tabs" role="tablist" id="tabs">
+        <button class="tab" role="tab" data-t="1"><b>1</b>Name the pieces</button>
+        <button class="tab" role="tab" data-t="2"><b>2</b>Write the formulas</button>
+        <button class="tab" role="tab" data-t="3"><b>3</b>What-if and data tables</button>
+      </nav>
+
+      <!-- Tab 1 -->
+      <section class="panel two" data-tab="1">
+        <div>
+          <p class="title">What kind of element is each one?</p>
+          <p class="lead">
+            Every model has decisions, parameters, constraints, calculations and an objective. Classify each piece of the Starbucks case. Getting this
+            right first is what makes the spreadsheet easy to build.
+          </p>
+          <div class="items" id="items"></div>
+        </div>
+        <div class="side">
+          <div class="score" id="score1"></div>
+          <div>
+            <h2 class="lbl">The five elements</h2>
+            <div class="legend" style="display: grid; gap: 8px">
+              <span><i class="swatch sw-dec"></i><b>Decision</b>: what Starbucks chooses (yellow cells).</span>
+              <span><i class="swatch sw-param"></i><b>Parameter</b>: an input Starbucks can't change, certain or uncertain (gray cells).</span>
+              <span><i class="swatch sw-con"></i><b>Constraint</b>: a restriction the decisions must satisfy.</span>
+              <span
+                ><i class="swatch sw-calc"></i><b>Calculation</b>: follows from decisions and parameters through a formula (cells with
+                formulas).</span
+              >
+              <span><i class="swatch sw-obj"></i><b>Objective</b>: what we maximize or minimize (green cell).</span>
+            </div>
+          </div>
+          <div class="box">
+            <p>
+              <b>Quick test.</b> If you could type any number you like into the cell, is it a decision? If the world sets it, it's a parameter. If a
+              formula can compute it from other cells, it's a calculation: never type over it.
+            </p>
+          </div>
+          <button id="reset1" type="button" style="justify-self: start">Start over</button>
+        </div>
+      </section>
+
+      <!-- Tab 2 -->
+      <section class="panel two" data-tab="2" hidden>
+        <div>
+          <p class="title">Write the formula for each calculated cell</p>
+          <p class="lead">
+            Pick a formula for every white cell. The sheet recalculates as you go. A formula can give the right number for Q1's inputs and still be
+            wrong, so <b>Check my model</b> also tests each cell at other prices and market conditions.
+          </p>
+          <div class="tablewrap"><table class="sheet" id="sheet2"></table></div>
+        </div>
+        <div class="side">
+          <div class="target" id="target2"></div>
+          <div class="score" style="gap: 8px">
+            <button id="check2" class="primary" type="button">Check my model</button><button id="reveal2" type="button">Show the solution</button
+            ><button id="reset2" type="button">Start over</button>
+          </div>
+          <div id="fb2"></div>
+          <div class="box">
+            <p><b>Q1:</b> Starbucks contracts 60% pre-season, charges $11/lb, and the open-market price is $1.75/lb. What is the profit?</p>
+            <p>
+              The stress tests use prices of $14 (demand below the 200M lb roasting capacity) and $18 (no demand at all), and a mix with 45%
+              contracted at a $2.60 open-market price.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3 -->
+      <section class="panel two" data-tab="3" hidden>
+        <div>
+          <p class="title">Ask the model what-if questions</p>
+          <p class="lead">
+            Change the decisions and parameters, and watch every cell and the profit respond. The charts are the data tables from the case: profit as
+            one input varies, with everything else held at the values on the right.
+          </p>
+          <div class="charttabs" id="charttabs">
+            <button type="button" data-c="price">Profit vs price (Q3)</button>
+            <button type="button" data-c="spot">Profit vs open-market price (Q2)</button>
+            <button type="button" data-c="two">Share × open-market price (Q4)</button>
+            <button type="button" data-c="water">Where the money goes</button>
+          </div>
+          <svg id="chart3" viewBox="0 0 640 330" role="img" aria-label="Data table chart"></svg>
+          <div class="readout" id="read3"></div>
+          <p class="howto small" id="howto3"></p>
+          <div class="tablewrap" style="margin-top: 10px"><table class="sheet" id="sheet3"></table></div>
+        </div>
+        <div class="side">
+          <div class="target" id="target3"></div>
+          <div>
+            <h2 class="lbl">Decisions</h2>
+            <div class="ctl">
+              <label for="i-price">Roasted bean price</label><input id="i-price" type="range" min="6" max="16" step="0.25" value="11" /><output
+                id="o-price"
+              ></output>
+            </div>
+            <div class="ctl">
+              <label for="i-share">Pre-season share</label><input id="i-share" type="range" min="0" max="1" step="0.05" value="0.6" /><output
+                id="o-share"
+              ></output>
+            </div>
+            <p class="small" id="sharenote" style="margin: -4px 0 8px"></p>
+            <h2 class="lbl">Parameters</h2>
+            <div class="ctl">
+              <label for="i-spot">Open-market price</label><input id="i-spot" type="range" min="0.5" max="3" step="0.05" value="1.75" /><output
+                id="o-spot"
+              ></output>
+            </div>
+            <div class="ctl">
+              <label for="i-cap">In-house capacity</label><input id="i-cap" type="range" min="100" max="300" step="10" value="200" /><output
+                id="o-cap"
+              ></output>
+            </div>
+          </div>
+          <div class="ext">
+            <h2 class="lbl" style="margin: 0">Extensions from the case</h2>
+            <label class="chk"><input type="checkbox" id="x-tier" /> Q5: quantity-based pre-season contract prices</label>
+            <label class="chk"><input type="checkbox" id="x-scen" /> Q7: three equally likely scenarios (expected profit)</label>
+            <div class="chk" style="flex-wrap: wrap">
+              Q6: expand to
+              <select id="x-mkt">
+                <option value="0">no new market</option>
+                <option value="1">market 1</option>
+                <option value="2">market 2</option>
+                <option value="3">market 3</option>
+                <option value="4">market 4</option>
+              </select>
+            </div>
+            <div class="ctl" id="newprice-row" hidden>
+              <label for="i-newprice">New-market price</label><input id="i-newprice" type="range" min="6" max="14" step="0.25" value="10" /><output
+                id="o-newprice"
+              ></output>
+            </div>
+            <button id="reset3" type="button" style="justify-self: start">Back to Q1 values</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // ---------- The model (same structure and numbers as the class solution) ----------
+      const BASE = {
+        price: 11,
+        share: 0.6,
+        spot: 1.75,
+        contractPrice: 1.5,
+        fixed: 100e6,
+        cap: 200e6,
+        inCost: 4.3,
+        outCost: 5.3,
+        intercept: 600e6,
+        slope: -35e6,
+        tier: false,
+        scen: false,
+        mkt: 0,
+        newPrice: 10,
+      };
+      const TIERS = [
+        [0, 50e6, 2.25],
+        [50e6, 75e6, 2],
+        [75e6, 100e6, 1.75],
+        [100e6, 125e6, 1.5],
+        [125e6, 150e6, 1.4],
+        [150e6, Infinity, 1.25],
+      ];
+      const MARKETS = [
+        null,
+        { a: 280e6, b: -22e6, f: 20e6 },
+        { a: 290e6, b: -23.5e6, f: 30e6 },
+        { a: 310e6, b: -24.4e6, f: 35e6 },
+        { a: 275e6, b: -21e6, f: 26e6 },
+      ];
+      const SCEN = [
+        { name: "Base", spot: 1.75, a: 600e6, b: -35e6 },
+        { name: "Scarce", spot: 3, a: 700e6, b: -30e6 },
+        { name: "Abundant", spot: 1, a: 500e6, b: -40e6 },
+      ];
+      const tierCost = (q) => TIERS.reduce((s, [lo, hi, p]) => s + Math.min(Math.max(q - lo, 0), hi - lo) * p, 0);
+
+      function calc(x) {
+        const demand = Math.max(x.intercept + x.slope * x.price, 0);
+        const m = MARKETS[x.mkt],
+          newDemand = m ? Math.max(m.a + m.b * x.newPrice, 0) : 0;
+        const total = demand + newDemand,
+          contract = x.share * total,
+          open = total - contract;
+        const inHouse = Math.min(total, x.cap),
+          outs = total - inHouse;
+        const revenue = demand * x.price + newDemand * x.newPrice;
+        const contractCost = x.tier ? tierCost(contract) : contract * x.contractPrice,
+          openCost = open * x.spot;
+        const fixed = total > 0 ? x.fixed : 0,
+          roasting = inHouse * x.inCost + outs * x.outCost,
+          expansion = m ? m.f : 0;
+        const profit = revenue - contractCost - openCost - fixed - roasting - expansion;
+        return {
+          demand,
+          newDemand,
+          total,
+          contract,
+          open,
+          inHouse,
+          outs,
+          revenue,
+          contractCost,
+          openCost,
+          sourcing: contractCost + openCost,
+          fixed,
+          roasting,
+          expansion,
+          profit,
+        };
+      }
+      // Q7: expected profit over the three scenarios (spot price and demand curve come from the scenario).
+      const expected = (x) =>
+        x.scen ? SCEN.reduce((s, sc) => s + calc({ ...x, spot: sc.spot, intercept: sc.a, slope: sc.b }).profit, 0) / SCEN.length : calc(x).profit;
+
+      // ---------- Formatting ----------
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+      const M = (v) =>
+        (v < 0 ? "−" : "") + "$" + (Math.abs(v) / 1e6).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "M";
+      const L = (v) =>
+        (v < 0 ? "−" : "") + (Math.abs(v) / 1e6).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "M lbs";
+      const D = (v, d = 2) => "$" + v.toFixed(d);
+      const P = (v) => Math.round(v * 100) + "%";
+
+      // ---------- Tab 1: classify ----------
+      const CATS = [
+        ["dec", "Decision"],
+        ["param", "Parameter"],
+        ["con", "Constraint"],
+        ["calc", "Calculation"],
+        ["obj", "Objective"],
+      ];
+      const ITEMS = [
+        { t: "Price charged for roasted beans", v: "$11/lb", c: "dec", why: "Starbucks sets its own price, and Q3 asks what it should be." },
+        {
+          t: "Share of beans bought with pre-season contracts",
+          v: "60%",
+          c: "dec",
+          why: "The case calls it “always a key business decision”. In Q1 to Q3 it is held at 60%, but Q4 asks what it should be.",
+        },
+        {
+          t: "Open-market price of green beans",
+          v: "$1.75/lb",
+          c: "param",
+          why: "The market sets it, not Starbucks. It is an uncertain parameter (it ranges from $0.50 to $3), which is why Q2 and Q7 study it.",
+          trap: { dec: "Starbucks decides how much to buy on the open market, but not the price it pays there." },
+        },
+        {
+          t: "Pre-season contract price",
+          v: "$1.50/lb",
+          c: "param",
+          why: "It is agreed with growers and given in the case. (In Q5 it depends on the quantity, but it is still set by the contract, not chosen freely.)",
+        },
+        {
+          t: "Fixed processing, distribution and marketing costs",
+          v: "$100M/year",
+          c: "param",
+          why: "A given cost. It still enters the profit formula, switched off only if nothing is sold.",
+        },
+        {
+          t: "In-house roasting capacity",
+          v: "200M lbs",
+          c: "param",
+          why: "A given number. It limits how much can be roasted in-house, which is what the MIN() in the roasting formula captures.",
+          trap: {
+            con: "Close: the capacity creates a restriction, but the 200M lbs itself is a parameter. The model respects it with MIN(demand, capacity).",
+          },
+        },
+        { t: "Variable roasting cost in-house and outsourced", v: "$4.3 and $5.3/lb", c: "param", why: "Given costs per pound." },
+        {
+          t: "Demand curve intercept and slope",
+          v: "600M lbs, −35M lbs per $",
+          c: "param",
+          why: "Estimated from market research and given. (Uncertain in Q7.)",
+        },
+        {
+          t: "Pre-season contracts must cover between 40% and 70% of requirements",
+          v: "40% ≤ share ≤ 70%",
+          c: "con",
+          why: "A restriction on the share decision. In a data table, only shares in this range are allowed answers.",
+          trap: { param: "The 40% and 70% are given numbers, but together they say what the decision is allowed to be: that is a constraint." },
+        },
+        {
+          t: "Demand for roasted beans",
+          v: "215M lbs",
+          c: "calc",
+          why: "It follows from the price through the demand curve: MAX(600M − 35M × price, 0). Change the price and demand changes on its own.",
+          trap: {
+            param: "The demand curve's numbers are parameters, but demand itself depends on the price Starbucks picks, so it is computed.",
+            dec: "Starbucks can't choose demand directly; it chooses the price, and demand follows.",
+          },
+        },
+        {
+          t: "Pounds of green beans bought on the open market",
+          v: "86M lbs",
+          c: "calc",
+          why: "Whatever is not covered by contracts: demand − contracted beans.",
+          trap: { dec: "It moves when Starbucks changes the share, but given the share and demand, a formula pins it down." },
+        },
+        {
+          t: "Pounds roasted in-house",
+          v: "200M lbs",
+          c: "calc",
+          why: "In-house roasting is cheaper, so roast as much as possible in-house: MIN(demand, capacity).",
+          trap: {
+            dec: "Once demand is known, the best choice is obvious (in-house first, up to capacity), so the model computes it with MIN() instead of leaving it as a choice.",
+          },
+        },
+        { t: "Pounds sent to outsourced roasters", v: "15M lbs", c: "calc", why: "Only what exceeds in-house capacity: MAX(0, demand − capacity)." },
+        { t: "Revenue from roasted beans", v: "$2,365M", c: "calc", why: "Demand × price." },
+        {
+          t: "Annual profit of the roasting division",
+          v: "$981.5M",
+          c: "obj",
+          why: "Revenue minus sourcing, roasting and fixed costs. It is what every question asks Starbucks to maximize.",
+          trap: {
+            calc: "It is computed by a formula, but it is also the quantity we are trying to maximize, so it gets the objective (green) role.",
+          },
+        },
+      ];
+      let picks1 = {};
+      function renderItems() {
+        $("items").innerHTML = ITEMS.map((it, i) => {
+          const p = picks1[i],
+            ok = p === it.c;
+          const fb = p
+            ? ok
+              ? `Right. ${esc(it.why)}`
+              : `Not quite. ${esc((it.trap && it.trap[p]) || "It is a " + CATS.find((c) => c[0] === it.c)[1].toLowerCase() + ".")} ${it.trap && it.trap[p] ? "" : esc(it.why)}`
+            : "";
+          return `<div class="item${p ? (ok ? " ok" : " no") : ""}"><div class="what">${esc(it.t)}<span class="v">${esc(it.v)}</span></div>
+      <div class="cats">${CATS.map(([k, n]) => `<button type="button" data-i="${i}" data-k="${k}" class="${p === k ? "pick-" + k : ""}" aria-pressed="${p === k}">${n}</button>`).join("")}</div>
+      ${p ? `<div class="fb">${fb}</div>` : ""}</div>`;
+        }).join("");
+        const done = Object.keys(picks1).length,
+          ok = ITEMS.filter((it, i) => picks1[i] === it.c).length;
+        $("score1").innerHTML =
+          `<span class="pill">${done} of ${ITEMS.length} classified</span><span class="pill ok">${ok} right</span>${done - ok ? `<span class="pill bad">${done - ok} to revisit</span>` : ""}`;
+      }
+      $("items").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-k]");
+        if (!b) return;
+        picks1[b.dataset.i] = b.dataset.k;
+        renderItems();
+      });
+      $("reset1").addEventListener("click", () => {
+        picks1 = {};
+        renderItems();
+      });
+
+      // ---------- Tab 2: formulas ----------
+      // Each calculated cell offers formulas; fn(v, x) uses upstream values v and inputs x.
+      const CELLS = [
+        {
+          id: "demand",
+          label: "Demand for roasted beans",
+          unit: L,
+          opts: [
+            {
+              f: "=Intercept + Slope*Price",
+              fn: (v, x) => x.intercept + x.slope * x.price,
+              why: "Right formula for normal prices, but above $17.14 the demand curve goes negative: Starbucks would “sell” negative pounds. Wrap it in MAX(…, 0).",
+            },
+            { f: "=MAX(Intercept + Slope*Price, 0)", fn: (v, x) => Math.max(x.intercept + x.slope * x.price, 0), ok: true },
+            {
+              f: "=Intercept − Slope*Price",
+              fn: (v, x) => x.intercept - x.slope * x.price,
+              why: "Sign error: the slope is already negative (−35M), so subtracting it makes demand grow with price.",
+            },
+          ],
+        },
+        {
+          id: "contract",
+          label: "Green beans bought pre-season",
+          unit: L,
+          opts: [
+            {
+              f: "=Share*Capacity",
+              fn: (v, x) => x.share * x.cap,
+              why: "The share applies to the beans Starbucks needs (demand), not to the roasting capacity.",
+            },
+            {
+              f: "=(1 − Share)*Demand",
+              fn: (v, x) => (1 - x.share) * v.demand,
+              why: "That is the open-market part. The share is the fraction bought pre-season.",
+            },
+            { f: "=Share*Demand", fn: (v, x) => x.share * v.demand, ok: true },
+          ],
+        },
+        {
+          id: "open",
+          label: "Green beans bought on the open market",
+          unit: L,
+          opts: [
+            { f: "=Demand − Contract", fn: (v) => v.demand - v.contract, ok: true },
+            { f: "=Demand", fn: (v) => v.demand, why: "This buys all the beans again on the open market, on top of the contracted ones." },
+            {
+              f: "=Share*Demand",
+              fn: (v, x) => x.share * v.demand,
+              why: "This repeats the contract quantity. The open market covers the rest: Demand − Contract.",
+            },
+          ],
+        },
+        {
+          id: "inHouse",
+          label: "Pounds roasted in-house",
+          unit: L,
+          opts: [
+            {
+              f: "=Capacity",
+              fn: (v, x) => x.cap,
+              why: "Right at $11, where demand (215M) exceeds capacity. But when demand is below 200M, this roasts beans nobody ordered.",
+            },
+            { f: "=MIN(Demand, Capacity)", fn: (v, x) => Math.min(v.demand, x.cap), ok: true },
+            { f: "=IF(Demand < Capacity, Demand, Capacity)", fn: (v, x) => (v.demand < x.cap ? v.demand : x.cap), ok: true },
+            {
+              f: "=MAX(Demand, Capacity)",
+              fn: (v, x) => Math.max(v.demand, x.cap),
+              why: "MAX picks the larger number, so it can exceed the 200M lbs the in-house plant can roast.",
+            },
+          ],
+        },
+        {
+          id: "outs",
+          label: "Pounds sent to outsourced roasters",
+          unit: L,
+          opts: [
+            {
+              f: "=Demand − Capacity",
+              fn: (v, x) => v.demand - x.cap,
+              why: "Right at $11, but when demand is below capacity it goes negative, and negative outsourcing “earns” $5.30 per pound. Use MAX(0, …).",
+            },
+            { f: "=MAX(0, Demand − Capacity)", fn: (v, x) => Math.max(0, v.demand - x.cap), ok: true },
+            { f: "=Demand − InHouse", fn: (v) => v.demand - v.inHouse, ok: true },
+          ],
+        },
+        {
+          id: "revenue",
+          label: "Revenue",
+          unit: M,
+          opts: [
+            { f: "=Demand*Price", fn: (v, x) => v.demand * x.price, ok: true },
+            {
+              f: "=Capacity*Price",
+              fn: (v, x) => x.cap * x.price,
+              why: "Starbucks is paid for what it sells (demand), not for what it could roast.",
+            },
+            {
+              f: "=Demand*(Price − ContractPrice)",
+              fn: (v, x) => v.demand * (x.price - x.contractPrice),
+              why: "This mixes a cost into revenue, and only the contract price at that. Keep revenue and costs in separate cells.",
+            },
+          ],
+        },
+        {
+          id: "sourcing",
+          label: "Sourcing cost (green beans)",
+          unit: M,
+          opts: [
+            {
+              f: "=Demand*SpotPrice",
+              fn: (v, x) => v.demand * x.spot,
+              why: "This prices every pound at the open-market price, ignoring the contracts.",
+            },
+            {
+              f: "=Contract*SpotPrice + Open*ContractPrice",
+              fn: (v, x) => v.contract * x.spot + v.open * x.contractPrice,
+              why: "The prices are swapped: contracted beans cost the contract price.",
+            },
+            { f: "=Contract*ContractPrice + Open*SpotPrice", fn: (v, x) => v.contract * x.contractPrice + v.open * x.spot, ok: true },
+          ],
+        },
+        {
+          id: "roasting",
+          label: "Roasting cost",
+          unit: M,
+          opts: [
+            { f: "=InHouse*InCost + Outsourced*OutCost", fn: (v, x) => v.inHouse * x.inCost + v.outs * x.outCost, ok: true },
+            {
+              f: "=Demand*InCost",
+              fn: (v, x) => v.demand * x.inCost,
+              why: "This roasts everything at the in-house rate, even the pounds above capacity that must be outsourced at $5.30.",
+            },
+            {
+              f: "=Capacity*InCost + Demand*OutCost",
+              fn: (v, x) => x.cap * x.inCost + v.demand * x.outCost,
+              why: "This double-counts: the first 200M lbs are paid twice.",
+            },
+          ],
+        },
+        {
+          id: "fixed",
+          label: "Fixed costs",
+          unit: M,
+          opts: [
+            {
+              f: "=FixedCost",
+              fn: (v, x) => x.fixed,
+              why: "Fine while Starbucks sells something, but the class model switches the fixed cost off when demand is 0: IF(Demand > 0, FixedCost, 0).",
+            },
+            { f: "=IF(Demand > 0, FixedCost, 0)", fn: (v, x) => (v.demand > 0 ? x.fixed : 0), ok: true },
+          ],
+        },
+        {
+          id: "profit",
+          label: "Profit",
+          unit: M,
+          obj: true,
+          opts: [
+            { f: "=Revenue − Sourcing − Roasting", fn: (v) => v.revenue - v.sourcing - v.roasting, why: "The fixed costs are missing." },
+            { f: "=Revenue − Sourcing − Roasting − Fixed", fn: (v) => v.revenue - v.sourcing - v.roasting - v.fixed, ok: true },
+            { f: "=Revenue − Sourcing", fn: (v) => v.revenue - v.sourcing, why: "Roasting and fixed costs are missing." },
+          ],
+        },
+      ];
+      const INPUT_ROWS = [
+        ["Price", "price", "dec", D],
+        ["Share", "share", "dec", P],
+        ["SpotPrice", "spot", "param", D],
+        ["ContractPrice", "contractPrice", "param", D],
+        ["Capacity", "cap", "param", L],
+        ["InCost", "inCost", "param", D],
+        ["OutCost", "outCost", "param", D],
+        ["FixedCost", "fixed", "param", M],
+        ["Intercept", "intercept", "param", L],
+        ["Slope", "slope", "param", (v) => v / 1e6 + "M lbs/$"],
+      ];
+      const TESTS = [
+        { name: "Q1 inputs", x: { ...BASE } },
+        { name: "price $14 (demand 110M lbs, below capacity)", x: { ...BASE, price: 14 } },
+        { name: "price $18 (no demand)", x: { ...BASE, price: 18 } },
+        { name: "price $9, 45% contracted, open market $2.60", x: { ...BASE, price: 9, share: 0.45, spot: 2.6 } },
+      ];
+      let choice2 = {},
+        checked2 = null;
+      function chainValues(x, pick) {
+        const v = {};
+        for (const c of CELLS) {
+          const o = pick(c);
+          v[c.id] = o ? o.fn(v, x) : NaN;
+        }
+        return v;
+      }
+      const refPick = (c) => c.opts.find((o) => o.ok);
+      const userPick = (c) => (choice2[c.id] == null ? null : c.opts[choice2[c.id]]);
+      function renderSheet2() {
+        const v = chainValues(BASE, userPick);
+        let h = `<thead><tr><th>Cell</th><th>Formula</th><th style="text-align:right">Value</th><th></th></tr></thead><tbody><tr class="grp"><td colspan="4">Inputs</td></tr>`;
+        h += INPUT_ROWS.map(
+          ([n, k, t, f]) =>
+            `<tr><td class="mono">${n}</td><td class="small">${t === "dec" ? "decision" : "parameter"}</td><td class="val cell-${t}">${f(BASE[k])}</td><td></td></tr>`
+        ).join("");
+        h += `<tr class="grp"><td colspan="4">Calculations</td></tr>`;
+        h += CELLS.map((c) => {
+          const i = choice2[c.id],
+            st = checked2 && checked2[c.id];
+          const val = i == null ? "" : isNaN(v[c.id]) ? "#VALUE!" : c.unit(v[c.id]);
+          return `<tr><td>${c.label}${c.obj ? ' <span class="small">(objective)</span>' : ""}</td><td><select data-c="${c.id}" aria-label="Formula for ${c.label}"><option value="">Pick a formula…</option>${c.opts.map((o, k) => `<option value="${k}"${i === k ? " selected" : ""}>${esc(o.f)}</option>`).join("")}</select></td>
+      <td class="val${c.obj && i != null ? " cell-obj" : ""}">${val}</td><td class="st ${st ? st.cls : ""}">${st ? st.label : ""}</td></tr>`;
+        }).join("");
+        $("sheet2").innerHTML = h + "</tbody>";
+        const target = calc(BASE).profit,
+          done = CELLS.every((c) => choice2[c.id] != null),
+          mine = v.profit;
+        $("target2").innerHTML =
+          `<div class="tile"><div class="k">Your profit (Q1)</div><div class="v">${done ? M(mine) : "—"}</div></div><div class="tile"><div class="k">Class solution</div><div class="v">${M(target)}</div></div>`;
+      }
+      function check2() {
+        checked2 = {};
+        const notes = [];
+        for (const c of CELLS) {
+          const i = choice2[c.id];
+          if (i == null) {
+            checked2[c.id] = { cls: "warn", label: "missing" };
+            continue;
+          }
+          const o = c.opts[i];
+          if (o.ok) {
+            checked2[c.id] = { cls: "ok", label: "✓" };
+            continue;
+          }
+          // Test this cell alone: feed it the correct upstream values in each test case.
+          let firstFail = null,
+            baseOk = true;
+          TESTS.forEach((t, k) => {
+            const ref = chainValues(t.x, refPick),
+              got = o.fn(ref, t.x),
+              want = ref[c.id];
+            if (Math.abs(got - want) > 1) {
+              if (k === 0) baseOk = false;
+              if (!firstFail) firstFail = { t, got, want };
+            }
+          });
+          checked2[c.id] = { cls: "no", label: baseOk ? "fails a test" : "✗" };
+          notes.push(
+            `<li><b>${c.label}</b>: <span class="mono">${esc(o.f)}</span>. ${baseOk ? `It gives the right number with Q1 inputs, but with ${firstFail.t.name} it gives ${c.unit(firstFail.got)} instead of ${c.unit(firstFail.want)}.` : `With Q1 inputs it gives ${c.unit(firstFail.got)} instead of ${c.unit(firstFail.want)}.`} ${esc(o.why)}</li>`
+          );
+        }
+        const missing = CELLS.filter((c) => choice2[c.id] == null).length;
+        let h = "";
+        if (!notes.length && !missing)
+          h = `<p class="result ok">Your model is correct</p><p style="margin:6px 0 0;font-size:.92rem">Every formula holds up in all four tests. Head to <b>What-if and data tables</b> to use it.</p>`;
+        else {
+          h = `<p class="result ${notes.length ? "no" : "info"}">${notes.length ? `${notes.length} formula${notes.length > 1 ? "s" : ""} to fix` : "Almost there"}</p>`;
+          if (missing)
+            h += `<p class="small" style="margin:4px 0 8px">${missing} cell${missing > 1 ? "s" : ""} still need${missing > 1 ? "" : "s"} a formula.</p>`;
+          if (notes.length) h += `<ul class="fbl">${notes.join("")}</ul>`;
+        }
+        $("fb2").innerHTML = h;
+        renderSheet2();
+      }
+      $("sheet2").addEventListener("change", (e) => {
+        const s = e.target.closest("select[data-c]");
+        if (!s) return;
+        choice2[s.dataset.c] = s.value === "" ? null : +s.value;
+        checked2 = null;
+        $("fb2").innerHTML = "";
+        renderSheet2();
+      });
+      $("check2").addEventListener("click", check2);
+      $("reveal2").addEventListener("click", () => {
+        CELLS.forEach((c) => {
+          choice2[c.id] = c.opts.findIndex((o) => o.ok);
+        });
+        check2();
+      });
+      $("reset2").addEventListener("click", () => {
+        choice2 = {};
+        checked2 = null;
+        $("fb2").innerHTML = "";
+        renderSheet2();
+      });
+
+      // ---------- Tab 3: what-if ----------
+      const X = { ...BASE };
+      let chart = "price";
+      function syncInputs() {
+        $("o-price").textContent = D(X.price);
+        $("o-share").textContent = P(X.share);
+        $("o-spot").textContent = D(X.spot);
+        $("o-cap").textContent = X.cap / 1e6 + "M lbs";
+        $("o-newprice").textContent = D(X.newPrice);
+        $("newprice-row").hidden = !X.mkt;
+        $("i-spot").disabled = X.scen;
+        $("sharenote").innerHTML =
+          X.share < 0.4 - 1e-9 || X.share > 0.7 + 1e-9
+            ? '<span style="color:var(--bad)">Outside the allowed 40% to 70% range (constraint).</span>'
+            : "Allowed range: 40% to 70% (constraint).";
+      }
+      function renderSheet3() {
+        const r = calc(X),
+          rows = [
+            ["grp", "Sales"],
+            ["Demand (current market)", L(r.demand)],
+            ...(X.mkt ? [[`Demand (market ${X.mkt})`, L(r.newDemand)]] : []),
+            ["grp", "Sourcing"],
+            ["Bought pre-season", L(r.contract)],
+            ["Bought on the open market", L(r.open)],
+            ["grp", "Roasting"],
+            ["Roasted in-house", L(r.inHouse)],
+            ["Outsourced roasting", L(r.outs)],
+            ["grp", "Profit and loss"],
+            ["Revenue", M(r.revenue)],
+            [X.tier ? "Pre-season cost (Q5 tiers)" : "Pre-season cost", M(-r.contractCost)],
+            ["Open-market cost", M(-r.openCost)],
+            ["Roasting cost", M(-r.roasting)],
+            ["Fixed costs", M(-r.fixed)],
+            ...(X.mkt ? [["Expansion cost", M(-r.expansion)]] : []),
+            ["obj", "Profit", M(r.profit)],
+          ];
+        $("sheet3").innerHTML =
+          "<tbody>" +
+          rows
+            .map((rw) =>
+              rw[0] === "grp"
+                ? `<tr class="grp"><td colspan="2">${rw[1]}</td></tr>`
+                : rw[0] === "obj"
+                  ? `<tr><td><b>${rw[1]}</b>${X.scen ? ' <span class="small">(at the slider values)</span>' : ""}</td><td class="val cell-obj">${rw[2]}</td></tr>`
+                  : `<tr><td>${rw[0]}</td><td class="val">${rw[1]}</td></tr>`
+            )
+            .join("") +
+          "</tbody>";
+        const ex = expected(X);
+        $("target3").innerHTML =
+          `<div class="tile"><div class="k">${X.scen ? "Expected profit" : "Profit"}</div><div class="v">${M(ex)}</div></div><div class="tile"><div class="k">vs Q1 model</div><div class="v" style="color:${ex - calc(BASE).profit >= 0 ? "var(--good)" : "var(--bad)"}">${ex - calc(BASE).profit >= 0 ? "+" : ""}${M(ex - calc(BASE).profit)}</div></div>`;
+      }
+      function ticks(lo, hi, n = 6) {
+        const span = hi - lo || 1,
+          s0 = span / n,
+          mag = 10 ** Math.floor(Math.log10(s0)),
+          e = s0 / mag,
+          st = (e >= 7.5 ? 10 : e >= 3.5 ? 5 : e >= 1.5 ? 2 : 1) * mag,
+          out = [];
+        for (let v = Math.ceil(lo / st) * st; v <= hi + 1e-9; v += st) out.push(+v.toFixed(10));
+        return out;
+      }
+      const sc = (d0, d1, r0, r1) => (v) => r0 + ((v - d0) / (d1 - d0 || 1)) * (r1 - r0);
+      let hover3 = null;
+      function lineChart(xs, f, xLabel, xFmt, cur) {
+        const ys = xs.map(f),
+          lo = Math.min(...ys),
+          hi = Math.max(...ys),
+          pad = (hi - lo) * 0.08 || 1e7;
+        const Lf = 70,
+          R = 620,
+          T = 16,
+          B = 280,
+          x = sc(xs[0], xs[xs.length - 1], Lf, R),
+          y = sc(lo - pad, hi + pad, B, T);
+        let g = ticks(lo - pad, hi + pad, 5)
+          .map(
+            (t) =>
+              `<line class="gl" x1="${Lf}" x2="${R}" y1="${y(t)}" y2="${y(t)}"/><text class="ax" x="${Lf - 8}" y="${y(t) + 4}" text-anchor="end">${M(t).replace(".0M", "M")}</text>`
+          )
+          .join("");
+        if (lo - pad < 0 && hi + pad > 0) g += `<line x1="${Lf}" x2="${R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)"/>`;
+        g +=
+          `<line class="base" x1="${Lf}" x2="${R}" y1="${B}" y2="${B}"/>` +
+          ticks(xs[0], xs[xs.length - 1], 8)
+            .map((t) => `<text class="ax" x="${x(t)}" y="${B + 16}" text-anchor="middle">${xFmt(t)}</text>`)
+            .join("");
+        g += `<text class="axt" x="${(Lf + R) / 2}" y="${B + 34}" text-anchor="middle">${xLabel}</text>`;
+        g += `<path d="${xs.map((v, i) => (i ? "L" : "M") + x(v).toFixed(1) + "," + y(ys[i]).toFixed(1)).join("")}" fill="none" stroke="var(--s1)" stroke-width="2"/>`;
+        let bi = 0;
+        ys.forEach((v, i) => {
+          if (v > ys[bi]) bi = i;
+        });
+        g += `<circle cx="${x(xs[bi])}" cy="${y(ys[bi])}" r="5" fill="var(--s3)" stroke="var(--panel)" stroke-width="2"/><text class="dl" x="${x(xs[bi])}" y="${y(ys[bi]) - 10}" text-anchor="middle">best ${xFmt(xs[bi])}: ${M(ys[bi])}</text>`;
+        const cy = f(cur);
+        g += `<circle cx="${x(cur)}" cy="${y(cy)}" r="6" fill="var(--s2)" stroke="var(--panel)" stroke-width="2"/><text class="dl" x="${x(cur) + (x(cur) > 500 ? -10 : 10)}" y="${y(cy) + 18}" text-anchor="${x(cur) > 500 ? "end" : "start"}">now ${M(cy)}</text>`;
+        g += `<line id="hx" x1="0" x2="0" y1="${T}" y2="${B}" stroke="var(--muted)" opacity="0"/>`;
+        hover3 = (evt) => {
+          const pt = svgPt(evt);
+          const v = xs[0] + ((Math.min(R, Math.max(Lf, pt.x)) - Lf) / (R - Lf)) * (xs[xs.length - 1] - xs[0]);
+          const k = xs.reduce((b, s, i) => (Math.abs(s - v) < Math.abs(xs[b] - v) ? i : b), 0);
+          const hx = $("hx");
+          hx.setAttribute("x1", x(xs[k]));
+          hx.setAttribute("x2", x(xs[k]));
+          hx.setAttribute("opacity", 0.6);
+          $("read3").textContent = `${xLabel.split(" (")[0]} ${xFmt(xs[k])}: ${X.scen ? "expected " : ""}profit ${M(ys[k])}`;
+        };
+        return g;
+      }
+      function svgPt(evt) {
+        const s = $("chart3"),
+          p = s.createSVGPoint();
+        p.x = evt.clientX;
+        p.y = evt.clientY;
+        return p.matrixTransform(s.getScreenCTM().inverse());
+      }
+      function heatmap() {
+        const shares = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+          spots = [];
+        for (let s = 0.5; s <= 3.0001; s += 0.25) spots.push(+s.toFixed(2));
+        const vals = shares.map((a) => spots.map((s) => expected({ ...X, share: a, spot: s }))),
+          flat = vals.flat(),
+          lo = Math.min(...flat),
+          hi = Math.max(...flat);
+        const Lf = 70,
+          T = 24,
+          cw = 50,
+          ch = 23;
+        let g = `<text class="axt" x="${Lf + (cw * spots.length) / 2}" y="14" text-anchor="middle">Open-market price ($/lb)</text>`;
+        spots.forEach((s, j) => {
+          g += `<text class="ax" x="${Lf + j * cw + cw / 2}" y="${T + 12}" text-anchor="middle">${s.toFixed(2)}</text>`;
+        });
+        shares.forEach((a, i) => {
+          const y0 = T + 18 + i * ch,
+            allowed = a >= 0.4 - 1e-9 && a <= 0.7 + 1e-9;
+          g += `<text class="ax" x="${Lf - 8}" y="${y0 + 15}" text-anchor="end"${allowed ? ' style="font-weight:600;fill:var(--ink)"' : ""}>${Math.round(a * 100)}%</text>`;
+          spots.forEach((s, j) => {
+            const v = vals[i][j],
+              t = (v - lo) / (hi - lo || 1);
+            g += `<rect x="${Lf + j * cw + 1}" y="${y0 + 1}" width="${cw - 2}" height="${ch - 2}" rx="2" fill="var(--s1)" fill-opacity="${(0.08 + 0.85 * t).toFixed(2)}" opacity="${allowed ? 1 : 0.45}" data-tip="Share ${Math.round(a * 100)}%, open market $${s.toFixed(2)}: ${M(v)}${allowed ? "" : " (not allowed)"}"/>`;
+            g += `<text class="hm" x="${Lf + j * cw + cw / 2}" y="${y0 + 15}" text-anchor="middle" fill="${allowed && t > 0.55 ? "#fff" : allowed ? "var(--ink)" : "var(--muted)"}" pointer-events="none">${(v / 1e6).toFixed(0)}</text>`;
+          });
+        });
+        // Best allowed share for each open-market price
+        spots.forEach((s, j) => {
+          let bi = -1;
+          shares.forEach((a, i) => {
+            if (a >= 0.4 - 1e-9 && a <= 0.7 + 1e-9 && (bi < 0 || vals[i][j] > vals[bi][j])) bi = i;
+          });
+          g += `<rect x="${Lf + j * cw + 1}" y="${T + 18 + bi * ch + 1}" width="${cw - 2}" height="${ch - 2}" rx="2" fill="none" stroke="var(--s2)" stroke-width="2.5" pointer-events="none"/>`;
+        });
+        g += `<text class="axt" x="16" y="${T + 18 + (ch * shares.length) / 2}" transform="rotate(-90 16 ${T + 18 + (ch * shares.length) / 2})" text-anchor="middle">Pre-season share</text>`;
+        g += `<text class="ax" x="${Lf}" y="${T + 18 + ch * shares.length + 18}">Profit in $M. Bold rows are the allowed shares (40% to 70%).</text><text class="ax" x="${Lf}" y="${T + 18 + ch * shares.length + 34}">Orange outline: the best allowed share for each open-market price.</text>`;
+        hover3 = null;
+        return g;
+      }
+      function waterfall() {
+        const r = calc(X),
+          steps = [
+            ["Revenue", r.revenue],
+            ["Pre-season", -r.contractCost],
+            ["Open market", -r.openCost],
+            ["Roasting", -r.roasting],
+            ["Fixed", -r.fixed],
+            ...(X.mkt ? [["Expansion", -r.expansion]] : []),
+          ];
+        const Lf = 70,
+          R = 620,
+          T = 16,
+          B = 280,
+          n = steps.length + 1,
+          bw = (R - Lf) / n;
+        const top = r.revenue * 1.05,
+          y = sc(Math.min(0, r.profit * 1.1), top, B, T);
+        let g = ticks(Math.min(0, r.profit * 1.1), top, 5)
+          .map(
+            (t) =>
+              `<line class="gl" x1="${Lf}" x2="${R}" y1="${y(t)}" y2="${y(t)}"/><text class="ax" x="${Lf - 8}" y="${y(t) + 4}" text-anchor="end">${M(t).replace(".0M", "M")}</text>`
+          )
+          .join("");
+        let run = 0;
+        steps.forEach(([k, v], i) => {
+          const a = run,
+            b = run + v;
+          run = b;
+          const x0 = Lf + i * bw + 8;
+          g += `<rect x="${x0}" y="${y(Math.max(a, b))}" width="${bw - 16}" height="${Math.max(1, Math.abs(y(a) - y(b)))}" rx="3" fill="${v >= 0 ? "var(--s1)" : "var(--s2)"}" data-tip="${k}: ${M(v)}"/>`;
+          g += `<text class="ax" x="${x0 + (bw - 16) / 2}" y="${B + 16}" text-anchor="middle">${k}</text><text class="dl" x="${x0 + (bw - 16) / 2}" y="${y(Math.max(a, b)) - 6}" text-anchor="middle">${M(v)}</text>`;
+          if (i < steps.length)
+            g += `<line x1="${x0 + bw - 16}" x2="${x0 + bw}" y1="${y(b)}" y2="${y(b)}" stroke="var(--muted)" stroke-dasharray="2 2"/>`;
+        });
+        const x0 = Lf + steps.length * bw + 8;
+        g += `<rect x="${x0}" y="${y(Math.max(0, r.profit))}" width="${bw - 16}" height="${Math.max(1, Math.abs(y(r.profit) - y(0)))}" rx="3" fill="var(--s3)" data-tip="Profit: ${M(r.profit)}"/><text class="ax" x="${x0 + (bw - 16) / 2}" y="${B + 16}" text-anchor="middle">Profit</text><text class="dl" x="${x0 + (bw - 16) / 2}" y="${y(Math.max(0, r.profit)) - 6}" text-anchor="middle">${M(r.profit)}</text>`;
+        g += `<line class="base" x1="${Lf}" x2="${R}" y1="${y(0)}" y2="${y(0)}"/>`;
+        hover3 = null;
+        return g;
+      }
+      const HOWTO = {
+        price:
+          "Excel: list prices in a column, put =Profit in the cell above-right, select the block, then Data → What-If Analysis → Data Table with column input cell = Price.",
+        spot: "Excel: same one-way data table with column input cell = open-market price. The line is straight: each extra $1 on the open market costs one dollar per pound bought there.",
+        two: "Excel: a two-way data table. Shares down the column, open-market prices across the row, =Profit in the corner; row input cell = open-market price, column input cell = share.",
+        water:
+          "Revenue minus each cost gives profit. Watch the open-market bar when you move the share or the open-market price, and the roasting bar when demand crosses the 200M lb capacity.",
+      };
+      function renderChart3() {
+        document.querySelectorAll("#charttabs button").forEach((b) => b.classList.toggle("on", b.dataset.c === chart));
+        let g = "";
+        if (chart === "price") {
+          const xs = [];
+          for (let p = 6; p <= 16.0001; p += 0.25) xs.push(+p.toFixed(2));
+          g = lineChart(
+            xs,
+            (p) => expected({ ...X, price: p }),
+            "Roasted bean price ($/lb)",
+            (v) => "$" + v,
+            X.price
+          );
+        }
+        if (chart === "spot") {
+          const xs = [];
+          for (let s = 0.5; s <= 3.0001; s += 0.05) xs.push(+s.toFixed(2));
+          g = X.scen
+            ? '<text class="ax" x="320" y="150" text-anchor="middle">With scenarios on, the open-market price comes from each scenario. Turn Q7 off to see this table.</text>'
+            : lineChart(
+                xs,
+                (s) => calc({ ...X, spot: s }).profit,
+                "Open-market price ($/lb)",
+                (v) => "$" + v.toFixed(2),
+                X.spot
+              );
+          if (X.scen) hover3 = null;
+        }
+        if (chart === "two") g = heatmap();
+        if (chart === "water") g = waterfall();
+        $("chart3").innerHTML = g;
+        $("read3").textContent = hover3 ? "Hover over the chart to read the data table." : "";
+        $("howto3").textContent = HOWTO[chart];
+      }
+      function render3() {
+        syncInputs();
+        renderSheet3();
+        renderChart3();
+      }
+      const bind = (id, key, f = Number) =>
+        $(id).addEventListener("input", (e) => {
+          X[key] = f(e.target.value);
+          render3();
+        });
+      bind("i-price", "price");
+      bind("i-share", "share");
+      bind("i-spot", "spot");
+      bind("i-newprice", "newPrice");
+      $("i-cap").addEventListener("input", (e) => {
+        X.cap = +e.target.value * 1e6;
+        render3();
+      });
+      $("x-tier").addEventListener("change", (e) => {
+        X.tier = e.target.checked;
+        render3();
+      });
+      $("x-scen").addEventListener("change", (e) => {
+        X.scen = e.target.checked;
+        render3();
+      });
+      $("x-mkt").addEventListener("change", (e) => {
+        X.mkt = +e.target.value;
+        render3();
+      });
+      $("reset3").addEventListener("click", () => {
+        Object.assign(X, BASE);
+        $("i-price").value = 11;
+        $("i-share").value = 0.6;
+        $("i-spot").value = 1.75;
+        $("i-cap").value = 200;
+        $("i-newprice").value = 10;
+        $("x-tier").checked = false;
+        $("x-scen").checked = false;
+        $("x-mkt").value = 0;
+        render3();
+      });
+      $("charttabs").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-c]");
+        if (b) {
+          chart = b.dataset.c;
+          renderChart3();
+        }
+      });
+      $("chart3").addEventListener("pointermove", (e) => hover3 && hover3(e));
+      $("chart3").addEventListener("pointerleave", () => {
+        const h = $("hx");
+        if (h) h.setAttribute("opacity", 0);
+      });
+
+      // Tooltips for marks with data-tip
+      const tip = document.createElement("div");
+      tip.style.cssText =
+        "position:fixed;pointer-events:none;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.12);z-index:10;display:none";
+      document.body.appendChild(tip);
+      document.addEventListener("pointermove", (e) => {
+        const t = e.target.closest && e.target.closest("[data-tip]");
+        if (!t) {
+          tip.style.display = "none";
+          return;
+        }
+        tip.textContent = t.dataset.tip;
+        tip.style.display = "block";
+        const w = tip.offsetWidth;
+        tip.style.left = Math.min(e.clientX + 12, innerWidth - w - 8) + "px";
+        tip.style.top = e.clientY - 36 + "px";
+      });
+
+      // ---------- Tabs ----------
+      function showTab(t) {
+        document.querySelectorAll("[data-tab]").forEach((el) => {
+          el.hidden = +el.dataset.tab !== t;
+        });
+        document.querySelectorAll(".tab").forEach((el) => el.setAttribute("aria-selected", String(+el.dataset.t === t)));
+        try {
+          localStorage.setItem("sml:tab", t);
+        } catch (e) {}
+        if (t === 3) render3();
+      }
+      $("tabs").addEventListener("click", (e) => {
+        const b = e.target.closest(".tab");
+        if (b) showTab(+b.dataset.t);
+      });
+      renderItems();
+      renderSheet2();
+      let t0 = 1;
+      try {
+        t0 = +localStorage.getItem("sml:tab") || 1;
+      } catch (e) {}
+      showTab(t0 >= 1 && t0 <= 3 ? t0 : 1);
+    </script>
+  </body>
+</html>
