@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Interactive LP geometry and sensitivity analysis explorer for MBA 60310, built on the dry-bag knapsack example."
+    />
+    <title>LP Geometry Lab</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap"
+    />
+    <style>
+      /* Layout: workbench. Plot and "what changed" left, model and controls right, Solver-style report below. */
+      :root {
+        --bg: #f4f6f9;
+        --panel: #ffffff;
+        --ink: #172031;
+        --muted: #5a6577;
+        --line: #d8dee7;
+        --grid: #e9edf2;
+        --accent: #1f4fa3;
+        --accent-soft: #e3ebf8;
+        --obj: #b56f00;
+        --region: #d6e3f6;
+        --region-edge: #7f9fd3;
+        --good: #1b7a48;
+        --bad: #b3261e;
+        --warn: #9a6a00;
+        --ghost: #8a94a3;
+        --c1: #b3261e;
+        --c2: #0d7680;
+        --c3: #7b3fa0;
+        --c4: #4d6b1f;
+        --c5: #a1306b;
+        --f-display: "IBM Plex Serif", Georgia, serif;
+        --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+        --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f141b;
+          --panel: #161d27;
+          --ink: #e5eaf1;
+          --muted: #98a4b5;
+          --line: #2a3442;
+          --grid: #1e2732;
+          --accent: #8ab0ff;
+          --accent-soft: #1d2a44;
+          --obj: #f0b44c;
+          --region: #1c2d4a;
+          --region-edge: #5b7fc0;
+          --good: #5fcf8f;
+          --bad: #ff8a80;
+          --warn: #e6c25c;
+          --ghost: #7d8897;
+          --c1: #ff8a80;
+          --c2: #5fd0d8;
+          --c3: #c79bea;
+          --c4: #a9d36a;
+          --c5: #f08ac0;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f141b;
+        --panel: #161d27;
+        --ink: #e5eaf1;
+        --muted: #98a4b5;
+        --line: #2a3442;
+        --grid: #1e2732;
+        --accent: #8ab0ff;
+        --accent-soft: #1d2a44;
+        --obj: #f0b44c;
+        --region: #1c2d4a;
+        --region-edge: #5b7fc0;
+        --good: #5fcf8f;
+        --bad: #ff8a80;
+        --warn: #e6c25c;
+        --ghost: #7d8897;
+        --c1: #ff8a80;
+        --c2: #5fd0d8;
+        --c3: #c79bea;
+        --c4: #a9d36a;
+        --c5: #f08ac0;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
+        font-size: 15px;
+        line-height: 1.5;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        padding-block: 20px 40px;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+      header h1 {
+        font-family: var(--f-display);
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin: 0;
+        text-wrap: balance;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        max-width: 75ch;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      .panel h2 {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-weight: 600;
+      }
+      .top {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      .side {
+        display: grid;
+        gap: 18px;
+        min-width: 0;
+      }
+      .bottom {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+      }
+      @media (max-width: 920px) {
+        .top,
+        .bottom {
+          grid-template-columns: 1fr;
+        }
+      }
+      svg {
+        width: 100%;
+        height: auto;
+        display: block;
+        touch-action: none;
+      }
+      .status {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .pill {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid currentColor;
+      }
+      .pill.ok {
+        color: var(--good);
+      }
+      .pill.bad {
+        color: var(--bad);
+      }
+      .pill.warn {
+        color: var(--warn);
+      }
+      .zline {
+        font-family: var(--f-mono);
+        font-size: 0.9rem;
+      }
+      .readout {
+        font-family: var(--f-mono);
+        font-size: 0.82rem;
+        color: var(--muted);
+        min-height: 1.4em;
+        margin-top: 6px;
+      }
+      .sweep {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+        font-size: 0.88rem;
+      }
+      .sweep output {
+        font-family: var(--f-mono);
+        min-width: 7ch;
+        text-align: right;
+      }
+      .corners {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+        align-items: center;
+      }
+      .corner {
+        font-family: var(--f-mono);
+        font-size: 0.78rem;
+        padding: 2px 8px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--muted);
+      }
+      .corner.best {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        font-weight: 500;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .legend span::before {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 0;
+        border-top: 2px solid;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      .legend .lg-obj::before {
+        border-color: var(--obj);
+      }
+      .legend .lg-orig::before {
+        border-color: var(--ghost);
+        border-top-style: dashed;
+      }
+      .legend .lg-sweep::before {
+        border-color: var(--obj);
+        border-top-style: dotted;
+      }
+      label.small,
+      .small {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .row {
+        display: grid;
+        gap: 6px;
+        padding: 10px 0;
+        border-top: 1px solid var(--line);
+      }
+      .row:first-of-type {
+        border-top: 0;
+      }
+      .eq {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--f-mono);
+        font-size: 0.9rem;
+      }
+      .eq input[type="number"] {
+        width: 4.6em;
+      }
+      input[type="number"],
+      input[type="text"],
+      select {
+        font: inherit;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 3px 6px;
+      }
+      input[type="text"] {
+        font-family: var(--f-body);
+        font-size: 0.88rem;
+        width: 100%;
+        min-width: 0;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+      .swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex: none;
+        display: inline-block;
+      }
+      .name-line {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      button {
+        font: inherit;
+        font-size: 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        color: var(--ink);
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      button.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .toolbar select {
+        flex: 1 1 200px;
+      }
+      .rhs {
+        display: grid;
+        grid-template-columns: 2.2em 1fr;
+        gap: 8px;
+        align-items: center;
+      }
+      .model {
+        font-family: var(--f-display);
+        font-style: italic;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        padding: 4px 0 10px;
+      }
+      .model .tag {
+        font-family: var(--f-body);
+        font-style: normal;
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-left: 8px;
+      }
+      .model .st {
+        display: inline-block;
+        width: 2.4em;
+        font-style: normal;
+        color: var(--muted);
+      }
+      .scen {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .change {
+        font-size: 0.9rem;
+        display: grid;
+        gap: 8px;
+      }
+      .change .verdict {
+        font-weight: 600;
+      }
+      .change .verdict.same {
+        color: var(--good);
+      }
+      .change .verdict.moved {
+        color: var(--bad);
+      }
+      .change .verdict.info {
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 2px 14px;
+        font-size: 0.85rem;
+      }
+      .kv dt {
+        color: var(--muted);
+      }
+      .kv dd {
+        margin: 0;
+        font-family: var(--f-mono);
+      }
+      .tablewrap {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.85rem;
+        font-variant-numeric: tabular-nums;
+      }
+      th,
+      td {
+        padding: 6px 8px;
+        text-align: right;
+        border-bottom: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+      thead th {
+        white-space: normal;
+        vertical-align: bottom;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      td {
+        font-family: var(--f-mono);
+      }
+      td:first-child {
+        font-family: var(--f-body);
+      }
+      tbody tr:hover {
+        background: var(--accent-soft);
+      }
+      td.chg {
+        color: var(--warn);
+        font-weight: 500;
+      }
+      .caption {
+        font-family: var(--f-display);
+        font-size: 1rem;
+        margin: 14px 0 6px;
+      }
+      .caption:first-of-type {
+        margin-top: 0;
+      }
+      .note {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin: 8px 0 0;
+      }
+      ol.try {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 10px;
+        font-size: 0.9rem;
+      }
+      ol.try b {
+        font-weight: 600;
+      }
+      .axis-label,
+      .tick {
+        fill: var(--muted);
+        font-family: var(--f-body);
+        font-size: 12px;
+      }
+      .cons-label {
+        font-family: var(--f-body);
+        font-size: 12px;
+        font-weight: 600;
+        paint-order: stroke;
+        stroke: var(--panel);
+        stroke-width: 4px;
+      }
+      .pt-label {
+        font-family: var(--f-mono);
+        font-size: 11.5px;
+        fill: var(--ink);
+        paint-order: stroke;
+        stroke: var(--panel);
+        stroke-width: 4px;
+      }
+      .ghost-label {
+        font-family: var(--f-body);
+        font-size: 11px;
+        fill: var(--ghost);
+        paint-order: stroke;
+        stroke: var(--panel);
+        stroke-width: 4px;
+      }
+      .dim {
+        opacity: 0.2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>LP Geometry Lab</h1>
+        <p>
+          The dry-bag knapsack from class, drawn. Change one value at a time and watch the feasible region, the optimal corner and Solver's
+          sensitivity report respond. MBA 60310, Optimization module.
+        </p>
+      </header>
+
+      <section class="top">
+        <div class="panel">
+          <div class="status" id="status"></div>
+          <svg id="plot" viewBox="0 0 600 500" role="img" aria-label="Feasible region, constraints and objective line"></svg>
+          <div class="legend">
+            <span class="lg-obj">Objective line at the optimum</span><span class="lg-sweep">Objective line you slide</span
+            ><span class="lg-orig" id="lg-orig">Original model</span>
+          </div>
+          <div class="readout" id="readout">Hover over the plot to check any point.</div>
+          <div class="sweep">
+            <label for="zslider" class="small">Slide the objective line</label>
+            <input id="zslider" type="range" min="0" max="100" step="0.1" value="0" />
+            <output id="zout">Z = 0</output>
+          </div>
+          <div class="corners" id="corners"></div>
+        </div>
+
+        <div class="side">
+          <div class="panel">
+            <div class="toolbar">
+              <label for="preset" class="small">Example</label>
+              <select id="preset">
+                <option value="knapsack">Dry-bag knapsack (class example)</option>
+                <option value="puzzle">Shadow-price puzzle: max Y with X ≤ a</option>
+                <option value="degenerate">Knapsack with a degenerate corner</option>
+                <option value="multiple">Knapsack with alternative optima</option>
+                <option value="unbounded">Knapsack without capacity limits (unbounded)</option>
+                <option value="infeasible">Knapsack that can't be packed (infeasible)</option>
+              </select>
+              <button id="reset" type="button">Reset</button>
+            </div>
+            <div class="model" id="model" aria-live="polite"></div>
+            <h2>One change at a time (from the slides)</h2>
+            <div class="scen" id="scen"></div>
+          </div>
+          <div class="panel">
+            <h2>What changed?</h2>
+            <div class="change" id="change"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="top">
+        <div class="panel">
+          <h2>Sensitivity report</h2>
+          <p class="note" style="margin: 0 0 10px">
+            Same layout as Excel Solver's Sensitivity Report for the model as it stands now. 1E+30 means "no limit". Values that differ from the
+            original model are highlighted.
+          </p>
+          <div id="report"></div>
+        </div>
+        <div class="panel">
+          <h2>Edit the model</h2>
+          <div class="row">
+            <div class="name-line">
+              <span class="small" style="font-family: var(--f-mono)">x₁</span><input id="nx" type="text" aria-label="Name of x1" />
+            </div>
+            <div class="name-line">
+              <span class="small" style="font-family: var(--f-mono)">x₂</span><input id="ny" type="text" aria-label="Name of x2" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="eq">
+              <select id="sense" aria-label="Maximize or minimize">
+                <option value="max">max</option>
+                <option value="min">min</option>
+              </select>
+              Z = <input id="c1" type="number" step="0.1" aria-label="Objective coefficient of x1" /> x₁ +
+              <input id="c2" type="number" step="0.1" aria-label="Objective coefficient of x2" /> x₂
+            </div>
+            <div class="rhs"><label for="c1r" class="small">c₁</label><input id="c1r" type="range" min="-10" max="20" step="0.1" /></div>
+            <div class="rhs"><label for="c2r" class="small">c₂</label><input id="c2r" type="range" min="-10" max="20" step="0.1" /></div>
+          </div>
+          <div id="cons"></div>
+          <button id="add" type="button">Add constraint</button>
+          <p class="note">x₁, x₂ ≥ 0 always apply.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Try this</h2>
+        <ol class="try" id="try"></ol>
+      </section>
+    </div>
+
+    <script>
+      (function () {
+        const PRESETS = {
+          knapsack: {
+            sense: "max",
+            names: ["Item 1 (units)", "Item 2 (units)"],
+            c: [5, 6],
+            cons: [
+              { name: "Weight (kg)", a: [1, 2], op: "<=", b: 6 },
+              { name: "Volume (lt)", a: [1, 1], op: "<=", b: 5 },
+              { name: "Min items", a: [1, 1], op: ">=", b: 1 },
+            ],
+            scenarios: [
+              {
+                label: "Objective 4x₁ + 6x₂",
+                apply: (s) => {
+                  s.c = [4, 6];
+                },
+              },
+              {
+                label: "Objective 2x₁ + 6x₂",
+                apply: (s) => {
+                  s.c = [2, 6];
+                },
+              },
+              {
+                label: "Volume ≤ 6",
+                apply: (s) => {
+                  s.cons[1].b = 6;
+                },
+              },
+              {
+                label: "Volume ≤ 4",
+                apply: (s) => {
+                  s.cons[1].b = 4;
+                },
+              },
+              {
+                label: "Min items ≥ 2",
+                apply: (s) => {
+                  s.cons[2].b = 2;
+                },
+              },
+              {
+                label: "Weight ≤ 7 (+1 kg)",
+                apply: (s) => {
+                  s.cons[0].b = 7;
+                },
+              },
+            ],
+          },
+          puzzle: {
+            sense: "max",
+            names: ["X", "Y"],
+            c: [0, 1],
+            cons: [
+              { name: "Y ≤ 2X", a: [-2, 1], op: "<=", b: 0 },
+              { name: "Y ≤ X + 1", a: [-1, 1], op: "<=", b: 1 },
+              { name: "X ≤ a", a: [1, 0], op: "<=", b: 0.5 },
+            ],
+            scenarios: [
+              {
+                label: "a = 0.5",
+                apply: (s) => {
+                  s.cons[2].b = 0.5;
+                },
+              },
+              {
+                label: "a = 0.8",
+                apply: (s) => {
+                  s.cons[2].b = 0.8;
+                },
+              },
+              {
+                label: "a = 1",
+                apply: (s) => {
+                  s.cons[2].b = 1;
+                },
+              },
+              {
+                label: "a = 1.5",
+                apply: (s) => {
+                  s.cons[2].b = 1.5;
+                },
+              },
+            ],
+          },
+          degenerate: {
+            sense: "max",
+            names: ["Item 1 (units)", "Item 2 (units)"],
+            c: [5, 6],
+            cons: [
+              { name: "Weight (kg)", a: [1, 2], op: "<=", b: 6 },
+              { name: "Volume (lt)", a: [1, 1], op: "<=", b: 5 },
+              { name: "Min items", a: [1, 1], op: ">=", b: 1 },
+              { name: "Pocket space", a: [1, 4], op: "<=", b: 8 },
+            ],
+            scenarios: [
+              {
+                label: "Weight ≤ 7",
+                apply: (s) => {
+                  s.cons[0].b = 7;
+                },
+              },
+              {
+                label: "Weight ≤ 5",
+                apply: (s) => {
+                  s.cons[0].b = 5;
+                },
+              },
+              {
+                label: "Pocket space ≤ 9",
+                apply: (s) => {
+                  s.cons[3].b = 9;
+                },
+              },
+            ],
+          },
+          multiple: {
+            sense: "max",
+            names: ["Item 1 (units)", "Item 2 (units)"],
+            c: [3, 6],
+            cons: [
+              { name: "Weight (kg)", a: [1, 2], op: "<=", b: 6 },
+              { name: "Volume (lt)", a: [1, 1], op: "<=", b: 5 },
+              { name: "Min items", a: [1, 1], op: ">=", b: 1 },
+            ],
+            scenarios: [],
+          },
+          unbounded: {
+            sense: "max",
+            names: ["Item 1 (units)", "Item 2 (units)"],
+            c: [5, 6],
+            cons: [{ name: "Min items", a: [1, 1], op: ">=", b: 1 }],
+            scenarios: [],
+          },
+          infeasible: {
+            sense: "max",
+            names: ["Item 1 (units)", "Item 2 (units)"],
+            c: [5, 6],
+            cons: [
+              { name: "Weight (kg)", a: [1, 2], op: "<=", b: 6 },
+              { name: "Volume (lt)", a: [1, 1], op: "<=", b: 5 },
+              { name: "Min items", a: [1, 1], op: ">=", b: 7 },
+            ],
+            scenarios: [],
+          },
+        };
+        const TRY = {
+          knapsack: [
+            "<b>Find the optimum by hand.</b> Move the objective slider up from 0. The last corner the line touches before it leaves the region is the optimal solution: 4 units of Item 1 and 1 of Item 2, Z = 26.",
+            '<b>Range of optimality.</b> Click "Objective 4x₁ + 6x₂". The objective line tilts but the corner stays put, because 4 is within 5 − 2 (allowable decrease). Then click "Objective 2x₁ + 6x₂": 2 is outside the range and the optimum jumps to (0, 3).',
+            '<b>Shadow price.</b> Click "Weight ≤ 7". Z rises from 26 to 27, exactly the weight shadow price of 1. Drag the weight RHS further. The gain per kg stays at 1 until 6 + 4 = 10 kg, the allowable increase.',
+            '<b>Range of feasibility.</b> Click "Volume ≤ 6" and "Volume ≤ 4". In both, the optimal decisions change but the shadow price of 4 still predicts the new Z, because both are inside 5 + 1 and 5 − 2.',
+            '<b>Non-binding constraints.</b> Click "Min items ≥ 2". Nothing moves: the constraint is not binding, so its shadow price is 0 and it can rise by 4 (to the final value 5) before it matters.',
+            "<b>Complementary slackness.</b> In the report, check that (Final value − R.H. side) × Shadow price = 0 for every constraint.",
+          ],
+          puzzle: [
+            "<b>The slide question.</b> For X ≤ a, what are the shadow price and the allowable increase and decrease? Start with a = 0.5.",
+            "<b>a &lt; 1.</b> The optimum sits where Y = 2X meets X = a. Each extra unit of a adds 2 to Y, so the shadow price is 2, with allowable increase 1 − a and decrease a.",
+            '<b>a ≥ 1.</b> Click "a = 1.5". Now Y ≤ X + 1 takes over and the shadow price drops to 1, with no limit on the increase and allowable decrease a − 1.',
+            "<b>At a = 1</b> the corner is degenerate: three constraints meet in one point. Compare the report with the two cases above.",
+          ],
+          degenerate: [
+            "<b>Three lines through one corner.</b> Weight, Volume and Pocket space all pass through (4, 1). That makes the corner degenerate.",
+            '<b>Odd shadow prices.</b> The report shows one shadow price for raising and another for lowering a right-hand side. Try "Weight ≤ 7" and "Weight ≤ 5" and compare the change in Z.',
+            "<b>Why it matters.</b> With degeneracy, Solver's report can list a zero allowable increase or decrease. The numbers are correct for that side, but they only describe one direction.",
+          ],
+          multiple: [
+            "<b>Parallel lines.</b> The objective 3x₁ + 6x₂ is parallel to the weight constraint, so every point on the weight edge between (0, 3) and (4, 1) gives Z = 18.",
+            "<b>Zero allowable change.</b> In the report, one objective coefficient has an allowable change of 0. That is Solver's hint that alternative optima exist.",
+          ],
+          unbounded: [
+            '<b>No capacity limit.</b> Without weight or volume limits, the objective line can slide forever. Solver reports "The Objective Cell values do not converge". Add a constraint back to fix it.',
+          ],
+          infeasible: [
+            '<b>Too many items.</b> At least 7 items cannot fit in 5 liters. No point satisfies every constraint, so Solver reports "Solver could not find a feasible solution". Lower the minimum or raise the volume.',
+          ],
+        };
+        const COLORS = ["--c1", "--c2", "--c3", "--c4", "--c5"];
+        const M = 1e4,
+          H = 1e-5;
+        let presetKey = "knapsack";
+        let S = clone(PRESETS.knapsack),
+          ORIG = clone(PRESETS.knapsack);
+        let origBase = null,
+          origSens = null,
+          lastBase = null,
+          activeScen = -1;
+
+        function clone(o) {
+          return {
+            sense: o.sense,
+            names: o.names.slice(),
+            c: o.c.slice(),
+            cons: o.cons.map((k) => ({ name: k.name, a: k.a.slice(), op: k.op, b: k.b })),
+          };
+        }
+        const $ = (id) => document.getElementById(id);
+        const dot = (a, p) => a[0] * p[0] + a[1] * p[1];
+
+        // ---------- Solver: enumerate the corner points of a 2-variable LP ----------
+        function feasible(p, cons) {
+          if (p[0] < -1e-7 || p[1] < -1e-7 || p[0] > M + 1e-6 || p[1] > M + 1e-6) return false;
+          for (const k of cons) {
+            const l = dot(k.a, p),
+              tol = 1e-7 * (1 + Math.abs(k.b));
+            if (k.op === "<=" && l > k.b + tol) return false;
+            if (k.op === ">=" && l < k.b - tol) return false;
+            if (k.op === "=" && Math.abs(l - k.b) > tol) return false;
+          }
+          return true;
+        }
+        function solve(cons, c, sense) {
+          const lines = cons
+            .map((k) => ({ a: k.a, b: k.b }))
+            .concat([
+              { a: [1, 0], b: 0 },
+              { a: [0, 1], b: 0 },
+              { a: [1, 0], b: M },
+              { a: [0, 1], b: M },
+            ]);
+          const pts = [];
+          for (let i = 0; i < lines.length; i++)
+            for (let j = i + 1; j < lines.length; j++) {
+              const A = lines[i],
+                B = lines[j],
+                det = A.a[0] * B.a[1] - A.a[1] * B.a[0];
+              if (Math.abs(det) < 1e-12) continue;
+              const p = [(A.b * B.a[1] - A.a[1] * B.b) / det, (A.a[0] * B.b - A.b * B.a[0]) / det];
+              if (!feasible(p, cons)) continue;
+              if (!pts.some((q) => Math.abs(q[0] - p[0]) < 1e-7 && Math.abs(q[1] - p[1]) < 1e-7)) pts.push(p);
+            }
+          if (!pts.length) return { status: "infeasible", verts: [] };
+          const sg = sense === "max" ? 1 : -1;
+          let best = null,
+            bz = 0;
+          for (const p of pts) {
+            const z = sg * dot(c, p);
+            if (best === null) {
+              best = p;
+              bz = z;
+              continue;
+            }
+            const tol = 1e-9 * (1 + Math.abs(bz));
+            if (z > bz + tol || (Math.abs(z - bz) <= tol && (p[0] < best[0] - 1e-9 || (Math.abs(p[0] - best[0]) <= 1e-9 && p[1] < best[1])))) {
+              best = p;
+              bz = z;
+            }
+          }
+          const verts = pts.filter((p) => p[0] < M / 2 && p[1] < M / 2);
+          if (best[0] > M / 2 || best[1] > M / 2) return { status: "unbounded", verts };
+          const z = dot(c, best);
+          const ties = verts.filter((p) => Math.abs(dot(c, p) - z) <= 1e-9 * (1 + Math.abs(z))).length;
+          return { status: "optimal", p: best, z, verts, ties };
+        }
+
+        // ---------- Sensitivity, computed numerically one change at a time ----------
+        function searchRange(ok, dir) {
+          let lo = 0,
+            d = 1e-3;
+          while (d <= 1e6 && ok(dir * d)) {
+            lo = d;
+            d *= 2;
+          }
+          if (d > 1e6) return Infinity;
+          let hi = d;
+          for (let i = 0; i < 60; i++) {
+            const m = (lo + hi) / 2;
+            if (ok(dir * m)) lo = m;
+            else hi = m;
+          }
+          return lo > M / 10 ? Infinity : lo; // only the solver's internal bounding box stopped it
+        }
+        function sensitivity(st, base) {
+          const vars = [0, 1].map((j) => {
+            const fin = base.p[j];
+            let rc = 0;
+            if (fin < 1e-6) {
+              const r = solve(st.cons.concat([{ a: j === 0 ? [1, 0] : [0, 1], op: ">=", b: H }]), st.c, st.sense);
+              rc = r.status === "optimal" ? (r.z - base.z) / H : NaN;
+            }
+            const same = (d) => {
+              const c2 = st.c.slice();
+              c2[j] += d;
+              const r = solve(st.cons, c2, st.sense);
+              return r.status === "optimal" && Math.abs(r.p[0] - base.p[0]) < 1e-6 && Math.abs(r.p[1] - base.p[1]) < 1e-6;
+            };
+            return { name: st.names[j], fin, rc, coef: st.c[j], inc: searchRange(same, 1), dec: searchRange(same, -1) };
+          });
+          const zAt = (i, b) => {
+            const cons = st.cons.map((k, t) => (t === i ? Object.assign({}, k, { b }) : k));
+            const r = solve(cons, st.c, st.sense);
+            return r.status === "optimal" ? r.z : NaN;
+          };
+          const slopeAt = (i, b) => (zAt(i, b + H) - zAt(i, b)) / H;
+          const cons = st.cons.map((k, i) => {
+            const lhs = dot(k.a, base.p);
+            let sp = slopeAt(i, k.b);
+            if (!isFinite(sp)) sp = (base.z - zAt(i, k.b - H)) / H;
+            const ok = (d) => {
+              const s = slopeAt(i, k.b + d);
+              return isFinite(s) && Math.abs(s - sp) < 1e-4 * (1 + Math.abs(sp));
+            };
+            return {
+              name: k.name,
+              lhs,
+              sp,
+              rhs: k.b,
+              inc: searchRange(ok, 1),
+              dec: searchRange(ok, -1),
+              binding: Math.abs(lhs - k.b) < 1e-6 * (1 + Math.abs(k.b)),
+            };
+          });
+          return { vars, cons };
+        }
+
+        // ---------- Formatting ----------
+        function fmt(v, dp = 3) {
+          if (v === Infinity || v === -Infinity) return "1E+30";
+          if (!isFinite(v)) return "–";
+          if (Math.abs(v) < 5e-10) return "0";
+          return String(Number(v.toFixed(dp)));
+        }
+        const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+        const opText = (op) => (op === "<=" ? "≤" : op === ">=" ? "≥" : "=");
+        function esc(s) {
+          return String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+        }
+        function linExpr(a, vars) {
+          let out = "";
+          a.forEach((v, j) => {
+            if (Math.abs(v) < 1e-12) return;
+            const mag = Math.abs(v),
+              coef = Math.abs(mag - 1) < 1e-12 ? "" : fmt(mag, 2);
+            if (!out) out = (v < 0 ? "−" : "") + coef + vars[j];
+            else out += (v < 0 ? " − " : " + ") + coef + vars[j];
+          });
+          return out || "0";
+        }
+        const VARS = ["x₁", "x₂"];
+
+        // ---------- Geometry helpers ----------
+        const W = 600,
+          Hh = 500,
+          PL = 52,
+          PR = 20,
+          PT = 16,
+          PB = 44;
+        function niceStep(r) {
+          const p = Math.pow(10, Math.floor(Math.log10(r)));
+          const f = r / p;
+          return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+        }
+        function domain(models) {
+          let X = 0,
+            Y = 0;
+          for (const m of models) {
+            for (const k of m.st.cons) {
+              if (k.a[0] > 0 && k.b > 0) X = Math.max(X, k.b / k.a[0]);
+              if (k.a[1] > 0 && k.b > 0) Y = Math.max(Y, k.b / k.a[1]);
+            }
+            for (const p of m.base.verts || []) {
+              X = Math.max(X, p[0]);
+              Y = Math.max(Y, p[1]);
+            }
+          }
+          X = Math.min(Math.max(X * 1.15, 2), 1000);
+          Y = Math.min(Math.max(Y * 1.15, 2), 1000);
+          return { X, Y };
+        }
+        function clipPoly(poly, a, b) {
+          const out = [];
+          for (let i = 0; i < poly.length; i++) {
+            const P = poly[i],
+              Q = poly[(i + 1) % poly.length];
+            const fp = dot(a, P) - b,
+              fq = dot(a, Q) - b;
+            if (fp <= 1e-9) out.push(P);
+            if ((fp < -1e-9 && fq > 1e-9) || (fp > 1e-9 && fq < -1e-9)) {
+              const t = fp / (fp - fq);
+              out.push([P[0] + t * (Q[0] - P[0]), P[1] + t * (Q[1] - P[1])]);
+            }
+          }
+          return out;
+        }
+        function region(st, X, Y) {
+          let poly = [
+            [0, 0],
+            [X, 0],
+            [X, Y],
+            [0, Y],
+          ];
+          for (const k of st.cons) {
+            if (k.op === "<=" || k.op === "=") poly = clipPoly(poly, k.a, k.b);
+            if (k.op === ">=" || k.op === "=") poly = clipPoly(poly, [-k.a[0], -k.a[1]], -k.b);
+            if (!poly.length) break;
+          }
+          return poly;
+        }
+        function lineInBox(a, b, X, Y) {
+          const pts = [];
+          if (Math.abs(a[1]) > 1e-12) {
+            for (const x of [0, X]) {
+              const y = (b - a[0] * x) / a[1];
+              if (y >= -1e-9 && y <= Y + 1e-9) pts.push([x, y]);
+            }
+          }
+          if (Math.abs(a[0]) > 1e-12) {
+            for (const y of [0, Y]) {
+              const x = (b - a[1] * y) / a[0];
+              if (x >= -1e-9 && x <= X + 1e-9) pts.push([x, y]);
+            }
+          }
+          const u = [];
+          for (const p of pts) if (!u.some((q) => Math.abs(q[0] - p[0]) < 1e-9 && Math.abs(q[1] - p[1]) < 1e-9)) u.push(p);
+          return u.length >= 2 ? [u[0], u[u.length - 1]] : null;
+        }
+        const samePt = (p, q) => p && q && Math.abs(p[0] - q[0]) < 1e-6 && Math.abs(p[1] - q[1]) < 1e-6;
+        function changedFromOrig() {
+          if (S.sense !== ORIG.sense || S.cons.length !== ORIG.cons.length) return true;
+          if (S.c.some((v, j) => Math.abs(v - ORIG.c[j]) > 1e-12)) return true;
+          return S.cons.some((k, i) => {
+            const o = ORIG.cons[i];
+            return k.op !== o.op || Math.abs(k.b - o.b) > 1e-12 || Math.abs(k.a[0] - o.a[0]) > 1e-12 || Math.abs(k.a[1] - o.a[1]) > 1e-12;
+          });
+        }
+
+        // ---------- Plot ----------
+        function draw(base) {
+          const changed = changedFromOrig();
+          const { X, Y } = domain(
+            changed
+              ? [
+                  { st: S, base },
+                  { st: ORIG, base: origBase },
+                ]
+              : [{ st: S, base }]
+          );
+          const sx = (x) => PL + (x / X) * (W - PL - PR),
+            sy = (y) => Hh - PB - (y / Y) * (Hh - PT - PB);
+          const pts = (poly) => poly.map((p) => sx(p[0]).toFixed(1) + "," + sy(p[1]).toFixed(1)).join(" ");
+          let g = `<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${css("--obj")}"/></marker></defs>`;
+          const sxs = niceStep(X / 6),
+            sys = niceStep(Y / 6);
+          for (let x = 0; x <= X + 1e-9; x += sxs)
+            g += `<line x1="${sx(x)}" y1="${sy(0)}" x2="${sx(x)}" y2="${sy(Y)}" stroke="${css("--grid")}"/><text class="tick" x="${sx(x)}" y="${sy(0) + 16}" text-anchor="middle">${fmt(x, 2)}</text>`;
+          for (let y = 0; y <= Y + 1e-9; y += sys)
+            g += `<line x1="${sx(0)}" y1="${sy(y)}" x2="${sx(X)}" y2="${sy(y)}" stroke="${css("--grid")}"/><text class="tick" x="${sx(0) - 8}" y="${sy(y) + 4}" text-anchor="end">${fmt(y, 2)}</text>`;
+          g += `<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(X)}" y2="${sy(0)}" stroke="${css("--muted")}"/><line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(0)}" y2="${sy(Y)}" stroke="${css("--muted")}"/>`;
+          g += `<text class="axis-label" x="${sx(X)}" y="${Hh - 6}" text-anchor="end">${presetKey === "puzzle" ? "X" : "x₁: " + esc(S.names[0])}</text>`;
+          g += `<text class="axis-label" x="${PL - 40}" y="${PT + 2}" transform="rotate(-90 ${PL - 40} ${PT + 2})" text-anchor="end">${presetKey === "puzzle" ? "Y" : "x₂: " + esc(S.names[1])}</text>`;
+
+          const poly = region(S, X, Y);
+          if (poly.length >= 3) g += `<polygon points="${pts(poly)}" fill="${css("--region")}" stroke="${css("--region-edge")}" stroke-width="1"/>`;
+          if (changed) {
+            const op = region(ORIG, X, Y);
+            if (op.length >= 3)
+              g += `<polygon points="${pts(op)}" fill="none" stroke="${css("--ghost")}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+          }
+
+          // constraint lines, with an arrow toward the feasible side (as on the slides)
+          S.cons.forEach((k, i) => {
+            const seg = lineInBox(k.a, k.b, X, Y);
+            if (!seg) return;
+            const col = css(COLORS[i % 5]);
+            const binding = base.status === "optimal" && Math.abs(dot(k.a, base.p) - k.b) < 1e-6 * (1 + Math.abs(k.b));
+            g += `<g><line x1="${sx(seg[0][0])}" y1="${sy(seg[0][1])}" x2="${sx(seg[1][0])}" y2="${sy(seg[1][1])}" stroke="${col}" stroke-width="${binding ? 2.6 : 1.6}" ${binding ? "" : 'stroke-dasharray="6 4"'}/>`;
+            if (k.op !== "=") {
+              const t = 0.32,
+                mx = sx(seg[0][0] + t * (seg[1][0] - seg[0][0])),
+                my = sy(seg[0][1] + t * (seg[1][1] - seg[0][1]));
+              const s = k.op === "<=" ? -1 : 1;
+              let dx = ((s * k.a[0]) / X) * (W - PL - PR),
+                dy = ((-s * k.a[1]) / Y) * (Hh - PT - PB);
+              const dn = Math.hypot(dx, dy) || 1;
+              g += `<line x1="${mx}" y1="${my}" x2="${mx + (18 * dx) / dn}" y2="${my + (18 * dy) / dn}" stroke="${col}" stroke-width="1.6" marker-end="url(#ah${i})"/>`;
+              g += `<defs><marker id="ah${i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${col}"/></marker></defs>`;
+            }
+            const L = Math.abs(seg[0][1] - seg[1][1]) < 1e-9 ? (seg[0][0] > seg[1][0] ? seg[0] : seg[1]) : seg[0][1] > seg[1][1] ? seg[0] : seg[1];
+            let lx = sx(L[0]) + 6,
+              ly = sy(L[1]) + (L[1] >= Y - 1e-9 ? 14 : -6);
+            lx = Math.min(Math.max(lx, PL + 4), W - PR - 4);
+            ly = Math.min(Math.max(ly, PT + 12), Hh - PB - 6);
+            const anchor = lx > W - 150 ? "end" : "start";
+            g += `<text class="cons-label" x="${anchor === "end" ? lx - 10 : lx}" y="${ly}" fill="${col}" text-anchor="${anchor}">${esc(k.name)}</text></g>`;
+          });
+
+          // original objective line + optimum (ghost)
+          if (changed && origBase && origBase.status === "optimal") {
+            const so = lineInBox(ORIG.c, origBase.z, X, Y);
+            if (so)
+              g += `<line x1="${sx(so[0][0])}" y1="${sy(so[0][1])}" x2="${sx(so[1][0])}" y2="${sy(so[1][1])}" stroke="${css("--ghost")}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+          }
+          // objective lines
+          const c = S.c;
+          if (Math.hypot(c[0], c[1]) > 1e-12) {
+            const sw = lineInBox(c, +$("zslider").value, X, Y);
+            if (sw)
+              g += `<line x1="${sx(sw[0][0])}" y1="${sy(sw[0][1])}" x2="${sx(sw[1][0])}" y2="${sy(sw[1][1])}" stroke="${css("--obj")}" stroke-width="1.8" stroke-dasharray="2 4"/>`;
+            if (base.status === "optimal") {
+              const so = lineInBox(c, base.z, X, Y);
+              if (so)
+                g += `<line x1="${sx(so[0][0])}" y1="${sy(so[0][1])}" x2="${sx(so[1][0])}" y2="${sy(so[1][1])}" stroke="${css("--obj")}" stroke-width="2.4"/>`;
+              const sg = S.sense === "max" ? 1 : -1;
+              const dx = ((sg * c[0]) / X) * (W - PL - PR),
+                dy = ((-sg * c[1]) / Y) * (Hh - PT - PB),
+                dn = Math.hypot(dx, dy);
+              const ax = sx(base.p[0]),
+                ay = sy(base.p[1]);
+              g += `<line x1="${ax}" y1="${ay}" x2="${ax + (44 * dx) / dn}" y2="${ay + (44 * dy) / dn}" stroke="${css("--obj")}" stroke-width="2" marker-end="url(#ah)"/>`;
+            }
+          }
+          for (const p of base.verts || []) {
+            const isBest = base.status === "optimal" && Math.abs(dot(S.c, p) - base.z) <= 1e-9 * (1 + Math.abs(base.z));
+            g += `<circle cx="${sx(p[0])}" cy="${sy(p[1])}" r="${isBest ? 4.5 : 3.5}" fill="${isBest ? css("--accent") : css("--panel")}" stroke="${css("--accent")}" stroke-width="1.5"/>`;
+          }
+          if (changed && origBase && origBase.status === "optimal" && !(base.status === "optimal" && samePt(base.p, origBase.p))) {
+            const ox = sx(origBase.p[0]),
+              oy = sy(origBase.p[1]);
+            g += `<circle cx="${ox}" cy="${oy}" r="8" fill="none" stroke="${css("--ghost")}" stroke-width="1.5" stroke-dasharray="3 3"/><text class="ghost-label" x="${ox - 10}" y="${oy + 20}" text-anchor="end">original optimum</text>`;
+          }
+          if (base.status === "optimal") {
+            const px = sx(base.p[0]),
+              py = sy(base.p[1]);
+            g += `<circle cx="${px}" cy="${py}" r="7" fill="none" stroke="${css("--accent")}" stroke-width="2"/>`;
+            const right = px < W - 170;
+            g += `<text class="pt-label" x="${right ? px + 12 : px - 12}" y="${py < PT + 30 ? py + 20 : py - 10}" text-anchor="${right ? "start" : "end"}">(${fmt(base.p[0], 2)}, ${fmt(base.p[1], 2)})  Z = ${fmt(base.z, 2)}</text>`;
+          }
+          $("plot").innerHTML = g;
+          $("plot")._map = { X, Y };
+          $("lg-orig").hidden = !changed;
+        }
+
+        // ---------- Panels ----------
+        function renderModel() {
+          const vars = presetKey === "puzzle" ? ["X", "Y"] : VARS;
+          let h = `<div><span class="st">${S.sense}</span>${linExpr(S.c, vars)}</div>`;
+          S.cons.forEach((k, i) => {
+            h += `<div><span class="st">${i === 0 ? "s.t." : ""}</span>${linExpr(k.a, vars)} ${opText(k.op)} ${fmt(k.b, 2)}<span class="tag"><span class="swatch" style="background:var(${COLORS[i % 5]})"></span> ${esc(k.name)}</span></div>`;
+          });
+          h += `<div><span class="st"></span>${vars[0]}, ${vars[1]} ≥ 0</div>`;
+          $("model").innerHTML = h;
+        }
+        function renderScenarios() {
+          const list = PRESETS[presetKey].scenarios;
+          $("scen").innerHTML = list.length
+            ? list.map((s, i) => `<button type="button" data-s="${i}" class="${i === activeScen ? "on" : ""}">${s.label}</button>`).join("")
+            : '<span class="small">No preset changes for this example. Edit the model below.</span>';
+          $("scen")
+            .querySelectorAll("[data-s]")
+            .forEach((b) =>
+              b.addEventListener("click", () => {
+                const i = +b.dataset.s;
+                S = clone(ORIG);
+                list[i].apply(S);
+                activeScen = i;
+                loadControls();
+                update();
+              })
+            );
+        }
+        function renderStatus(base) {
+          let h;
+          if (base.status === "infeasible") h = '<span class="pill bad">Solver could not find a feasible solution</span>';
+          else if (base.status === "unbounded") h = '<span class="pill bad">The Objective Cell values do not converge</span>';
+          else {
+            const nb =
+              S.cons.filter((k) => Math.abs(dot(k.a, base.p) - k.b) < 1e-6 * (1 + Math.abs(k.b))).length + (base.p[0] < 1e-9) + (base.p[1] < 1e-9);
+            h = '<span class="pill ok">Solver found a solution</span>';
+            if (base.ties > 1) h += ' <span class="pill warn">Alternative optima</span>';
+            if (nb > 2) h += ' <span class="pill warn">Degenerate corner</span>';
+            h += ` <span class="zline">${presetKey === "puzzle" ? "X" : "x₁"} = ${fmt(base.p[0])}, ${presetKey === "puzzle" ? "Y" : "x₂"} = ${fmt(base.p[1])}, Z = ${fmt(base.z)}</span>`;
+          }
+          $("status").innerHTML = h;
+          const sorted = (base.verts || []).slice().sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+          $("corners").innerHTML = sorted.length
+            ? '<span class="small">Corner points:</span>' +
+              sorted
+                .map((p) => {
+                  const z = dot(S.c, p),
+                    best = base.status === "optimal" && Math.abs(z - base.z) <= 1e-9 * (1 + Math.abs(base.z));
+                  return `<span class="corner${best ? " best" : ""}">(${fmt(p[0], 2)}, ${fmt(p[1], 2)}) Z=${fmt(z, 2)}</span>`;
+                })
+                .join("")
+            : "";
+        }
+        function renderChange(base) {
+          const el = $("change");
+          if (!origBase || origBase.status !== "optimal") {
+            el.innerHTML =
+              '<p class="note" style="margin:0">The original model has no optimal solution, so there is no sensitivity report to compare against.</p>';
+            return;
+          }
+          if (!changedFromOrig()) {
+            el.innerHTML = `<p style="margin:0">This is the original model. Pick one of the changes above, or edit a single number below, and this panel will check the sensitivity report's prediction against the re-solved model.</p>`;
+            return;
+          }
+          const diffs = [];
+          if (S.sense !== ORIG.sense || S.cons.length !== ORIG.cons.length) diffs.push({ kind: "struct" });
+          else {
+            S.c.forEach((v, j) => {
+              if (Math.abs(v - ORIG.c[j]) > 1e-12) diffs.push({ kind: "c", j, d: v - ORIG.c[j] });
+            });
+            S.cons.forEach((k, i) => {
+              const o = ORIG.cons[i];
+              if (k.op !== o.op || Math.abs(k.a[0] - o.a[0]) > 1e-12 || Math.abs(k.a[1] - o.a[1]) > 1e-12) diffs.push({ kind: "struct" });
+              else if (Math.abs(k.b - o.b) > 1e-12) diffs.push({ kind: "b", i, d: k.b - o.b });
+            });
+          }
+          const vars = presetKey === "puzzle" ? ["X", "Y"] : VARS;
+          const actual = base.status === "optimal" ? `(${fmt(base.p[0])}, ${fmt(base.p[1])}), Z = ${fmt(base.z)}` : base.status;
+          const moved = !(base.status === "optimal" && samePt(base.p, origBase.p));
+          if (diffs.length !== 1 || diffs[0].kind === "struct") {
+            el.innerHTML = `<div class="verdict info">More than one change, or a change to a constraint's coefficients</div><p style="margin:0">The sensitivity report only covers one change at a time to an objective coefficient or a right-hand side. Re-solve instead: the optimum is now ${actual}.</p>`;
+            return;
+          }
+          const d = diffs[0];
+          if (d.kind === "c") {
+            const v = origSens.vars[d.j];
+            const inside = d.d <= v.inc + 1e-9 && -d.d <= v.dec + 1e-9;
+            const predZ = origBase.z + d.d * origBase.p[d.j];
+            el.innerHTML = `<div class="verdict ${moved ? "moved" : "same"}">${moved ? "The optimal decisions changed" : "The optimal decisions did not change"}</div>
+        <dl class="kv"><dt>Change</dt><dd>c${d.j === 0 ? "₁" : "₂"} (${vars[d.j]}) from ${fmt(ORIG.c[d.j])} to ${fmt(S.c[d.j])}</dd>
+        <dt>Range of optimality</dt><dd>${fmt(ORIG.c[d.j] - v.dec)} to ${v.inc === Infinity ? "∞" : fmt(ORIG.c[d.j] + v.inc)}</dd>
+        <dt>Report predicts</dt><dd>${inside ? `same decisions; Z = ${fmt(origBase.z)} ${d.d >= 0 ? "+" : "−"} ${fmt(Math.abs(d.d))} × ${fmt(origBase.p[d.j])} = ${fmt(predZ)}` : "outside the range: the optimal corner moves, so re-solve"}</dd>
+        <dt>Re-solved</dt><dd>${actual}</dd></dl>`;
+          } else {
+            const k = origSens.cons[d.i];
+            const inside = d.d <= k.inc + 1e-9 && -d.d <= k.dec + 1e-9;
+            const predZ = origBase.z + d.d * k.sp;
+            el.innerHTML = `<div class="verdict ${moved ? "moved" : "same"}">${moved ? "The optimal decisions changed" : "The optimal decisions did not change"}${inside && base.status === "optimal" ? ", and the shadow price still predicts Z" : ""}</div>
+        <dl class="kv"><dt>Change</dt><dd>${esc(ORIG.cons[d.i].name)} RHS from ${fmt(ORIG.cons[d.i].b)} to ${fmt(S.cons[d.i].b)}</dd>
+        <dt>Shadow price</dt><dd>${fmt(k.sp)} per unit, valid from ${k.dec === Infinity ? "−∞" : fmt(ORIG.cons[d.i].b - k.dec)} to ${k.inc === Infinity ? "∞" : fmt(ORIG.cons[d.i].b + k.inc)}</dd>
+        <dt>Report predicts</dt><dd>${inside ? `Z = ${fmt(origBase.z)} ${d.d >= 0 ? "+" : "−"} ${fmt(Math.abs(d.d))} × ${fmt(k.sp)} = ${fmt(predZ)}` : "outside the range of feasibility: the shadow price no longer applies, so re-solve"}</dd>
+        <dt>Re-solved</dt><dd>${actual}</dd></dl>`;
+          }
+        }
+        function renderReport(base) {
+          if (base.status !== "optimal") {
+            $("report").innerHTML =
+              `<p class="note">No sensitivity report: the model is ${base.status}. Solver only produces this report for an optimal solution.</p>`;
+            return;
+          }
+          const r = sensitivity(S, base);
+          const cmp = changedFromOrig() && origSens && S.cons.length === ORIG.cons.length;
+          const cell = (v, o) => `<td${cmp && o !== undefined && fmt(v) !== fmt(o) ? ' class="chg"' : ""}>${fmt(v)}</td>`;
+          let h =
+            '<div class="caption">Variable cells</div><div class="tablewrap"><table><thead><tr><th>Name</th><th>Final value</th><th>Reduced cost</th><th>Objective coefficient</th><th>Allowable increase</th><th>Allowable decrease</th></tr></thead><tbody>';
+          r.vars.forEach((v, j) => {
+            const o = cmp ? origSens.vars[j] : {};
+            h += `<tr><td>${esc(v.name)}</td>${cell(v.fin, o.fin)}${cell(v.rc, o.rc)}${cell(v.coef, o.coef)}${cell(v.inc, o.inc)}${cell(v.dec, o.dec)}</tr>`;
+          });
+          h +=
+            '</tbody></table></div><div class="caption">Constraints</div><div class="tablewrap"><table><thead><tr><th>Name</th><th>Final value</th><th>Shadow price</th><th>Constraint R.H. side</th><th>Allowable increase</th><th>Allowable decrease</th></tr></thead><tbody>';
+          r.cons.forEach((k, i) => {
+            const o = cmp ? origSens.cons[i] : {};
+            h += `<tr><td><span class="swatch" style="margin-right:6px;background:var(${COLORS[i % 5]})"></span>${esc(k.name)} ${k.binding ? '<span class="small">(binding)</span>' : ""}</td>${cell(k.lhs, o.lhs)}${cell(k.sp, o.sp)}${cell(k.rhs, o.rhs)}${cell(k.inc, o.inc)}${cell(k.dec, o.dec)}</tr>`;
+          });
+          h +=
+            '</tbody></table></div><p class="note">Complementary slackness: (Final value − R.H. side) × Shadow price = 0 in every row. At a degenerate corner, the shadow price can differ for increases and decreases; this report shows the one for an increase.</p>';
+          $("report").innerHTML = h;
+        }
+
+        // ---------- Controls ----------
+        function buildCons() {
+          $("cons").innerHTML = S.cons
+            .map((k, i) => {
+              const o = ORIG.cons[i],
+                max = Math.max(2 * Math.abs(o ? o.b : k.b), 10);
+              return `<div class="row">
+        <div class="name-line"><span class="swatch" style="background:var(${COLORS[i % 5]})"></span><input id="cn${i}" type="text" value="${esc(k.name)}" aria-label="Constraint name"><button type="button" data-rm="${i}" aria-label="Remove ${esc(k.name)}">Remove</button></div>
+        <div class="eq"><input id="ca${i}" type="number" step="0.1" value="${k.a[0]}" aria-label="Coefficient of x1"> x₁ + <input id="cb${i}" type="number" step="0.1" value="${k.a[1]}" aria-label="Coefficient of x2"> x₂
+          <select id="co${i}" aria-label="Constraint sense"><option value="<="${k.op === "<=" ? " selected" : ""}>≤</option><option value=">="${k.op === ">=" ? " selected" : ""}>≥</option><option value="="${k.op === "=" ? " selected" : ""}>=</option></select>
+          <input id="cr${i}" type="number" step="0.1" value="${k.b}" aria-label="Right-hand side"></div>
+        <div class="rhs"><label for="cs${i}" class="small">RHS</label><input id="cs${i}" type="range" min="${Math.min(0, -max)}" max="${max}" step="0.1" value="${k.b}"></div>
+      </div>`;
+            })
+            .join("");
+          S.cons.forEach((k, i) => {
+            const upd = () => {
+              k.name = $("cn" + i).value;
+              k.a = [num($("ca" + i).value), num($("cb" + i).value)];
+              k.op = $("co" + i).value;
+              k.b = num($("cr" + i).value);
+              $("cs" + i).value = k.b;
+              activeScen = -1;
+              update();
+            };
+            ["cn", "ca", "cb", "co", "cr"].forEach((p) => $(p + i).addEventListener("input", upd));
+            $("cs" + i).addEventListener("input", () => {
+              $("cr" + i).value = $("cs" + i).value;
+              upd();
+            });
+          });
+          $("cons")
+            .querySelectorAll("[data-rm]")
+            .forEach((b) =>
+              b.addEventListener("click", () => {
+                S.cons.splice(+b.dataset.rm, 1);
+                activeScen = -1;
+                buildCons();
+                update();
+              })
+            );
+          $("add").disabled = S.cons.length >= 5;
+        }
+        const num = (v) => {
+          const n = parseFloat(v);
+          return isFinite(n) ? n : 0;
+        };
+        function loadControls() {
+          $("nx").value = S.names[0];
+          $("ny").value = S.names[1];
+          $("sense").value = S.sense;
+          $("c1").value = S.c[0];
+          $("c2").value = S.c[1];
+          $("c1r").value = S.c[0];
+          $("c2r").value = S.c[1];
+          buildCons();
+        }
+        function loadPreset(key) {
+          presetKey = key;
+          ORIG = clone(PRESETS[key]);
+          S = clone(ORIG);
+          activeScen = -1;
+          origBase = solve(ORIG.cons, ORIG.c, ORIG.sense);
+          origSens = origBase.status === "optimal" ? sensitivity(ORIG, origBase) : null;
+          $("try").innerHTML = TRY[key].map((t) => `<li>${t}</li>`).join("");
+          loadControls();
+          update(true);
+        }
+        function update(resetSweep) {
+          const base = solve(S.cons, S.c, S.sense);
+          lastBase = base;
+          const zs = $("zslider");
+          const zvals = (base.verts || []).map((p) => dot(S.c, p));
+          const zmax = Math.max(1, ...zvals.map(Math.abs)) * 1.25;
+          zs.min = (Math.min(0, ...zvals) < 0 ? -zmax : 0).toFixed(1);
+          zs.max = zmax.toFixed(1);
+          if (resetSweep) zs.value = S.sense === "max" ? zs.min : zs.max;
+          $("zout").textContent = "Z = " + fmt(+zs.value, 1);
+          draw(base);
+          renderModel();
+          renderScenarios();
+          renderStatus(base);
+          renderChange(base);
+          renderReport(base);
+        }
+        $("nx").addEventListener("input", (e) => {
+          S.names[0] = e.target.value;
+          ORIG.names[0] = e.target.value;
+          update();
+        });
+        $("ny").addEventListener("input", (e) => {
+          S.names[1] = e.target.value;
+          ORIG.names[1] = e.target.value;
+          update();
+        });
+        $("sense").addEventListener("input", (e) => {
+          S.sense = e.target.value;
+          activeScen = -1;
+          update(true);
+        });
+        const setC = (j, v) => {
+          S.c[j] = num(v);
+          $("c" + (j + 1)).value = S.c[j];
+          $("c" + (j + 1) + "r").value = S.c[j];
+          activeScen = -1;
+          update();
+        };
+        $("c1").addEventListener("input", (e) => setC(0, e.target.value));
+        $("c2").addEventListener("input", (e) => setC(1, e.target.value));
+        $("c1r").addEventListener("input", (e) => setC(0, e.target.value));
+        $("c2r").addEventListener("input", (e) => setC(1, e.target.value));
+        $("zslider").addEventListener("input", () => {
+          $("zout").textContent = "Z = " + fmt(+$("zslider").value, 1);
+          draw(lastBase);
+        });
+        $("add").addEventListener("click", () => {
+          if (S.cons.length >= 5) return;
+          S.cons.push({ name: "New constraint", a: [1, 1], op: "<=", b: 4 });
+          activeScen = -1;
+          buildCons();
+          update();
+        });
+        $("preset").addEventListener("change", (e) => loadPreset(e.target.value));
+        $("reset").addEventListener("click", () => {
+          S = clone(ORIG);
+          activeScen = -1;
+          loadControls();
+          update(true);
+        });
+
+        $("plot").addEventListener("pointermove", (e) => {
+          const m = $("plot")._map;
+          if (!m) return;
+          const r = $("plot").getBoundingClientRect();
+          const px = ((e.clientX - r.left) * W) / r.width,
+            py = ((e.clientY - r.top) * Hh) / r.height;
+          const x = ((px - PL) / (W - PL - PR)) * m.X,
+            y = ((Hh - PB - py) / (Hh - PT - PB)) * m.Y;
+          if (x < 0 || y < 0 || x > m.X || y > m.Y) {
+            $("readout").textContent = "Hover over the plot to check any point.";
+            return;
+          }
+          const viol = S.cons.filter((k) => (k.op === "<=" && dot(k.a, [x, y]) > k.b) || (k.op === ">=" && dot(k.a, [x, y]) < k.b));
+          const v = presetKey === "puzzle" ? ["X", "Y"] : VARS;
+          $("readout").textContent =
+            `${v[0]} = ${fmt(x, 2)}, ${v[1]} = ${fmt(y, 2)}, Z = ${fmt(dot(S.c, [x, y]), 2)}  ·  ` +
+            (viol.length ? "infeasible: violates " + viol.map((k) => k.name).join(", ") : "feasible");
+        });
+        $("plot").addEventListener("pointerleave", () => {
+          $("readout").textContent = "Hover over the plot to check any point.";
+        });
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        if (mq.addEventListener) mq.addEventListener("change", () => draw(lastBase));
+        new MutationObserver(() => draw(lastBase)).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+        loadPreset("knapsack");
+      })();
+    </script>
+  </body>
+</html>
