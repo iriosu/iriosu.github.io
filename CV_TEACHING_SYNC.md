@@ -6,7 +6,7 @@ The teaching section is now automatically synchronized between the **Teaching pa
 
 ### Single Source of Truth
 - **Data File:** `_data/teaching.yml`
-- **Teaching Page:** `_pages/teaching.md` reads from teaching.yml
+- **Teaching Page:** `_pages/teaching.html` reads from teaching.yml (lab cards use the `links` fields: topic, icon, image, description)
 - **CV Page:** Uses `_includes/cv/teaching_from_data.liquid` to display teaching data
 
 ### Benefits

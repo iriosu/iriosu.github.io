@@ -75,3 +75,227 @@
   padding-left: 18px;
   margin-bottom: 0;
 }
+
+/*****************************
+ * Teaching page: lab gallery and course list
+ *****************************/
+
+.labs {
+  margin: 0.5rem 0 3rem;
+}
+
+.labs-eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--global-theme-color);
+}
+
+.labs-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.labs-intro {
+  max-width: 44rem;
+  margin: 0 0 1.5rem;
+  color: var(--global-text-color-light);
+}
+
+.labs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 1.25rem;
+}
+
+.lab-card {
+  --lab-accent: var(--global-theme-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 12px;
+  background: var(--global-card-bg-color);
+  color: var(--global-text-color);
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--lab-accent);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    color: var(--global-text-color);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--lab-accent);
+    outline-offset: 2px;
+  }
+}
+
+// One accent per topic, so the course arc reads at a glance.
+.lab-spreadsheet-modeling {
+  --lab-accent: #1baf7a;
+}
+.lab-linear-optimization {
+  --lab-accent: #2a78d6;
+}
+.lab-integer-optimization {
+  --lab-accent: #8a5cd1;
+}
+.lab-simulation {
+  --lab-accent: #e0702f;
+}
+
+.lab-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 3px solid var(--lab-accent);
+  background: #f4f6f9;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform 0.3s ease;
+  }
+}
+
+.lab-card:hover .lab-thumb img {
+  transform: scale(1.04);
+}
+
+.lab-step {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--lab-accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.lab-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.lab-topic {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--lab-accent);
+}
+
+.lab-name {
+  margin: 0.3rem 0 0.4rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.lab-desc {
+  flex: 1;
+  margin: 0 0 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--global-text-color-light);
+}
+
+.lab-open {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--lab-accent);
+
+  i {
+    margin-left: 0.2rem;
+    transition: transform 0.15s ease;
+  }
+}
+
+.lab-card:hover .lab-open i {
+  transform: translateX(3px);
+}
+
+.course-history {
+  margin-top: 1rem;
+}
+
+.inst {
+  margin-top: 1.5rem;
+}
+
+.inst-name {
+  margin: 0 0 0.25rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--global-divider-color);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.course-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.course-row {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px dashed var(--global-divider-color);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.course-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.course-title {
+  font-weight: 500;
+}
+
+.course-meta {
+  font-size: 0.85rem;
+  color: var(--global-text-color-light);
+}
+
+.course-years {
+  flex-shrink: 0;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--global-divider-color);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .lab-thumb img {
+  filter: brightness(0.85);
+}

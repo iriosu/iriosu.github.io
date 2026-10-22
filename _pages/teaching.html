@@ -1,0 +1,70 @@
+---
+layout: page
+permalink: /teaching/
+title: teaching
+description: Courses I teach and have taught, and the interactive labs I built for them.
+nav: true
+nav_order: 6
+---
+
+{% for institution in site.data.teaching.courses %} {% for course in institution.courses %} {% if course.links %}
+
+<section class="labs" id="labs">
+  <div class="labs-head">
+    <p class="labs-eyebrow">{{ course.title }} · {{ institution.institution }}</p>
+    <h2 class="labs-title">Interactive labs</h2>
+    {% if course.labs_intro %}
+    <p class="labs-intro">{{ course.labs_intro }}</p>
+    {% endif %}
+  </div>
+  <div class="labs-grid">
+    {% for link in course.links %}
+    <a class="lab-card lab-{{ link.topic | slugify }}" href="{{ link.url | relative_url }}">
+      <div class="lab-thumb">
+        {% if link.image %}<img
+          src="{{ link.image | relative_url }}"
+          alt="Screenshot of the {{ link.title }}"
+          loading="lazy"
+          width="800"
+          height="500"
+        />{% endif %}
+        <span class="lab-step">{{ forloop.index }}</span>
+      </div>
+      <div class="lab-body">
+        {% if link.topic %}<span class="lab-topic"
+          >{% if link.icon %}<i class="fa-solid {{ link.icon }}" aria-hidden="true"></i> {% endif %}{{ link.topic }}</span
+        >{% endif %}
+        <h3 class="lab-name">{{ link.title }}</h3>
+        {% if link.description %}
+        <p class="lab-desc">{{ link.description }}</p>
+        {% endif %}
+        <span class="lab-open">Open lab <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %} {% endfor %} {% endfor %}
+
+<section class="course-history">
+  <h2 class="labs-title">Courses</h2>
+  {% for institution in site.data.teaching.courses %}
+  <div class="inst">
+    <h3 class="inst-name">{{ institution.institution }}</h3>
+    <ul class="course-rows">
+      {% for course in institution.courses %}
+      <li class="course-row">
+        <div class="course-main">
+          <span class="course-title">{{ course.title }}</span>
+          <span class="course-meta"
+            >{{ course.level }}{% if course.role %} · {{ course.role }}{% endif %}{% if course.links %} ·
+            <a href="#labs">{{ course.links | size }} interactive labs</a>{% endif %}</span
+          >
+        </div>
+        <span class="course-years">{{ course.years }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
