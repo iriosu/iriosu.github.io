@@ -35,4 +35,4 @@ I have played a leading role in the reform of Chile's school choice and college 
 
 My research and teaching have been recognized with several awards, including the Poets & Quants "40 Under 40 Best Business School Professors" distinction, the IFORS Prize for OR in Development, the Doing Good with Good OR Award, and the BOM Best Paper Award, among others.
 
-You can reach me at [irios\@nd.edu](mailto:irios@nd.edu) or [ignacio.rios.u@gmail.com](mailto:ignacio.rios.u@gmail.com).
+You can reach me at [irios@nd.edu](mailto:irios@nd.edu) or [ignacio.rios.u@gmail.com](mailto:ignacio.rios.u@gmail.com).
