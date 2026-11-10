@@ -8,28 +8,28 @@ students:
     affiliation: "UTD"
     role: "Primary Advisor"
     start_year: "2023"
-    
+
   - name: "Abhijit Marar"
     photo: "abhijit_marar.jpeg"
     website: "https://jindal.utdallas.edu/phd-students/abhijit-marar"
     affiliation: "UTD"
     role: "Primary Advisor"
     start_year: "2025"
-    
+
   - name: "Shayak Ghosal"
-    photo: "shayak_ghosal.png"
-    website: "https://jindal.utdallas.edu/phd-students/shayak-ghosal"
+    photo: "shayak_ghosal.jpeg"
+    website: "https://www.linkedin.com/in/shayak-ghosal-1b3421175/"
     affiliation: "UTD"
     role: "Co-Advisor"
     start_year: "2025"
-    
+
   - name: "Rahul Sharma"
     photo: "rahul_sharma.jpeg"
     website: "https://jindal.utdallas.edu/phd-students/rahul-sharma"
     affiliation: "UTD"
     role: "Primary Advisor"
     start_year: "2025"
-    
+
   - name: "Shenghui Zhai"
     photo: "shenghui_zhai.png"
     website: "https://jindal.utdallas.edu/phd-students/shenghui-zhai"
