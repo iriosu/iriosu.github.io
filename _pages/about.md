@@ -33,6 +33,6 @@ My research focuses on behavioral market design, with particular interest in how
 
 I have played a leading role in the reform of Chile's school choice and college admissions systems, as well as in the design of other two-sided matching markets. My work combines rigorous mechanism design insights with real-world implementation at scale.
 
-My research and teaching have been recognized with several awards, including the Poets & Quants "40 Under 40 Best Business School Professors" distinction, the IFORS Prize for OR in Development, the Doing Good with Good OR Award, and the BOM Best Paper Award, among others.
+My research and teaching have been recognized with several awards, including the [ACM EAAMO 2026 Best Paper Award](/news/eaamo-2026-best-paper-award/), the Poets & Quants "40 Under 40 Best Business School Professors" distinction, the IFORS Prize for OR in Development, the Doing Good with Good OR Award, and the BOM Best Paper Award, among others.
 
 You can reach me at [irios@nd.edu](mailto:irios@nd.edu) or [ignacio.rios.u@gmail.com](mailto:ignacio.rios.u@gmail.com).
