@@ -466,7 +466,12 @@ ninja.data = [{
           section: "News",},{id: "news-i-had-the-great-pleasure-of-presenting-our-paper-stable-matching-with-contingent-priorities-at-the-yale-school-of-management-many-thanks-to-faidra-monachou-for-the-invitation-and-for-inviting-me-again-after-a-storm-kept-me-from-making-it-last-spring",
           title: 'I had the great pleasure of presenting our paper Stable Matching with Contingent...',
           description: "",
-          section: "News",},{id: "projects-project-1",
+          section: "News",},{id: "news-best-paper-award-at-acm-eaamo-2026",
+          title: 'Best Paper Award at ACM EAAMO 2026',
+          description: "",
+          section: "News",handler: () => {
+              window.location.href = "/news/eaamo-2026-best-paper-award/";
+            },},{id: "projects-project-1",
           title: 'project 1',
           description: "with background image",
           section: "Projects",handler: () => {
